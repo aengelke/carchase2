@@ -10,7 +10,7 @@ import inprotk.carchase2.CarChase;
 
 /**
  * Eine Darstellung der Welt, bestehend aus Straﬂen und Knotenpunkten.
- * Eine Straﬂe wird durch eine Liste von Punkten beschrieben, 
+ * Eine Strasse wird durch eine Liste von Punkten beschrieben, 
  * @author Alexis Engelke
  *
  */

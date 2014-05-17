@@ -123,7 +123,7 @@ public class CarChaseExperimenter2 {
 	}
 	
 	public static void main(String[] args) {
-		CarChase.get().init("configs2/test1");
+		CarChase.get().init("configs2/");
 		
 		CarChaseExperimenter2 exp = new CarChaseExperimenter2();
 		CarChase.get().start();
