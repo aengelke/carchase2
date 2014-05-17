@@ -1,0 +1,35 @@
+[ TODO - CAR CHASE 2 ]
+
+Milestone 1: Seperate files for messages, world and configuration.
+x Implement representations
+x Implement trigger lines for TTS
+
+Milestone 2: Speed Changes
+x Implement detection
+x Implement handling
+x   Recreation of timeline in Viewer
+x Improve TTS messages to include the speed of the car
+_   Add TTS messages beside Text and Cont
+_     (example: Drive from DR to K to DL and increase speed: Continues on D [with higher speed])
+x Fix bug with turning left or right.
+
+
+Milestone 3: Add User Interface
+x Decide on control
+x   Keys: 0-... => direction, +/- => speed
+_ Improve TTS messages to handle all choices appropriately
+
+No Milestone 1
+_ Improve rendering of car.
+_ Use PApplet instead of JPanel 
+_   Get rid of SwingRepaintTimeline and use draw()
+_ Change Package
+_ Prepare setting online
+
+No Milestone 2
+_ Add a point-of-view perspective.
+_   Use OpenGL?
+
+[ QUESTIONS - ASK TIMO ]
+_ How to get the (absolute!) end time of an IU?
+o   Tried endTime(), but this is relative to the starttime of a Chunk...

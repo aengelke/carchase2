@@ -1,0 +1,3 @@
+Point: Left, 0, 100
+Point: Right, 1024, 100
+Street: Street1, 1, Left, Right
