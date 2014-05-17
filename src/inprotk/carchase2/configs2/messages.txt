@@ -13,6 +13,11 @@
 #   p2, stop, OPTIONAL
 #   p3, stop, Dorfstrasse, OPTIONAL  
 #
+# This is to test the revoking function!
+p1, Dorfstrasse, DxK, -60, Kreisel, -1, 0, y
+--T2#F1#F1#Sent1=Dies ist nur ein Test, ob die Revoking Funktion zur Zurücknahme auch wirklich funktioniert.
+++
+#
 p1, DorfstrasseR, ExK, 190, %, -1, 0, n
 --T2#F1#F1#Sent1=Das Auto fährt auf den Kreisel zuu.
 --T3#F1#F1#Sent2=Das Auto fährt langsam auf den Kreisel zuu.

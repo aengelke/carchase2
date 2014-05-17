@@ -29,6 +29,9 @@
  * [ ] Implement spoke in last seconds function
    * [ ] How to get the absolute end time of an IU? Ask Timo
  * [ ] Add speed changes to the configuration file for automated testing
+ * [ ] Hesitations are buggy
+   * [ ] However, sometimes two hesitations occour directly after each other
+ * [ ] Duration of an IU is not correct
 
 ## No Milestone
  * [x] Use Processing's `PApplet` instead of `JPanel`

@@ -84,6 +84,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		double durationCanRevoked = 0;
 		for (IUextended iue : iues) {
 			durationOverAll += iue.inner.duration();
+			// This is buggy. TODO: fix.
 			if (iue.action.optional)
 				durationCanRevoked += iue.inner.duration();
 		}
