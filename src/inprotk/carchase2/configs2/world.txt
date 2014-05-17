@@ -21,10 +21,12 @@
 # T=OBEN
 # B=UNTEN
 Point: BxD, 220, 380
+Point: BxF, 220, 97
 Point: B-T, 220, 10
 Point: B-B, 220, 720
 Point: D-L, 0, 380
 Point: T-T, 688, 10
+Point: TxF, 688, 97
 Point: TxK, 688, 265
 Point: DxK, 590, 380
 Point: IxK, 640, 460
@@ -34,10 +36,11 @@ Point: A-B, 890, 720
 Point: ExK, 800, 380
 Point: E-R, 1000, 380
 #
-Street: Breite Strasse, 1, B-T, BxD, B-B
+Street: Breite Strasse, 1, B-T, BxF, BxD, B-B
 Street: Dorfstrasse, 1, D-L, BxD, DxK
-Street: Tierparkallee, 1, T-T, TxK
+Street: Tierparkallee, 1, T-T, TxF, TxK
 Street: Kreisel, 0, TxK, DxK, IxK, AxK, ExK, TxK
 Street: DorfstrasseR, 1, ExK, E-R
 Street: Kirchstrasse, 1, IxK, I-B
 Street: Bahnhofstrasse, 1, AxK, A-B
+Street: Fliedergasse, 1, TxF, BxF
