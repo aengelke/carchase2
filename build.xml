@@ -5,57 +5,53 @@
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="Inpro">
     <property environment="env"/>
-    <!-- Update these! -->
-    <property name="INPROTK" value="../inpro-inprotk-94e5a64d4d3c/inprotk/"/>
+    <!-- Update this! -->
     <property name="maryBase" value="C:/MaryTTS"/>
-    <property name="workspace_loc:Inpro/bin" value="bin"/>
-    <property name="workspace_loc:Inpro" value="."/>
     <property name="build_files" value=""/>
-    <property name="junit.output.dir" value="junit"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
     <path id="Inpro.classpath">
         <pathelement location="lib/core.jar"/>
-        <pathelement location="${INPROTK}bin"/>
-        <pathelement location="${INPROTK}lib/mary3/java-diff.jar"/>
-        <pathelement location="${INPROTK}lib/weka.jar"/>
-        <pathelement location="${INPROTK}lib/drej.jar"/>
-        <pathelement location="${INPROTK}lib/sphinx4/jsapi.jar"/>
-        <pathelement location="${INPROTK}lib/Cocolab_DE_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/commons-collections-3.2.1.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/commons-io-1.4.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/commons-lang-2.4.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/freetts-de.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/freetts.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/freetts-en_us.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/jtok.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/maxent-2.5.1.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/opennlp-tools-1.4.1.jar"/>
-        <pathelement location="${INPROTK}lib/mary3/maryclient.jar"/>
-        <pathelement location="${INPROTK}lib/trident.jar"/>
-        <pathelement location="${INPROTK}lib/snakeyaml-1.9.jar"/>
-        <pathelement location="${INPROTK}lib/jrtp_1.0a.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/mary-common.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/mary-de.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/mary-en.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/mary-mbrola.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/signalproc.jar"/>
-        <pathelement location="${INPROTK}lib/mary4/mary-freetts.jar"/>
-        <pathelement location="${INPROTK}lib/common-for-convenience/jflac-1.3.jar"/>
-        <pathelement location="${INPROTK}lib/common-for-convenience/log4j-1.2.15.jar"/>
-        <pathelement location="${INPROTK}lib/common-for-convenience/jdom1-1.1.1.jar"/>
-        <pathelement location="${INPROTK}lib/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar"/>
-        <pathelement location="${INPROTK}lib/oaa2/antlr-oaa.jar"/>
-        <pathelement location="${INPROTK}lib/oaa2/oaa2.jar"/>
-        <pathelement location="${INPROTK}lib/oaa2/backport-util-concurrent.jar"/>
-        <pathelement location="${INPROTK}lib/xmlrpc/xmlrpc-client-3.1.3.jar"/>
-        <pathelement location="${INPROTK}lib/xmlrpc/xmlrpc-common-3.1.3.jar"/>
-        <pathelement location="${INPROTK}lib/xmlrpc/xmlrpc-server-3.1.3.jar"/>
-        <pathelement location="${INPROTK}lib/junit-4.10.jar"/>
-        <pathelement location="${INPROTK}lib/common-for-convenience/jgraphx.jar"/>
-        <pathelement location="${INPROTK}lib/sphinx4/sphinx4.jar"/>
-        <pathelement location="${INPROTK}lib/common-for-convenience/commons-math3.jar"/>
+        <pathelement location="lib/inprotk.jar"/>
+        <pathelement location="lib/mary3/java-diff.jar"/>
+        <pathelement location="lib/weka.jar"/>
+        <pathelement location="lib/drej.jar"/>
+        <pathelement location="lib/sphinx4/jsapi.jar"/>
+        <pathelement location="lib/Cocolab_DE_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar"/>
+        <pathelement location="lib/mary4/commons-collections-3.2.1.jar"/>
+        <pathelement location="lib/mary4/commons-io-1.4.jar"/>
+        <pathelement location="lib/mary4/commons-lang-2.4.jar"/>
+        <pathelement location="lib/mary4/freetts-de.jar"/>
+        <pathelement location="lib/mary4/freetts.jar"/>
+        <pathelement location="lib/mary4/freetts-en_us.jar"/>
+        <pathelement location="lib/mary4/jtok.jar"/>
+        <pathelement location="lib/mary4/maxent-2.5.1.jar"/>
+        <pathelement location="lib/mary4/opennlp-tools-1.4.1.jar"/>
+        <pathelement location="lib/mary3/maryclient.jar"/>
+        <pathelement location="lib/trident.jar"/>
+        <pathelement location="lib/snakeyaml-1.9.jar"/>
+        <pathelement location="lib/jrtp_1.0a.jar"/>
+        <pathelement location="lib/mary4/mary-common.jar"/>
+        <pathelement location="lib/mary4/mary-de.jar"/>
+        <pathelement location="lib/mary4/mary-en.jar"/>
+        <pathelement location="lib/mary4/mary-mbrola.jar"/>
+        <pathelement location="lib/mary4/signalproc.jar"/>
+        <pathelement location="lib/mary4/mary-freetts.jar"/>
+        <pathelement location="lib/common-for-convenience/jflac-1.3.jar"/>
+        <pathelement location="lib/common-for-convenience/log4j-1.2.15.jar"/>
+        <pathelement location="lib/common-for-convenience/jdom1-1.1.1.jar"/>
+        <pathelement location="lib/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar"/>
+        <pathelement location="lib/oaa2/antlr-oaa.jar"/>
+        <pathelement location="lib/oaa2/oaa2.jar"/>
+        <pathelement location="lib/oaa2/backport-util-concurrent.jar"/>
+        <pathelement location="lib/xmlrpc/xmlrpc-client-3.1.3.jar"/>
+        <pathelement location="lib/xmlrpc/xmlrpc-common-3.1.3.jar"/>
+        <pathelement location="lib/xmlrpc/xmlrpc-server-3.1.3.jar"/>
+        <pathelement location="lib/junit-4.10.jar"/>
+        <pathelement location="lib/common-for-convenience/jgraphx.jar"/>
+        <pathelement location="lib/sphinx4/sphinx4.jar"/>
+        <pathelement location="lib/common-for-convenience/commons-math3.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -79,8 +75,8 @@
             <classpath refid="Inpro.classpath"/>
         </javac>
     </target>
-    <target name="CarChase2" depends="build-project">
-        <java classname="inprotk.carchase2.CarChaseExperimenter2" dir="${workspace_loc:Inpro/bin}" failonerror="true" fork="yes">
+    <target name="carchase2" depends="build-project">
+        <java classname="inprotk.carchase2.CarChaseExperimenter2" dir="bin" failonerror="true" fork="yes">
             <jvmarg line="-Dinpro.tts.voice=bits1-hsmm -Dinpro.tts.language=de -Dmary.base=${maryBase} -ea"/>
             <classpath>
               <pathelement location="bin/"/>
