@@ -61,7 +61,6 @@ public class Configuration {
 			World w = CarChase.get().world();
 			startPoint = w.points.get(startPointStr);
 			currentStreet = w.streets.get(startStreetStr);
-			CarChase.log(currentStreet, startPoint, startDirection, currentStreet.fetchNextPoint(startPoint, startDirection));
 			nextPoint = currentStreet.fetchNextPoint(startPoint, startDirection);
 			direction = startDirection;
 			listeners = new ArrayList<ConfigurationUpdateListener>();

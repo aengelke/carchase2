@@ -69,7 +69,6 @@ public class CarChaseViewer extends PApplet {
 		int millis = millis() - startMillis;
 		float rotationPercent = map(millis, 0, rotationDuration, 0, 1);
 		rotationPercent = min(1, rotationPercent);
-		println(millis, transitionDuration);
 		float position = map(millis, 0, transitionDuration, 0, 1);
 		if (position >= 1 && animating) {
 			CarChase.get().configuration().markDone();
@@ -119,7 +118,6 @@ public class CarChaseViewer extends PApplet {
 		strokeWeight(5);
 		stroke(255, 0, 0);
 		line(carPosition.x, carPosition.y, endPoint.x, endPoint.y);
-		println(carPath);
 		for (int i = 0; i < possibilities.size(); i++) {
 			PVector p = wp2vec(possibilities.get(i));
 			float dist = min(p.dist(decisionPoint), 100);

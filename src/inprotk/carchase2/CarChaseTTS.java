@@ -229,7 +229,6 @@ public class CarChaseTTS {
 			HashMap<MessageInformationLevel,TTSAction> actions = new HashMap<MessageInformationLevel,TTSAction>();
 			for (TTSAction action : matches) {
 				if (actions.containsKey(action.type)) continue;
-				if (last != null) CarChase.log(last.typeEnd);
 				// If last is null, we assume that we currently say nothing. 
 				// If last is not null, we (have to) should try to append a continuation,
 				// as the dispatcher always asks for both, last = null and last != null.

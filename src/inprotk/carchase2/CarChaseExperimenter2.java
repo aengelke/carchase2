@@ -78,7 +78,6 @@ public class CarChaseExperimenter2 {
 		int direction = config.direction;
 		int travelDuration;
 		float percent = 0;
-		CarChase.log(startPoint, nextPoint);
 		viewer.initialize(Math.atan2(startPoint.y - nextPoint.y, startPoint.x - nextPoint.x));
 		
 		do {
@@ -117,7 +116,6 @@ public class CarChaseExperimenter2 {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			CarChase.log("Interrupted.", e);
 		}
 		System.exit(0);
 	}
