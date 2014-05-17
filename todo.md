@@ -32,6 +32,7 @@
  * [ ] Hesitations are buggy
    * [ ] However, sometimes two hesitations occour directly after each other
  * [ ] Duration of an IU is not correct
+ * [ ] Auto-Revoke sometimes doesn't work
 
 ## No Milestone
  * [x] Use Processing's `PApplet` instead of `JPanel`
