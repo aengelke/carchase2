@@ -121,7 +121,7 @@ public class CarChaseExperimenter2 {
 	}
 	
 	public static void main(String[] args) {
-		CarChase.get().init("configs2/");
+		CarChase.get().init("default");
 		
 		CarChaseExperimenter2 exp = new CarChaseExperimenter2();
 		CarChase.get().start();

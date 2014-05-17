@@ -53,7 +53,7 @@ public class CarChaseViewer extends PApplet {
 	}
 	
 	public void setup() {
-		map = loadImage(CarChase.getFilename("data/mapWithStreetNames.png"));
+		map = loadImage(CarChase.get().getConfigFilename("mapWithStreetNames.png"));
 		car = loadImage(CarChase.getFilename("data/car.png"));
 		textFont(createFont("ArialMT-Bold", 15));
 		frameRate(30);

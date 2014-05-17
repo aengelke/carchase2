@@ -18,6 +18,7 @@ public class CarChase {
 
 	private static CarChase carchase;
 	
+	private String configSet;
 	private World world;
 	private Configuration config;
 	private CarChaseTTS tts;
@@ -44,20 +45,25 @@ public class CarChase {
 		this.tts = tts;
 	}
 	
+	public String getConfigSet() {
+		return configSet;
+	}
+	
+	public String getConfigFilename(String name) {
+		return getFilename("configs2/" + configSet + "/" + name);
+	}
+	
 	public void init(World w, CarChaseTTS tts, Configuration c) {
 		world = w;
 		this.tts = tts;
 		config = c;
 	}
 	
-	public void init(String prefix) {
-		init(prefix + "world.txt", prefix + "messages.txt", prefix + "config.txt");
-	}
-	
-	public void init(String w, String m, String c) {
-		world = new World(getFilename(w));
-		config = new InteractiveConfiguration(getFilename(c));
-		tts = new CarChaseTTS(getFilename(m));
+	public void init(String name) {
+		configSet = name;
+		world = new World(getConfigFilename("world.txt"));
+		config = new InteractiveConfiguration(getConfigFilename("config.txt"));
+		tts = new CarChaseTTS(getConfigFilename("messages.txt"));
 	}
 	
 	public boolean isInteractive() {
