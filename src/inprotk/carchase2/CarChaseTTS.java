@@ -27,7 +27,7 @@ public class CarChaseTTS {
 			articulator = new IncrementalArticulator(dispatcher);
 			int index = 0;
 			for (String line : lines) {
-				if (index++ == 1) continue;
+				if (index++ == 0) continue;
 				if (line.startsWith("#")) continue;
 				if (line.startsWith("--")) {
 					String[] args = line.substring(2).split("=");
