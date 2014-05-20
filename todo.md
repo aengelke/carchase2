@@ -36,7 +36,8 @@
  * [ ] Duration of an IU is not correct
  * [ ] Auto-Revoke sometimes doesn't work
  * [ ] Implement Patterns.
-   * [ ] Implement Specs and Parser for a `patterns.txt`
+   * [x] Define Specs for a `patterns.txt`
+   * [ ] Implement Parser for a `patterns.txt`
    * [ ] Generate text at runtime, if no special message exists.
 
 ## No Milestone
