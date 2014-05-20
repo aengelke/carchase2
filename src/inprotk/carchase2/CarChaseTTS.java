@@ -25,7 +25,9 @@ public class CarChaseTTS {
 			dispatcher = SimpleMonitor.setupDispatcher();
 			//articulator = new StandardArticulator(dispatcher);
 			articulator = new IncrementalArticulator(dispatcher);
+			int index = 0;
 			for (String line : lines) {
+				if (index++ == 1) continue;
 				if (line.startsWith("#")) continue;
 				if (line.startsWith("--")) {
 					String[] args = line.substring(2).split("=");
