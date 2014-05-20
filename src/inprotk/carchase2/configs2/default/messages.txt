@@ -1,4 +1,4 @@
-# Filename: messages.txt       #
+ï»¿# Filename: messages.txt       #
 # Parser: MessagesParser       #
 # Author: Alexis Engelke 2014  #
 ################################
@@ -15,73 +15,73 @@
 #
 # This is to test the revoking function!
 #p1, Dorfstrasse, DxK, -60, Kreisel, -1, 0, y
-#--T2#F1#F1#Sent1=Dies ist nur ein Test, ob die Revoking Funktion zur Zurücknahme auch wirklich funktioniert.
+#--T2#F1#F1#Sent1=Dies ist nur ein Test, ob die Revoking Funktion zur ZurÃ¼cknahme auch wirklich funktioniert.
 #++
 #
 p1, DorfstrasseR, ExK, 190, %, -1, 0, n
---T2#F1#F1#Sent1=Das Auto fährt auf den Kreisel zuu.
---T3#F1#F1#Sent2=Das Auto fährt langsam auf den Kreisel zuu.
---T2#R1#F1#Cont1=und fährt auf den Kreisel zuu.
+--T2#F1#F1#Sent1=Das Auto fÃ¤hrt auf den Kreisel zuu.
+--T3#F1#F1#Sent2=Das Auto fÃ¤hrt langsam auf den Kreisel zuu.
+--T2#R1#F1#Cont1=und fÃ¤hrt auf den Kreisel zuu.
 ++
 p1, Kreisel, ExK, 1, DorfstrasseR, 1, 0, y
---T2#F1#F1#Sent1=Das Auto fährt in den Kreisel.
+--T2#F1#F1#Sent1=Das Auto fÃ¤hrt in den Kreisel.
 --T1#R1#F1#Cont1=und in den Kreisel.
---T2#R1#F1#Cont2=und fährt in den Kreisel.
+--T2#R1#F1#Cont2=und fÃ¤hrt in den Kreisel.
 --T3#R1#F1#Cont2=und biegt dann in den Kreisel.
 ++
 p1, Dorfstrasse, DxK, -1, Kreisel, -1, 0, n
---T2#F1#F1#Sent1=Das Auto fährt in die Dorfstrasse.
---T3#F1#F1#Sent2=Das Auto fährt aus dem Kreisel in die Dorfstrasse.
---T2#R1#F1#Cont1=und fährt in die Dorfstrasse.
+--T2#F1#F1#Sent1=Das Auto fÃ¤hrt in die Dorfstrasse.
+--T3#F1#F1#Sent2=Das Auto fÃ¤hrt aus dem Kreisel in die Dorfstrasse.
+--T2#R1#F1#Cont1=und fÃ¤hrt in die Dorfstrasse.
 ++
 p1, Tierparkallee, TxK, -1, Kreisel, -1, 0, n
---T2#F1#F1#Sent1=Das Auto fährt in die Tierparkallee.
---T3#F1#F1#Sent2=Das Auto fährt aus dem Kreisel in die Tierparkallee.
---T2#R1#F1#Cont1=und fährt weiter in die Tierparkallee.
+--T2#F1#F1#Sent1=Das Auto fÃ¤hrt in die Tierparkallee.
+--T3#F1#F1#Sent2=Das Auto fÃ¤hrt aus dem Kreisel in die Tierparkallee.
+--T2#R1#F1#Cont1=und fÃ¤hrt weiter in die Tierparkallee.
 --T1#R1#F1#Cont2=und in die Tierparkallee.
 ++
 p1, Dorfstrasse, DxK, -1, Kreisel, -1, 0, n
---T2#F1#F1#Sent1=Das Auto fährt in die Dorfstrasse.
---T3#F1#F1#Sent2=Das Auto fährt aus dem Kreisel in die Dorfstrasse.
---T2#R1#F1#Cont1=und fährt weiter in die Dorfstrasse.
+--T2#F1#F1#Sent1=Das Auto fÃ¤hrt in die Dorfstrasse.
+--T3#F1#F1#Sent2=Das Auto fÃ¤hrt aus dem Kreisel in die Dorfstrasse.
+--T2#R1#F1#Cont1=und fÃ¤hrt weiter in die Dorfstrasse.
 --T1#R1#F1#Cont2=und in die Dorfstrasse.
 ++
 p1, Dorfstrasse, BxD, 190, %, -1, 0, n
 --T2#F1#F1#Sent1=Das Auto erreicht die Kreuzung.
 --T3#F1#F1#Sent2=Das Auto erreicht die Kreuzung mit der Breiten Strasse.
---T2#R1#R2#Cont1=und fährt auf die Kreuzung zu und
+--T2#R1#R2#Cont1=und fÃ¤hrt auf die Kreuzung zu und
 --T1#R1#R1#Cont2=es erreicht die Kreuzung
 ++
 p1, Breite Strasse, BxD, -1, Dorfstrasse, -1, -1, n
 --T2#F1#F1#Sent1=Das Auto biegt rechts ab, in die Breite Strasse
 --T3#R1#F1#Cont1=und biegt rechts ab, in die Breite Strasse.
---T2#R2#F1#Cont2=fährt nun in der Breiten Strasse.
+--T2#R2#F1#Cont2=fÃ¤hrt nun in der Breiten Strasse.
 --T1#R2#F1#Cont3=biegt rechts ab.
---T2#R1#F1#Cont4=und fährt nun in der Breiten Strasse.
+--T2#R1#F1#Cont4=und fÃ¤hrt nun in der Breiten Strasse.
 --T1#R1#F1#Cont5=und biegt rechts ab.
 ++
 p1, Breite Strasse, BxD, 1, Dorfstrasse, 1, 1, n
 --T2#F1#F1#Sent1=Das Auto biegt rechts ab, in die Breite Strasse
 --T3#R1#F1#Cont1=und biegt rechts ab, in die Breite Strasse.
---T2#R2#F1#Cont2=fährt nun in der Breiten Strasse.
+--T2#R2#F1#Cont2=fÃ¤hrt nun in der Breiten Strasse.
 --T1#R2#F1#Cont3=biegt rechts ab.
---T2#R1#F1#Cont4=und fährt nun in der Breiten Strasse.
+--T2#R1#F1#Cont4=und fÃ¤hrt nun in der Breiten Strasse.
 --T1#R1#F1#Cont5=und biegt rechts ab.
 ++
 p1, Breite Strasse, BxD, 1, Dorfstrasse, 1, -1, n
 --T2#F1#F1#Sent1=Das Auto biegt links ab, in die Breite Strasse
 --T3#R1#F1#Cont1=und biegt links ab, in die Breite Strasse.
---T2#R2#F1#Cont2=fährt nun in der Breiten Strasse.
+--T2#R2#F1#Cont2=fÃ¤hrt nun in der Breiten Strasse.
 --T1#R2#F1#Cont3=biegt links ab.
---T2#R1#F1#Cont4=und fährt nun in der Breiten Strasse.
+--T2#R1#F1#Cont4=und fÃ¤hrt nun in der Breiten Strasse.
 --T1#R1#F1#Cont5=und biegt links ab.
 ++
 p1, Breite Strasse, BxD, -1, Dorfstrasse, -1, 1, n
 --T2#F1#F1#Sent1=Das Auto biegt links ab, in die Breite Strasse
 --T3#R1#F1#Cont1=und biegt links ab, in die Breite Strasse.
---T2#R2#F1#Cont2=fährt nun in der Breiten Strasse.
+--T2#R2#F1#Cont2=fÃ¤hrt nun in der Breiten Strasse.
 --T1#R2#F1#Cont3=biegt links ab.
---T2#R1#F1#Cont4=und fährt nun in der Breiten Strasse.
+--T2#R1#F1#Cont4=und fÃ¤hrt nun in der Breiten Strasse.
 --T1#R1#F1#Cont5=und biegt links ab.
 ++
 p1, Fliedergasse, BxF, -1, Breite Strasse, -1, 0, n
@@ -104,8 +104,8 @@ p1, Fliedergasse, TxF, 1, Tierparkallee, 1, -1, n
 --T1#R1#F1#Cont2=und biegt in die Fliedergasse.
 ++
 p1, Kreisel, TxK, 1, Tierparkallee, 1, 0, y
---T2#F1#F1#Sent1=Das Auto fährt in den Kreisel
---T3#F1#F1#Sent2=Das Auto fährt nun in den Kreisel.
---T2#R1#F1#Cont1=und fährt in den Kreisel.
+--T2#F1#F1#Sent1=Das Auto fÃ¤hrt in den Kreisel
+--T3#F1#F1#Sent2=Das Auto fÃ¤hrt nun in den Kreisel.
+--T2#R1#F1#Cont1=und fÃ¤hrt in den Kreisel.
 ++
 #
