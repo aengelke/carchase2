@@ -20,14 +20,16 @@
  * [x] Use another Thread for matching situations
  * [ ] Remove configuration file completely
    * [ ] Implement dialog to choose start point
+   * [ ] or maybe, have the user select the starting point with digits on the map? (0-9 points should always offer enough options)
    * [ ] Implement possibility to set car with distance to a points
 
 ## Milestone 4
+ * [ ] be able to specify routes in advance (as in the old prototype)
+   * [ ] specify routes in advance via navigation on the board (something like a pause/play button)
+ * [ ] be able to specify multiple steps in advance via keyboard (maybe take back future steps with the backspace key?)
  * [ ] Add other situations
- * [ ] Use another map
-   * [ ] Implement zooming on a bigger map
  * [ ] Implement spoke in last seconds function
-   * [ ] How to get the absolute end time of an IU? Ask Timo
+   * [ ] How to get the absolute end time of an IU? Ask Timo --> Timo tries to implement this
  * [ ] Add speed changes to the configuration file for automated testing
  * [ ] Hesitations are buggy
    * [ ] However, sometimes two hesitations occour directly after each other
@@ -35,6 +37,8 @@
  * [ ] Auto-Revoke sometimes doesn't work
 
 ## No Milestone
+ * [ ] Use another map
+   * [ ] Implement zooming on a bigger map
  * [x] Use Processing's `PApplet` instead of `JPanel`
    * [x] Get rid of SwingRepaintTimeline
    * [ ] Make sure that all variables are not null on run
