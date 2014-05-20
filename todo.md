@@ -35,15 +35,16 @@
    * [ ] However, sometimes two hesitations occour directly after each other
  * [ ] Duration of an IU is not correct
  * [ ] Auto-Revoke sometimes doesn't work
+ * [ ] Implement Patterns.
+   * [ ] Implement Specs and Parser for a `patterns.txt`
+   * [ ] Generate text at runtime, if no special message exists.
 
 ## No Milestone
- * [ ] Use another map
-   * [ ] Implement zooming on a bigger map
  * [x] Use Processing's `PApplet` instead of `JPanel`
    * [x] Get rid of SwingRepaintTimeline
    * [ ] Make sure that all variables are not null on run
  * [ ] Improve rendering of the car in a curve
- * [ ] Add point-of-view perspective
-   * [ ] Switch to OpenGL
+ * [ ] Add point-of-view perspective (in 2D)
  * [ ] Save street history and not just the previous street
    * [ ] Implement this in the configuration and remove other occourences
+ * [ ] Extend existing map
