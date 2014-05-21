@@ -55,11 +55,7 @@ public class CarChaseExperimenter2 {
 			
 			@Override
 			public void configurationUpdated(int type) {
-				if (type == ConfigurationUpdateListener.PATH_CHANGED) {
-					viewer.carPath = CarChase.get().configuration().getComingPath();
-					viewer.possibilities = CarChase.get().configuration().getPossibilities();
-				}
-				else {
+				if (type != ConfigurationUpdateListener.PATH_CHANGED) {
 					lastEvent = type;
 					synchronized(self) {
 						self.notify();
@@ -81,8 +77,6 @@ public class CarChaseExperimenter2 {
 		viewer.initialize(Math.atan2(startPoint.y - nextPoint.y, startPoint.x - nextPoint.x));
 		
 		do {
-			viewer.carPath = config.getComingPath();
-			viewer.possibilities = config.getPossibilities();
 			int time = CarChase.get().getTime();
 			travelDuration = (int) ((1 - percent) * (nextPoint.distanceTo(startPoint) / config.getCurrentSpeed(time) - 10));
 			 

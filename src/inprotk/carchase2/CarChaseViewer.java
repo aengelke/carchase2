@@ -37,10 +37,6 @@ public class CarChaseViewer extends PApplet {
 	private boolean animating;
 	
 	private float previousTimelinePosition;
-
-	// TODO: Use setter methods
-	public List<WorldPoint> carPath = new ArrayList<WorldPoint>();
-	public List<WorldPoint> possibilities = new ArrayList<WorldPoint>();
 	
 	public int sketchWidth() {
 		return 1024;
@@ -118,6 +114,20 @@ public class CarChaseViewer extends PApplet {
 		strokeWeight(5);
 		stroke(255, 0, 0);
 		line(carPosition.x, carPosition.y, endPoint.x, endPoint.y);
+		ArrayList<WorldPoint> path = CarChase.get().configuration().getComingPath();
+		for (int i = 1; i < path.size(); i++) {
+			line(path.get(i - 1).x, path.get(i - 1).y, path.get(i).x, path.get(i).y);
+		}
+		
+		WorldPoint last = null;
+		if (path.size() < 2) last = path.size() == 1 ? end : start;
+		else last = path.get(path.size() - 2);
+		WorldPoint current = null;
+		if (path.size() == 0) current = end;
+		else current = path.get(path.size() - 1);
+		ArrayList<WorldPoint> possibilities = CarChase.get().configuration().getPossibilities(last, current);
+		
+		decisionPoint = wp2vec(current);
 		for (int i = 0; i < possibilities.size(); i++) {
 			PVector p = wp2vec(possibilities.get(i));
 			float dist = min(p.dist(decisionPoint), 100);
@@ -127,7 +137,7 @@ public class CarChaseViewer extends PApplet {
 			stroke(255, 0, 0);
 			line(decisionPoint.x, decisionPoint.y, x, y);
 			fill(255);
-			if (!possibilities.get(i).equals(carPath.get(carPath.size() - 1)) && possibilities.size() != 1)
+			if (!possibilities.get(i).equals(path.get(path.size() - 1)) && possibilities.size() != 1)
 				noStroke();
 			rect(x - 12, y - 12, 24, 24, 4);
 			fill(0);

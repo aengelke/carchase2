@@ -22,9 +22,9 @@
    * [x] Implement dialog to choose start point
 
 ## Milestone 4
- * [ ] be able to specify routes in advance (as in the old prototype)
-   * [ ] specify routes in advance via navigation on the board (something like a pause/play button)
- * [ ] be able to specify multiple steps in advance via keyboard (maybe take back future steps with the backspace key?)
+ * [x] be able to specify routes in advance (as in the old prototype)
+   * [x] specify routes in advance via navigation on the board (something like a pause/play button) --> set speed to 0
+ * [x] be able to specify multiple steps in advance via keyboard (maybe take back future steps with the slash key?)
  * [ ] Add other situations
  * [ ] Implement spoke in last seconds function
    * [ ] How to get the absolute end time of an IU? Ask Timo --> Timo tries to implement this
@@ -41,7 +41,7 @@
 ## No Milestone
  * [x] Use Processing's `PApplet` instead of `JPanel`
    * [x] Get rid of SwingRepaintTimeline
-   * [ ] Make sure that all variables are not null on run
+   * [x] Make sure that all variables are not null on run
  * [ ] Improve rendering of the car in a curve
  * [ ] Add point-of-view perspective (in 2D)
  * [ ] Save street history and not just the previous street

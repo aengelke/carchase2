@@ -2,11 +2,13 @@ package inprotk.carchase2;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 import inprotk.carchase2.Configuration;
 import inprotk.carchase2.ConfigurationUpdateListener;
+import inprotk.carchase2.World.WorldPoint;
 
 public class InteractiveConfiguration extends Configuration implements KeyListener {
 	
@@ -54,9 +56,16 @@ public class InteractiveConfiguration extends Configuration implements KeyListen
 	public void keyTyped(KeyEvent e) {
 		int number = e.getKeyChar() - 48;
 		if (number >= 0 && number < 10) {
-			int possibilityCount = getPossibilities(startPoint, nextPoint).size();
+			ArrayList<WorldPoint> path = getComingPath();
+			WorldPoint last = null;
+			if (path.size() < 2) last = path.size() == 1 ? nextPoint : startPoint;
+			else last = path.get(path.size() - 2);
+			WorldPoint current = null;
+			if (path.size() == 0) current = nextPoint;
+			else current = path.get(path.size() - 1);
+			int possibilityCount = getPossibilities(last, current).size();
 			if (possibilityCount > number) {
-				setNextDirection(number);
+				pushDirection(number);
 				if (waitForDirection) {
 					synchronized (this) {
 						notify();
@@ -64,6 +73,7 @@ public class InteractiveConfiguration extends Configuration implements KeyListen
 				}
 			}
 		}
+		if (e.getKeyChar() == '/') popDirection();
 		if (e.getKeyChar() == '+' && currentSpeed < 3) {
 			currentSpeed++; 
 			notifyListeners(ConfigurationUpdateListener.SPEED_CHANGED);

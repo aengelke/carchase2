@@ -85,7 +85,7 @@ public class Configuration {
 	}
 	
 	public boolean update(int time) {
-		ArrayList<WorldPointWrapper> possibilities = getPossibilities(startPoint, nextPoint);
+		ArrayList<WorldPointWrapper> possibilities = getPossibilitiesIntern(startPoint, nextPoint);
 		
 		int wrapperIndex = possibilities.size() - 1;
 		if (possibilities.size() > 1) {
@@ -101,7 +101,7 @@ public class Configuration {
 		return true;
 	}
 	
-	protected ArrayList<WorldPointWrapper> getPossibilities(WorldPoint startPoint, WorldPoint nextPoint) {
+	protected ArrayList<WorldPointWrapper> getPossibilitiesIntern(WorldPoint startPoint, WorldPoint nextPoint) {
 		ArrayList<String> streets = nextPoint.streets;
 		ArrayList<WorldPointWrapper> possibilities = new ArrayList<WorldPointWrapper>();
 		for (String streetName : streets)  {
@@ -133,21 +133,16 @@ public class Configuration {
 		return possibilities;
 	}
 	
-	public ArrayList<WorldPoint> getPossibilities() {
+	public ArrayList<WorldPoint> getPossibilities(WorldPoint prev, WorldPoint current) {
 		ArrayList<WorldPoint> possibilities = new ArrayList<WorldPoint>();
-		for (WorldPointWrapper w : getPossibilities(startPoint, nextPoint)) {
+		for (WorldPointWrapper w : getPossibilitiesIntern(prev, current)) {
 			possibilities.add(w.point);
 		}
-		/*WorldPoint point1 = nextPoint;
-		while (possibilities.size() == 1) {
-			WorldPoint pStart = possibilities.get(0);
-			possibilities = new ArrayList<WorldPoint>();
-			for (WorldPointWrapper w : getPossibilities(point1, pStart)) {
-				possibilities.add(w.point);
-			}
-			point1 = pStart;
-		}*/
 		return possibilities;
+	}
+	
+	public ArrayList<WorldPoint> getPossibilities() {
+		return getPossibilities(startPoint, nextPoint);
 	}
 	
 	public ArrayList<WorldPoint> getComingPath() {
@@ -157,9 +152,14 @@ public class Configuration {
 		int steppedOver = 0;
 		path.add(sp);
 		path.add(np);
-		for (int i = currentDirAction; i < actions.size() + steppedOver; i++) {
-			ArrayList<WorldPointWrapper> nextPossibilities = getPossibilities(sp, np);
+		for (int i = currentDirAction; i <= actions.size() + steppedOver; i++) {
+			ArrayList<WorldPointWrapper> nextPossibilities = getPossibilitiesIntern(sp, np);
 			int index = nextPossibilities.size() - 1;
+			if (i >= actions.size() + steppedOver && index == 0) { 
+				steppedOver++; 
+				i++; 
+			}
+			else if (i >= actions.size() + steppedOver) break;
 			if (index > 0) {
 				index = actions.get(i - steppedOver).data;
 			} else if (index == 0) {
@@ -172,6 +172,15 @@ public class Configuration {
 			np = nextPossibilities.get(index).point;
 		}
 		return path;
+	}
+	
+	public void pushDirection(int direction) {
+		actions.add(new DirectionAction(direction));
+		notifyListeners(ConfigurationUpdateListener.PATH_CHANGED);
+	}
+	
+	public void popDirection() {
+		if (actions.size() >= currentDirAction && actions.size() > 0) actions.remove(actions.size() - 1);
 	}
 	
 	public void setNextDirection(int direction) {
