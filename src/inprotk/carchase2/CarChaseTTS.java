@@ -16,9 +16,12 @@ import inprotk.carchase2.IncrementalArticulator;
 public class CarChaseTTS {
 	private ArrayList<Situation> situations;
 	private ArrayList<Pattern> patterns;
+	private HashMap<String, StreetReplacement> streetNames;
 	private Articulator articulator;
 	private DispatchStream dispatcher;
 	private DispatcherThread dispatchThread;
+	
+	private String flexForm1, flexForm2;
 	
 	public CarChaseTTS(String messagesFilename, String patternsFilename) {
 		try {
@@ -36,6 +39,7 @@ public class CarChaseTTS {
 	
 	private void parsePatterns(String filename) throws Exception {
 		patterns = new ArrayList<Pattern>();
+		streetNames = new HashMap<String, StreetReplacement>();
 		Pattern currentPattern = null;
 		String[] lines = CarChase.readLines(filename);
 		int index = 0;
@@ -64,6 +68,23 @@ public class CarChaseTTS {
 					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
 				boolean optional = args.length > 1 && args[1].equals("y");
 				currentPattern = new Pattern(optional);
+			}
+			else if (line.startsWith("street")) {
+				String[] args = line.substring(7).split(",");
+				for (int i = 0; i < args.length; i++) 
+					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
+				String key = args[0];
+				String name = args[1];
+				if (name.equals("%")) name = key;
+				String flex1 = args[2];
+				String flex2 = args[3];
+				flex1 = flex1.replace("%", key);
+				flex2 = flex2.replace("%", key);
+				streetNames.put(key, new StreetReplacement(name, flex1, flex2));
+			}
+			else if (line.startsWith("flex")) {
+				if (line.startsWith("flex1")) flexForm1 = line.substring(6);
+				if (line.startsWith("flex2")) flexForm2 = line.substring(6);
 			}
 			else if (line.equals("")) continue;
 			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
@@ -262,7 +283,7 @@ public class CarChaseTTS {
 		}
 	}
 	
-	public static class Pattern {
+	public class Pattern {
 		protected boolean optional;
 		public HashMap<String, TTSAction> templates;
 		public ArrayList<Condition> conditions;
@@ -284,12 +305,18 @@ public class CarChaseTTS {
 		
 		public TTSAction match(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int direction, int prevDir, TTSAction last) {
 			StringDict replace = new StringDict();
-			replace.set("*STREET", streetName);
-			replace.set("*PREVSTREET", prevStreet);
-			replace.set("*FLEX1STREET", "die " + streetName);
-			replace.set("*FLEX1PREVSTREET", "die " + prevStreet);
-			replace.set("*FLEX2STREET", "der " + streetName);
-			replace.set("*FLEX2PREVSTREET", "der " + prevStreet);
+			replace.set("*INTSTREET", streetName);
+			replace.set("*INTPREVSTREET", prevStreet);
+			StreetReplacement streetRpl = streetNames.get(streetName);
+			if (streetRpl == null) streetRpl = new StreetReplacement(streetName);
+			StreetReplacement prevStreetRpl = streetNames.get(prevStreet);
+			if (prevStreetRpl == null) prevStreetRpl = new StreetReplacement(prevStreet);
+			replace.set("*STREET", streetRpl.name);
+			replace.set("*PREVSTREET", prevStreetRpl.name);
+			replace.set("*FLEX1STREET", streetRpl.flex1);
+			replace.set("*FLEX1PREVSTREET", prevStreetRpl.flex1);
+			replace.set("*FLEX2STREET", streetRpl.flex2);
+			replace.set("*FLEX2PREVSTREET", prevStreetRpl.flex2);
 			replace.set("*DIRECTION", direction + "");
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
@@ -317,7 +344,7 @@ public class CarChaseTTS {
 			return s.match(streetName, prevStreet, pointName, previousDistance, currentDistance, speed, direction, prevDir, last);
 		}
 		
-		private static class Condition {
+		private class Condition {
 			public String leftSide;
 			public String rightSide;
 			public char operator;
@@ -331,7 +358,7 @@ public class CarChaseTTS {
 			}
 		}
 		
-		private static String instanciate(String original, StringDict replace) {
+		private String instanciate(String original, StringDict replace) {
 			String newString = original;
 			for (String key : replace.keyArray())
 				newString = newString.replace((CharSequence) key, replace.get(key));
@@ -446,6 +473,20 @@ public class CarChaseTTS {
 			if (dir != direction) return false;
 			if (prevDirection != 0 && prevDir != 0 && prevDir != prevDirection) return false;
 			return true;
+		}
+	}
+	
+	private class StreetReplacement {
+		public String name, flex1, flex2;
+
+		public StreetReplacement(String name, String flex1, String flex2) {
+			this.name = name;
+			this.flex1 = flex1;
+			this.flex2 = flex2;
+		}
+		
+		public StreetReplacement(String name) {
+			this(name, flexForm1 + " " + name, flexForm2 + " " + name);
 		}
 	}
 }

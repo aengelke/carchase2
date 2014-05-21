@@ -36,18 +36,20 @@ there are variables, that will be replaced at runtime. Here's a list of
 
 | Name | Replacement |
 | ---- | ----------- |
+| INTSTREET | internal name of the current street |
+| INTPREVSTREET | internal name of the previous street |
 | STREET | name of the current street |
-| _FLEX1STREET_ | variant of the current street name, to match with preposition "in" |
-| _FLEX2STREET_ | variant of the current street name, to match with preposition "out of" |
 | PREVSTREET | name of the previous street |
-| _FLEX1PREVSTREET_ | variant of the previous street name, to match with preposition "in" |
-| _FLEX2PREVSTREET_ | variant of the previous street name, to match with preposition "out of" |
-| _ANGLE_ | The angle between the current and the previous street |
+| FLEX1STREET | variant of the current street name, to match with preposition "in" |
+| FLEX1PREVSTREET | variant of the previous street name, to match with preposition "in" |
+| FLEX2STREET | variant of the current street name, to match with preposition "out of" |
+| FLEX2PREVSTREET | variant of the previous street name, to match with preposition "out of" |
 | DISTANCE | distance to the next point _Only for usage in conditions!_ |
-| _POINTNAME_ | name of the next point |
-| _NUMSTREETS_ | number of streets that cross the next point |
 | DIRECTION | current direction |
 | _PREVDIRECTION_ | previous direction |
+| _ANGLE_ | The angle between the current and the previous street |
+| _POINTNAME_ | name of the next point |
+| _NUMSTREETS_ | number of streets that cross the next point |
 | _SPEED_ | current speed |
 | _PREVSPEED_ | previous speed |
 

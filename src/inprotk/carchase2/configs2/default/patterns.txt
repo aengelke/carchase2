@@ -32,3 +32,9 @@ pt p1
 --msg#T1#R1#F1#Cont3=und in *FLEX1STREET.
 ++
 #
+#
+flex1 die
+flex2 der
+#
+street DorfstrasseR, Dorfstrasse, die Dorfstrasse, der Dorfstrasse
+street Kreisel, %, den %, dem %
