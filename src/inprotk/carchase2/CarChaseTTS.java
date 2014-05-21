@@ -5,8 +5,10 @@ import inpro.audio.DispatchStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
+import processing.data.StringDict;
 import inprotk.carchase2.Articulator;
 import inprotk.carchase2.CarChase;
 import inprotk.carchase2.IncrementalArticulator;
@@ -144,7 +146,15 @@ public class CarChaseTTS {
 			}
 			
 			if (startAction == null) { // Try to find a matching pattern! 
-				
+				for (Pattern p : patterns) {
+					if (startAction == null)	
+						startAction = p.match(a.streetName, a.prevStreet, a.pointName, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, null);
+					if (continuationAction == null && continuationPossible)	
+						continuationAction = p.match(a.streetName, a.prevStreet, a.pointName, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, lastIU);
+					if (startAction != null && (!continuationPossible || continuationAction != null)) break;
+				}
+				if (startAction == null)
+					return;
 			}
 			
 			CarChase.log(continuationPossible, startAction.text, continuationAction == null ? null : continuationAction.text);
@@ -272,12 +282,39 @@ public class CarChaseTTS {
 			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
 		
-		public TTSAction match() {
+		public TTSAction match(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int direction, int prevDir, TTSAction last) {
+			StringDict replace = new StringDict();
+			replace.set("*STREET", streetName);
+			replace.set("*PREVSTREET", prevStreet);
+			replace.set("*FLEX1STREET", "die " + streetName);
+			replace.set("*FLEX1PREVSTREET", "die " + prevStreet);
+			replace.set("*FLEX2STREET", "der " + streetName);
+			replace.set("*FLEX2PREVSTREET", "der " + prevStreet);
+			replace.set("*DIRECTION", direction + "");
 			for (Condition cond : conditions) {
-				String instancedLeftSide = cond.leftSide;
-				String instancedRightSide = cond.rightSide;
+				String instancedLeftSide = instanciate(cond.leftSide, replace);
+				String instancedRightSide = instanciate(cond.rightSide, replace);
+				if (cond.isDistance) {
+					int distance = Integer.parseInt(instancedRightSide);
+					if (previousDistance > currentDistance) {
+						if (distance >= previousDistance || distance < currentDistance) return null;
+					}
+					else if (distance < previousDistance || distance >= currentDistance) return null;
+				} else {
+					if (cond.operator == '=' && !instancedLeftSide.equals(instancedRightSide)) return null;
+					else if (cond.operator == '!' && instancedLeftSide.equals(instancedRightSide)) return null;
+					else if (cond.operator == '<' || cond.operator == '>') {
+						int left = Integer.parseInt(instancedLeftSide);
+						int right = Integer.parseInt(instancedRightSide);
+						if (cond.operator == '<' && left >= right) return null;
+						if (cond.operator == '>' && left <= right) return null;
+					}
+				}
 			}
-			return null;
+			PatternSituation s = new PatternSituation(optional);
+			for (Map.Entry<String, TTSAction> entry : templates.entrySet()) 
+				s.addMessage(entry.getKey(), entry.getValue(), instanciate(entry.getValue().text, replace));
+			return s.match(streetName, prevStreet, pointName, previousDistance, currentDistance, speed, direction, prevDir, last);
 		}
 		
 		private static class Condition {
@@ -292,6 +329,13 @@ public class CarChaseTTS {
 				this.operator = op.charAt(0);
 				this.isDistance = leftSide.equals("*DISTANCE");
 			}
+		}
+		
+		private static String instanciate(String original, StringDict replace) {
+			String newString = original;
+			for (String key : replace.keyArray())
+				newString = newString.replace((CharSequence) key, replace.get(key));
+			return newString;
 		}
 	}
 	
@@ -353,6 +397,25 @@ public class CarChaseTTS {
 		}
 		
 		public abstract boolean isSituationMatching(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int dir, int prevDir);
+	}
+	
+	private static class PatternSituation extends Situation {
+
+		public PatternSituation(boolean optional) {
+			super(optional);
+		}
+		
+		public void addMessage(String key, TTSAction a, String newText) {
+			addMessage(key, newText, a.typeStart, a.typeEnd, a.type);
+		}
+
+		@Override
+		public boolean isSituationMatching(String streetName,
+				String prevStreet, String pointName, int previousDistance,
+				int currentDistance, int speed, int dir, int prevDir) {
+			return true;
+		}
+		
 	}
 	
 	public static class DrivingSituation extends Situation {
