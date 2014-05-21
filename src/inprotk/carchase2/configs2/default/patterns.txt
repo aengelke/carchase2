@@ -36,5 +36,8 @@ pt p1
 flex1 die
 flex2 der
 #
-street DorfstrasseR, Dorfstrasse, die Dorfstrasse, der Dorfstrasse
+street DorfstrasseR, Dorfstraße, die Dorfstraße, der Dorfstraße
+street Dorfstrasse, Dorfstraße, die Dorfstraße, der Dorfstraße
 street Kreisel, %, den %, dem %
+street Breite Strasse, Breite Straße, die Breite Straße, der Breiten Straße
+street Bahnhofstrasse, Baahnhoofstraße, die Baahnhoofstraße, der Baahnhoofstraße
