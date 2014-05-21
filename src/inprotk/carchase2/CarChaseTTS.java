@@ -256,8 +256,11 @@ public class CarChaseTTS {
 	// Example: Das Auto faehrt auf die Kreuzung zu und (Begin: S1, End: R2)
 	public static enum MessageType {
 		F1(false),
+		F2(false),
+		F3(false),
 		R1(true),
-		R2(true);
+		R2(true),
+		R3(true);
 		
 		// Moeglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
 		// R benoetigt einen Satz davor, der gerade gesprochen wird;
