@@ -3,8 +3,9 @@ package inprotk.carchase2;
 import inpro.util.TimeUtil;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import inprotk.carchase2.CarChase;
@@ -106,7 +107,7 @@ public class CarChase {
 	}
 	
 	public static String[] readLines(String filename) throws IOException {
-        FileReader fileReader = new FileReader(filename);
+        InputStreamReader fileReader = new InputStreamReader(new FileInputStream(filename), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         ArrayList<String> lines = new ArrayList<String>();
         String line = null;
