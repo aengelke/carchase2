@@ -35,10 +35,10 @@
    * [ ] However, sometimes two hesitations occour directly after each other
  * [ ] Duration of an IU is not correct
  * [ ] Auto-Revoke sometimes doesn't work
- * [ ] Implement Patterns.
+ * [x] Implement Patterns.
    * [x] Define Specs for a `patterns.txt`
-   * [ ] Implement Parser for a `patterns.txt`
-   * [ ] Generate text at runtime, if no special message exists.
+   * [x] Implement Parser for a `patterns.txt`
+   * [x] Generate text at runtime, if no special message exists.
 
 ## No Milestone
  * [x] Use Processing's `PApplet` instead of `JPanel`

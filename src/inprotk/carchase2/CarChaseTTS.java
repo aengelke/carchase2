@@ -5,57 +5,100 @@ import inpro.audio.DispatchStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
+import processing.data.StringDict;
 import inprotk.carchase2.Articulator;
 import inprotk.carchase2.CarChase;
 import inprotk.carchase2.IncrementalArticulator;
 
 public class CarChaseTTS {
 	private ArrayList<Situation> situations;
+	private ArrayList<Pattern> patterns;
 	private Articulator articulator;
 	private DispatchStream dispatcher;
 	private DispatcherThread dispatchThread;
 	
-	public CarChaseTTS(String filename) {
+	public CarChaseTTS(String messagesFilename, String patternsFilename) {
 		try {
-			situations = new ArrayList<Situation>();
-			String[] lines = CarChase.readLines(filename);
-			Situation currentMessage = null;
 			dispatcher = SimpleMonitor.setupDispatcher();
 			//articulator = new StandardArticulator(dispatcher);
 			articulator = new IncrementalArticulator(dispatcher);
-			int index = 0;
-			for (String line : lines) {
-				if (index++ == 0) continue;
-				if (line.startsWith("#")) continue;
-				if (line.startsWith("--")) {
-					String[] args = line.substring(2).split("=");
-					String[] meta = args[0].split("#");
-					MessageInformationLevel type = MessageInformationLevel.valueOf(meta[0]);
-					MessageType typeStart = MessageType.valueOf(meta[1]);
-					MessageType typeEnd = MessageType.valueOf(meta[2]);
-					String key = meta[3];
-					currentMessage.addMessage(key, args[1], typeStart, typeEnd, type);
-				}
-				else if (line.startsWith("++")) {
-					situations.add(currentMessage);
-					currentMessage = null;
-				}
-				else if (line.startsWith("p1")) {
-					String[] args = line.substring(3).split(",");
-					for (int i = 0; i < args.length; i++) 
-						while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
-					currentMessage = new DrivingSituation(args[6].equals("y"), args[0], args[1], args[3], Integer.parseInt(args[2]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
-				}
-				else if (line.equals("")) continue;
-				else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
-			}
-			//System.exit(0);
+			parseMessages(messagesFilename);
+			parsePatterns(patternsFilename);
 			dispatchThread = new DispatcherThread();
 			dispatchThread.start();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void parsePatterns(String filename) throws Exception {
+		patterns = new ArrayList<Pattern>();
+		Pattern currentPattern = null;
+		String[] lines = CarChase.readLines(filename);
+		int index = 0;
+		for (String line : lines) {
+			if (index++ == 0) continue;
+			if (line.startsWith("#")) continue;
+			if (line.startsWith("--msg")) {
+				String[] args = line.substring(6).split("=");
+				String[] meta = args[0].split("#");
+				MessageInformationLevel type = MessageInformationLevel.valueOf(meta[0]);
+				MessageType typeStart = MessageType.valueOf(meta[1]);
+				MessageType typeEnd = MessageType.valueOf(meta[2]);
+				String key = meta[3];
+				currentPattern.addTemplate(key, args[1], typeStart, typeEnd, type);
+			}
+			else if (line.startsWith("--cond")) {
+				currentPattern.addCondition(line.substring(7));
+			}
+			else if (line.startsWith("++")) {
+				patterns.add(currentPattern);
+				currentPattern = null;
+			}
+			else if (line.startsWith("pt")) {
+				String[] args = line.substring(3).split(",");
+				for (int i = 0; i < args.length; i++) 
+					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
+				boolean optional = args.length > 1 && args[1].equals("y");
+				currentPattern = new Pattern(optional);
+			}
+			else if (line.equals("")) continue;
+			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
+		}
+	}
+	
+	private void parseMessages(String filename) throws Exception {
+		situations = new ArrayList<Situation>();
+		Situation currentMessage = null;
+		String[] lines = CarChase.readLines(filename);
+		int index = 0;
+		for (String line : lines) {
+			if (index++ == 0) continue;
+			if (line.startsWith("#")) continue;
+			if (line.startsWith("--")) {
+				String[] args = line.substring(2).split("=");
+				String[] meta = args[0].split("#");
+				MessageInformationLevel type = MessageInformationLevel.valueOf(meta[0]);
+				MessageType typeStart = MessageType.valueOf(meta[1]);
+				MessageType typeEnd = MessageType.valueOf(meta[2]);
+				String key = meta[3];
+				currentMessage.addMessage(key, args[1], typeStart, typeEnd, type);
+			}
+			else if (line.startsWith("++")) {
+				situations.add(currentMessage);
+				currentMessage = null;
+			}
+			else if (line.startsWith("p1")) {
+				String[] args = line.substring(3).split(",");
+				for (int i = 0; i < args.length; i++) 
+					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
+				currentMessage = new DrivingSituation(args[6].equals("y"), args[0], args[1], args[3], Integer.parseInt(args[2]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
+			}
+			else if (line.equals("")) continue;
+			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
 		}
 	}
 	
@@ -102,7 +145,17 @@ public class CarChaseTTS {
 				if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 			}
 			
-			if (startAction == null) return;
+			if (startAction == null) { // Try to find a matching pattern! 
+				for (Pattern p : patterns) {
+					if (startAction == null)	
+						startAction = p.match(a.streetName, a.prevStreet, a.pointName, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, null);
+					if (continuationAction == null && continuationPossible)	
+						continuationAction = p.match(a.streetName, a.prevStreet, a.pointName, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, lastIU);
+					if (startAction != null && (!continuationPossible || continuationAction != null)) break;
+				}
+				if (startAction == null)
+					return;
+			}
 			
 			CarChase.log(continuationPossible, startAction.text, continuationAction == null ? null : continuationAction.text);
 			
@@ -177,16 +230,16 @@ public class CarChaseTTS {
 	}
 	
 	
-	// Example: Das Auto fährt in den Kreisel. (Begin: S2, End: S1)
-	// Example: und fährt in den Kreisel. (Begin: R1, End: S1)
-	// Example: Das Auto fährt auf die Kreuzung zu und (Begin: S1, End: R2)
+	// Example: Das Auto faehrt in den Kreisel. (Begin: S2, End: S1)
+	// Example: und faehrt in den Kreisel. (Begin: R1, End: S1)
+	// Example: Das Auto faehrt auf die Kreuzung zu und (Begin: S1, End: R2)
 	public static enum MessageType {
 		F1(false),
 		R1(true),
 		R2(true);
 		
-		// Möglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
-		// R benötigt einen Satz davor, der gerade gesprochen wird;
+		// Moeglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
+		// R benoetigt einen Satz davor, der gerade gesprochen wird;
 		// F geht immer, wenn der vorige Satz keinen nachfolgenden braucht.
 		
 		private boolean requiresSentence;
@@ -206,6 +259,83 @@ public class CarChaseTTS {
 		
 		public int getType() {
 			return type;
+		}
+	}
+	
+	public static class Pattern {
+		protected boolean optional;
+		public HashMap<String, TTSAction> templates;
+		public ArrayList<Condition> conditions;
+		public Pattern(boolean optional) {
+			templates = new HashMap<String, TTSAction>();
+			conditions = new ArrayList<Condition>();
+			this.optional = optional;
+		}
+		
+		// Requires: XY#OP#XY
+		public void addCondition(String conditionLine) {
+			String[] condParts = conditionLine.split("#");
+			conditions.add(new Condition(condParts[0], condParts[2], condParts[1]));
+		}
+		
+		public void addTemplate(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
+			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
+		}
+		
+		public TTSAction match(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int direction, int prevDir, TTSAction last) {
+			StringDict replace = new StringDict();
+			replace.set("*STREET", streetName);
+			replace.set("*PREVSTREET", prevStreet);
+			replace.set("*FLEX1STREET", "die " + streetName);
+			replace.set("*FLEX1PREVSTREET", "die " + prevStreet);
+			replace.set("*FLEX2STREET", "der " + streetName);
+			replace.set("*FLEX2PREVSTREET", "der " + prevStreet);
+			replace.set("*DIRECTION", direction + "");
+			for (Condition cond : conditions) {
+				String instancedLeftSide = instanciate(cond.leftSide, replace);
+				String instancedRightSide = instanciate(cond.rightSide, replace);
+				if (cond.isDistance) {
+					int distance = Integer.parseInt(instancedRightSide);
+					if (previousDistance > currentDistance) {
+						if (distance >= previousDistance || distance < currentDistance) return null;
+					}
+					else if (distance < previousDistance || distance >= currentDistance) return null;
+				} else {
+					if (cond.operator == '=' && !instancedLeftSide.equals(instancedRightSide)) return null;
+					else if (cond.operator == '!' && instancedLeftSide.equals(instancedRightSide)) return null;
+					else if (cond.operator == '<' || cond.operator == '>') {
+						int left = Integer.parseInt(instancedLeftSide);
+						int right = Integer.parseInt(instancedRightSide);
+						if (cond.operator == '<' && left >= right) return null;
+						if (cond.operator == '>' && left <= right) return null;
+					}
+				}
+			}
+			PatternSituation s = new PatternSituation(optional);
+			for (Map.Entry<String, TTSAction> entry : templates.entrySet()) 
+				s.addMessage(entry.getKey(), entry.getValue(), instanciate(entry.getValue().text, replace));
+			return s.match(streetName, prevStreet, pointName, previousDistance, currentDistance, speed, direction, prevDir, last);
+		}
+		
+		private static class Condition {
+			public String leftSide;
+			public String rightSide;
+			public char operator;
+			public boolean isDistance;
+			
+			public Condition(String left, String right, String op) {
+				this.leftSide = left;
+				this.rightSide = right;
+				this.operator = op.charAt(0);
+				this.isDistance = leftSide.equals("*DISTANCE");
+			}
+		}
+		
+		private static String instanciate(String original, StringDict replace) {
+			String newString = original;
+			for (String key : replace.keyArray())
+				newString = newString.replace((CharSequence) key, replace.get(key));
+			return newString;
 		}
 	}
 	
@@ -267,6 +397,25 @@ public class CarChaseTTS {
 		}
 		
 		public abstract boolean isSituationMatching(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int dir, int prevDir);
+	}
+	
+	private static class PatternSituation extends Situation {
+
+		public PatternSituation(boolean optional) {
+			super(optional);
+		}
+		
+		public void addMessage(String key, TTSAction a, String newText) {
+			addMessage(key, newText, a.typeStart, a.typeEnd, a.type);
+		}
+
+		@Override
+		public boolean isSituationMatching(String streetName,
+				String prevStreet, String pointName, int previousDistance,
+				int currentDistance, int speed, int dir, int prevDir) {
+			return true;
+		}
+		
 	}
 	
 	public static class DrivingSituation extends Situation {

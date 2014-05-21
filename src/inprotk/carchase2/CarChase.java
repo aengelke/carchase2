@@ -64,7 +64,7 @@ public class CarChase {
 		configSet = name;
 		world = new World(getConfigFilename("world.txt"));
 		config = new InteractiveConfiguration(getConfigFilename("config.txt"));
-		tts = new CarChaseTTS(getConfigFilename("messages.txt"));
+		tts = new CarChaseTTS(getConfigFilename("messages.txt"), getConfigFilename("patterns.txt"));
 	}
 	
 	public boolean isInteractive() {
