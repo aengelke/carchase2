@@ -1,7 +1,5 @@
 # CarChase 2: text-generating component
 
-_Note: The patterns are not implemented yet._
-
 The patterns for generating sentences or concatenations are parsed from a file. This
 file contains the definition of patterns. A pattern defines _many_ situations.
 Each pattern has a situation type and defines conditions and some message 
@@ -38,17 +36,17 @@ there are variables, that will be replaced at runtime. Here's a list of
 
 | Name | Replacement |
 | ---- | ----------- |
-| _STREET_ | name of the current street |
+| STREET | name of the current street |
 | _FLEX1STREET_ | variant of the current street name, to match with preposition "in" |
 | _FLEX2STREET_ | variant of the current street name, to match with preposition "out of" |
-| _PREVSTREET_ | name of the previous street |
+| PREVSTREET | name of the previous street |
 | _FLEX1PREVSTREET_ | variant of the previous street name, to match with preposition "in" |
 | _FLEX2PREVSTREET_ | variant of the previous street name, to match with preposition "out of" |
 | _ANGLE_ | The angle between the current and the previous street |
-| _DISTANCE_ | distance to the next point _Only for usage in conditions!_ |
+| DISTANCE | distance to the next point _Only for usage in conditions!_ |
 | _POINTNAME_ | name of the next point |
 | _NUMSTREETS_ | number of streets that cross the next point |
-| _DIRECTION_ | current direction |
+| DIRECTION | current direction |
 | _PREVDIRECTION_ | previous direction |
 | _SPEED_ | current speed |
 | _PREVSPEED_ | previous speed |
