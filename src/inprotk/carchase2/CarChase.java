@@ -60,10 +60,16 @@ public class CarChase {
 		config = c;
 	}
 	
+	private Configuration makeConfig() {
+		// For non interactive:
+		// return new Configuration(getConfigFilename("config.txt"));
+		return new InteractiveConfiguration();
+	}
+	
 	public void init(String name) {
 		configSet = name;
 		world = new World(getConfigFilename("world.txt"));
-		config = new InteractiveConfiguration(getConfigFilename("config.txt"));
+		config = makeConfig();
 		tts = new CarChaseTTS(getConfigFilename("messages.txt"), getConfigFilename("patterns.txt"));
 	}
 	

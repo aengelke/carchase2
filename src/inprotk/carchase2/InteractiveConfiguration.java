@@ -3,6 +3,8 @@ package inprotk.carchase2;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.JOptionPane;
+
 import inprotk.carchase2.Configuration;
 import inprotk.carchase2.ConfigurationUpdateListener;
 
@@ -11,10 +13,33 @@ public class InteractiveConfiguration extends Configuration implements KeyListen
 	private int currentSpeed, backupSpeed;
 	private boolean waitForDirection;
 
-	public InteractiveConfiguration(String filename) {
-		super(filename);
+	public InteractiveConfiguration() {
+		super();
 		currentSpeed = 2;
 		waitForDirection = false;
+		World w = CarChase.get().world();
+		
+		String[] streetNames = w.streets.keySet().toArray(new String[0]);
+		String startStreetStr = (String) JOptionPane.showInputDialog(null, "Choose start street: ", "CarChase 2", JOptionPane.QUESTION_MESSAGE, null, streetNames, streetNames[0]);
+		String[] pointNames = w.streets.get(startStreetStr).streetPoints.toArray(new String[0]);
+		String startPointStr = (String) JOptionPane.showInputDialog(null, "Choose start point: ", "CarChase 2", JOptionPane.QUESTION_MESSAGE, null, pointNames, pointNames[0]);
+		
+		boolean ask = false;
+		Object next = w.streets.get(startStreetStr).fetchNextPoint(w.points.get(startPointStr), 1);
+		if (next == null) startDirection = -1;
+		else {
+			next = w.streets.get(startStreetStr).fetchNextPoint(w.points.get(startPointStr), -1);
+			if (next == null) startDirection = 1;
+			else ask = true;
+		}
+		if (ask) {
+			startDirection = Integer.parseInt((String) JOptionPane.showInputDialog(null, "Choose start direction: ", "CarChase 2", JOptionPane.QUESTION_MESSAGE, null, new String[] {"-1", "1"}, "1"));
+		}
+		
+		startPoint = w.points.get(startPointStr);
+		currentStreet = w.streets.get(startStreetStr);
+		nextPoint = currentStreet.fetchNextPoint(startPoint, startDirection);
+		direction = startDirection;
 	}
 
 	@Override

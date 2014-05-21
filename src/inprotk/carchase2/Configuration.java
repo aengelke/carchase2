@@ -27,6 +27,11 @@ public class Configuration {
 	public int direction;
 	
 	private ArrayList<ConfigurationUpdateListener> listeners;
+
+	protected Configuration() {
+		actions = new ArrayList<DirectionAction>();
+		listeners = new ArrayList<ConfigurationUpdateListener>();
+	}
 	
 	public Configuration(String filename) {
 		try {

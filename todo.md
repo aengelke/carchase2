@@ -18,10 +18,8 @@
  * [x] If best matching info level is not available, use nearest one
  * [x] Add interface for adding other situations
  * [x] Use another Thread for matching situations
- * [ ] Remove configuration file completely
-   * [ ] Implement dialog to choose start point
-   * [ ] or maybe, have the user select the starting point with digits on the map? (0-9 points should always offer enough options)
-   * [ ] Implement possibility to set car with distance to a points
+ * [x] Remove configuration file completely
+   * [x] Implement dialog to choose start point
 
 ## Milestone 4
  * [ ] be able to specify routes in advance (as in the old prototype)
@@ -49,3 +47,4 @@
  * [ ] Save street history and not just the previous street
    * [ ] Implement this in the configuration and remove other occourences
  * [ ] Extend existing map
+ * [ ] have the user select the starting point with digits on the map? (0-9 points should always offer enough options)
