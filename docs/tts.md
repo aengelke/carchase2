@@ -36,22 +36,22 @@ there are variables, that will be replaced at runtime. Here's a list of
 
 | Name | Replacement |
 | ---- | ----------- |
-| INTSTREET | internal name of the current street |
-| INTPREVSTREET | internal name of the previous street |
-| STREET | name of the current street |
-| PREVSTREET | name of the previous street |
-| FLEX1STREET | variant of the current street name, to match with preposition "in" |
-| FLEX1PREVSTREET | variant of the previous street name, to match with preposition "in" |
-| FLEX2STREET | variant of the current street name, to match with preposition "out of" |
-| FLEX2PREVSTREET | variant of the previous street name, to match with preposition "out of" |
-| DISTANCE | distance to the next point _Only for usage in conditions!_ |
-| DIRECTION | current direction |
-| _PREVDIRECTION_ | previous direction |
-| _ANGLE_ | The angle between the current and the previous street |
-| _POINTNAME_ | name of the next point |
-| _NUMSTREETS_ | number of streets that cross the next point |
-| _SPEED_ | current speed |
-| _PREVSPEED_ | previous speed |
+| intstreet | internal name of the current street |
+| intprevstreet | internal name of the previous street |
+| street | name of the current street |
+| prevstreet | name of the previous street |
+| flex1street | variant of the current street name, to match with preposition "in" |
+| flex1prevstreet | variant of the previous street name, to match with preposition "in" |
+| flex2street | variant of the current street name, to match with preposition "out of" |
+| flex2prevstreet | variant of the previous street name, to match with preposition "out of" |
+| distance | distance to the next point _Only for usage in conditions!_ |
+| direction | current direction |
+| prevdirection | previous direction |
+| pointname | name of the next point |
+| numstreets | number of streets that cross the next point |
+| speed | current speed |
+| _prevspeed_ | previous speed |
+| _angle_ | The angle between the current and the previous street |
 
 ## Information level
 Messages with a higher information level usually take

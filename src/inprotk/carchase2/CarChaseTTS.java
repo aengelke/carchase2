@@ -318,6 +318,10 @@ public class CarChaseTTS {
 			replace.set("*FLEX2STREET", streetRpl.flex2);
 			replace.set("*FLEX2PREVSTREET", prevStreetRpl.flex2);
 			replace.set("*DIRECTION", direction + "");
+			replace.set("*PREVDIRECTION", prevDir + "");
+			replace.set("*POINTNAME", pointName);
+			replace.set("*NUMSTREETS", "" + CarChase.get().world().points.get(pointName).streets.size());
+			replace.set("*SPEED", "" + speed);
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
 				String instancedRightSide = instanciate(cond.rightSide, replace);
