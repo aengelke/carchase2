@@ -220,16 +220,16 @@ public class CarChaseTTS {
 	}
 	
 	
-	// Example: Das Auto fährt in den Kreisel. (Begin: S2, End: S1)
-	// Example: und fährt in den Kreisel. (Begin: R1, End: S1)
-	// Example: Das Auto fährt auf die Kreuzung zu und (Begin: S1, End: R2)
+	// Example: Das Auto faehrt in den Kreisel. (Begin: S2, End: S1)
+	// Example: und faehrt in den Kreisel. (Begin: R1, End: S1)
+	// Example: Das Auto faehrt auf die Kreuzung zu und (Begin: S1, End: R2)
 	public static enum MessageType {
 		F1(false),
 		R1(true),
 		R2(true);
 		
-		// Möglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
-		// R benötigt einen Satz davor, der gerade gesprochen wird;
+		// Moeglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
+		// R benoetigt einen Satz davor, der gerade gesprochen wird;
 		// F geht immer, wenn der vorige Satz keinen nachfolgenden braucht.
 		
 		private boolean requiresSentence;
