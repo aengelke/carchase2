@@ -13,49 +13,90 @@ import inprotk.carchase2.IncrementalArticulator;
 
 public class CarChaseTTS {
 	private ArrayList<Situation> situations;
+	private ArrayList<Pattern> patterns;
 	private Articulator articulator;
 	private DispatchStream dispatcher;
 	private DispatcherThread dispatchThread;
 	
-	public CarChaseTTS(String filename) {
+	public CarChaseTTS(String messagesFilename, String patternsFilename) {
 		try {
-			situations = new ArrayList<Situation>();
-			String[] lines = CarChase.readLines(filename);
-			Situation currentMessage = null;
 			dispatcher = SimpleMonitor.setupDispatcher();
 			//articulator = new StandardArticulator(dispatcher);
 			articulator = new IncrementalArticulator(dispatcher);
-			int index = 0;
-			for (String line : lines) {
-				if (index++ == 0) continue;
-				if (line.startsWith("#")) continue;
-				if (line.startsWith("--")) {
-					String[] args = line.substring(2).split("=");
-					String[] meta = args[0].split("#");
-					MessageInformationLevel type = MessageInformationLevel.valueOf(meta[0]);
-					MessageType typeStart = MessageType.valueOf(meta[1]);
-					MessageType typeEnd = MessageType.valueOf(meta[2]);
-					String key = meta[3];
-					currentMessage.addMessage(key, args[1], typeStart, typeEnd, type);
-				}
-				else if (line.startsWith("++")) {
-					situations.add(currentMessage);
-					currentMessage = null;
-				}
-				else if (line.startsWith("p1")) {
-					String[] args = line.substring(3).split(",");
-					for (int i = 0; i < args.length; i++) 
-						while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
-					currentMessage = new DrivingSituation(args[6].equals("y"), args[0], args[1], args[3], Integer.parseInt(args[2]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
-				}
-				else if (line.equals("")) continue;
-				else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
-			}
-			//System.exit(0);
+			parseMessages(messagesFilename);
+			parsePatterns(patternsFilename);
 			dispatchThread = new DispatcherThread();
 			dispatchThread.start();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void parsePatterns(String filename) throws Exception {
+		patterns = new ArrayList<Pattern>();
+		Pattern currentPattern = null;
+		String[] lines = CarChase.readLines(filename);
+		int index = 0;
+		for (String line : lines) {
+			if (index++ == 0) continue;
+			if (line.startsWith("#")) continue;
+			if (line.startsWith("--msg")) {
+				String[] args = line.substring(6).split("=");
+				String[] meta = args[0].split("#");
+				MessageInformationLevel type = MessageInformationLevel.valueOf(meta[0]);
+				MessageType typeStart = MessageType.valueOf(meta[1]);
+				MessageType typeEnd = MessageType.valueOf(meta[2]);
+				String key = meta[3];
+				currentPattern.addTemplate(key, args[1], typeStart, typeEnd, type);
+			}
+			else if (line.startsWith("--cond")) {
+				currentPattern.addCondition(line.substring(7));
+			}
+			else if (line.startsWith("++")) {
+				patterns.add(currentPattern);
+				currentPattern = null;
+			}
+			else if (line.startsWith("pt")) {
+				String[] args = line.substring(3).split(",");
+				for (int i = 0; i < args.length; i++) 
+					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
+				boolean optional = args.length > 1 && args[1].equals("y");
+				currentPattern = new Pattern(optional);
+			}
+			else if (line.equals("")) continue;
+			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
+		}
+	}
+	
+	private void parseMessages(String filename) throws Exception {
+		situations = new ArrayList<Situation>();
+		Situation currentMessage = null;
+		String[] lines = CarChase.readLines(filename);
+		int index = 0;
+		for (String line : lines) {
+			if (index++ == 0) continue;
+			if (line.startsWith("#")) continue;
+			if (line.startsWith("--")) {
+				String[] args = line.substring(2).split("=");
+				String[] meta = args[0].split("#");
+				MessageInformationLevel type = MessageInformationLevel.valueOf(meta[0]);
+				MessageType typeStart = MessageType.valueOf(meta[1]);
+				MessageType typeEnd = MessageType.valueOf(meta[2]);
+				String key = meta[3];
+				currentMessage.addMessage(key, args[1], typeStart, typeEnd, type);
+			}
+			else if (line.startsWith("++")) {
+				situations.add(currentMessage);
+				currentMessage = null;
+			}
+			else if (line.startsWith("p1")) {
+				String[] args = line.substring(3).split(",");
+				for (int i = 0; i < args.length; i++) 
+					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
+				currentMessage = new DrivingSituation(args[6].equals("y"), args[0], args[1], args[3], Integer.parseInt(args[2]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
+			}
+			else if (line.equals("")) continue;
+			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
 		}
 	}
 	
@@ -102,7 +143,9 @@ public class CarChaseTTS {
 				if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 			}
 			
-			if (startAction == null) return;
+			if (startAction == null) { // Try to find a matching pattern! 
+				
+			}
 			
 			CarChase.log(continuationPossible, startAction.text, continuationAction == null ? null : continuationAction.text);
 			
@@ -206,6 +249,49 @@ public class CarChaseTTS {
 		
 		public int getType() {
 			return type;
+		}
+	}
+	
+	public static class Pattern {
+		protected boolean optional;
+		public HashMap<String, TTSAction> templates;
+		public ArrayList<Condition> conditions;
+		public Pattern(boolean optional) {
+			templates = new HashMap<String, TTSAction>();
+			conditions = new ArrayList<Condition>();
+			this.optional = optional;
+		}
+		
+		// Requires: XY#OP#XY
+		public void addCondition(String conditionLine) {
+			String[] condParts = conditionLine.split("#");
+			conditions.add(new Condition(condParts[0], condParts[2], condParts[1]));
+		}
+		
+		public void addTemplate(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
+			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
+		}
+		
+		public TTSAction match() {
+			for (Condition cond : conditions) {
+				String instancedLeftSide = cond.leftSide;
+				String instancedRightSide = cond.rightSide;
+			}
+			return null;
+		}
+		
+		private static class Condition {
+			public String leftSide;
+			public String rightSide;
+			public char operator;
+			public boolean isDistance;
+			
+			public Condition(String left, String right, String op) {
+				this.leftSide = left;
+				this.rightSide = right;
+				this.operator = op.charAt(0);
+				this.isDistance = leftSide.equals("*DISTANCE");
+			}
 		}
 	}
 	
