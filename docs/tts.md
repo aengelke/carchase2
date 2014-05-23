@@ -30,28 +30,36 @@ Currently, there is only one situation type, more are coming in future. (Planned
 | _Speed_ | Street, Speed, Old-Speed |
 
 ## Patterns
-For each situation type, there is a similar pattern type. As mentioned above,
-there are variables, that will be replaced at runtime. Here's a list of 
-(upcoming) variables:
+As mentioned above, there are variables, that will be replaced at runtime. Every pattern
+has an optional flag.
+Here's a list of 
+(_upcoming_) variables:
 
 | Name | Replacement |
 | ---- | ----------- |
 | intstreet | internal name of the current street |
 | intprevstreet | internal name of the previous street |
+| _intjunctionstreet_ | internal name of the junction street |
 | street | name of the current street |
 | prevstreet | name of the previous street |
+| _junctionstreet_ | name of the junction street |
 | flex1street | variant of the current street name, to match with preposition "in" |
 | flex1prevstreet | variant of the previous street name, to match with preposition "in" |
+| _flex1junctionstreet_ | variant of the junction street name, to match with preposition "in" |
 | flex2street | variant of the current street name, to match with preposition "out of" |
 | flex2prevstreet | variant of the previous street name, to match with preposition "out of" |
+| _flex2junctionstreet_ | variant of the junction street name, to match with preposition "out of" |
 | distance | distance to the next point _Only for usage in conditions!_ |
 | direction | current direction |
 | prevdirection | previous direction |
+| _bidirectional_ | whether the street is bidirectional (0 = no, 1 = yes) |
 | pointname | name of the next point |
 | numstreets | number of streets that cross the next point |
+| _isjunction_ | whether the next point is a junction (0 = no, 1 = yes, 2 = T-junction) |
 | speed | current speed |
 | _prevspeed_ | previous speed |
 | _angle_ | The angle between the current and the previous street |
+| _leftright_ | after a junction: whether the car turns left or right |
 
 ## Information level
 Messages with a higher information level usually take
@@ -73,4 +81,5 @@ situations matching, the first, which offers a continuation to the current
 sentence will be chosen. If there are upcoming sentences, and the duration of
 these sentences is longer than 2 seconds, all optional sentences will be
 revoked. _In future, continuations will also be appended, if there is a 
-break of some seconds._
+break of some seconds. Furthermore, if a text is revoked, it will be replaced
+with one message of a lower information level, which is designed to be shorter._
