@@ -25,10 +25,9 @@
  * [x] be able to specify routes in advance (as in the old prototype)
    * [x] specify routes in advance via navigation on the board (something like a pause/play button) --> set speed to 0
  * [x] be able to specify multiple steps in advance via keyboard (maybe take back future steps with the slash key?)
- * [ ] Add other situations
  * [ ] Implement spoke in last seconds function
    * [ ] How to get the absolute end time of an IU? Ask Timo --> Timo tries to implement this
- * [ ] Add speed changes to the configuration file for automated testing
+ * [x] Add speed changes to the configuration file for automated testing
  * [ ] Hesitations are buggy
    * [ ] However, sometimes two hesitations occour directly after each other
  * [ ] Duration of an IU is not correct
@@ -51,4 +50,5 @@
  * [ ] Save street history and not just the previous street
    * [ ] Implement this in the configuration and remove other occourences
  * [ ] Extend existing map
+ * [ ] Add other situations --> really needed?
  * [ ] have the user select the starting point with digits on the map? (0-9 points should always offer enough options)
