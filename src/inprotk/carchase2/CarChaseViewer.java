@@ -100,8 +100,8 @@ public class CarChaseViewer extends PApplet {
 		
 		CarChaseTTS tts = CarChase.get().tts();
 		int speed = CarChase.get().configuration().getDiscreteSpeed(CarChase.get().getTime());
-		tts.matchAndTrigger(currentStreet.name, previousStreet.name, start.name, prevDistance1, distance1, speed, direction, previousDirection);
-		tts.matchAndTrigger(currentStreet.name, previousStreet.name, end.name, prevDistance2, distance2, speed, direction, previousDirection);
+		tts.matchAndTrigger(currentStreet.name, previousStreet.name, start.name, end.name, prevDistance1, distance1, speed, direction, previousDirection);
+		tts.matchAndTrigger(currentStreet.name, previousStreet.name, end.name, end.name, prevDistance2, distance2, speed, direction, previousDirection);
 		
 		previousTimelinePosition = position;
 	}

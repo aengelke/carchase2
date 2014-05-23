@@ -37,6 +37,7 @@
    * [x] Define Specs for a `patterns.txt`
    * [x] Implement Parser for a `patterns.txt`
    * [x] Generate text at runtime, if no special message exists.
+   * [x] Implement junctions (this was difficult!)
    * [ ] Implement other variables
 
 ## No Milestone

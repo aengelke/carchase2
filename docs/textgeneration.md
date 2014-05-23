@@ -39,23 +39,24 @@ Here's a list of
 | ---- | ----------- |
 | intstreet | internal name of the current street |
 | intprevstreet | internal name of the previous street |
-| _intjunctionstreet_ | internal name of the junction street |
+| intjunctionstreet | internal name of the junction street |
 | street | name of the current street |
 | prevstreet | name of the previous street |
-| _junctionstreet_ | name of the junction street |
+| junctionstreet | name of the junction street |
 | flex1street | variant of the current street name, to match with preposition "in" |
 | flex1prevstreet | variant of the previous street name, to match with preposition "in" |
-| _flex1junctionstreet_ | variant of the junction street name, to match with preposition "in" |
+| flex1junctionstreet | variant of the junction street name, to match with preposition "in" |
 | flex2street | variant of the current street name, to match with preposition "out of" |
 | flex2prevstreet | variant of the previous street name, to match with preposition "out of" |
-| _flex2junctionstreet_ | variant of the junction street name, to match with preposition "out of" |
+| flex2junctionstreet | variant of the junction street name, to match with preposition "out of" |
 | distance | distance to the next point _Only for usage in conditions!_ |
 | direction | current direction |
 | prevdirection | previous direction |
-| _bidirectional_ | whether the street is bidirectional (0 = no, 1 = yes) |
+| bidirectional | whether the street is bidirectional (0 = no, 1 = yes) |
 | pointname | name of the next point |
 | numstreets | number of streets that cross the next point |
-| _isjunction_ | whether the next point is a junction (0 = no, 1 = yes, 2 = T-junction) |
+| isjunction | whether the next point is a junction (0 = no, 1 = yes, 2 = T-junction) |
+| wasjunction | whether the last point was a junction (0 = no, 1 = yes, 2 = T-junction) |
 | speed | current speed |
 | _prevspeed_ | previous speed |
 | _angle_ | The angle between the current and the previous street |
