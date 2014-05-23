@@ -33,15 +33,19 @@
    * [ ] However, sometimes two hesitations occour directly after each other
  * [ ] Duration of an IU is not correct
  * [ ] Auto-Revoke sometimes doesn't work
+ * [ ] Take random choice if there are many options
  * [x] Implement Patterns.
    * [x] Define Specs for a `patterns.txt`
    * [x] Implement Parser for a `patterns.txt`
    * [x] Generate text at runtime, if no special message exists.
+   * [ ] Implement other variables
 
 ## No Milestone
  * [x] Use Processing's `PApplet` instead of `JPanel`
    * [x] Get rid of SwingRepaintTimeline
    * [x] Make sure that all variables are not null on run
+ * [ ] Use message with lower information level on revoke, if the distance is smaller than 4 seconds
+   * [ ] Requires a correct duration of an IU
  * [ ] Improve rendering of the car in a curve
  * [ ] Add point-of-view perspective (in 2D)
  * [ ] Save street history and not just the previous street
