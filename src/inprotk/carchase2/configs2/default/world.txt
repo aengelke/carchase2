@@ -27,19 +27,21 @@ Point: B-B, 220, 720
 Point: D-L, 0, 380
 Point: T-T, 688, 10
 Point: TxF, 688, 97
-Point: TxK, 688, 265
-Point: DxK, 590, 380
+Point: TxK, 688, 295
+Point: DxK, 600, 380
 Point: IxK, 640, 460
 Point: I-B, 490, 720
 Point: AxK, 740, 460
 Point: A-B, 890, 720
-Point: ExK, 800, 380
+Point: ExK, 770, 380
 Point: E-R, 1000, 380
+Point: K-1, 635, 315
+Point: K-2, 750, 325
 #
 Street: Breite Strasse, 1, B-T, BxF, BxD, B-B
 Street: Dorfstrasse, 1, D-L, BxD, DxK
 Street: Tierparkallee, 1, T-T, TxF, TxK
-Street: Kreisel, 0, TxK, DxK, IxK, AxK, ExK, TxK
+Street: Kreisel, 0, TxK, K-1, DxK, IxK, AxK, ExK, K-2, TxK
 Street: DorfstrasseR, 1, ExK, E-R
 Street: Kirchstrasse, 1, IxK, I-B
 Street: Bahnhofstrasse, 1, AxK, A-B
