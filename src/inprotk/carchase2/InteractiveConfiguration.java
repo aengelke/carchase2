@@ -110,5 +110,7 @@ public class InteractiveConfiguration extends Configuration implements KeyListen
 		}
 		notifyListeners(ConfigurationUpdateListener.PATH_COMPLETED);
 	}
+	
+	public void checkSpeed(int millis, int currentSpeed) {}
 }
 

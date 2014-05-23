@@ -77,6 +77,8 @@ public class CarChaseViewer extends PApplet {
 		carPosition = PVector.lerp(startPoint, endPoint, position);
 		
 		if (!animating) return;
+		
+		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), (int) (speed * 20));
 
 		if (previousTimelinePosition > position) previousTimelinePosition = position;
 		if (previousTimelinePosition == position) return;
@@ -97,7 +99,7 @@ public class CarChaseViewer extends PApplet {
 		}
 		
 		CarChaseTTS tts = CarChase.get().tts();
-		int speed = CarChase.get().configuration().getDiscreteSpeed();
+		int speed = CarChase.get().configuration().getDiscreteSpeed(CarChase.get().getTime());
 		tts.matchAndTrigger(currentStreet.name, previousStreet.name, start.name, prevDistance1, distance1, speed, direction, previousDirection);
 		tts.matchAndTrigger(currentStreet.name, previousStreet.name, end.name, prevDistance2, distance2, speed, direction, previousDirection);
 		
@@ -155,6 +157,9 @@ public class CarChaseViewer extends PApplet {
 		scale(CAR_SCALE, CAR_SCALE);
 		image(car, 0, 0);
 		popMatrix();
+		
+		fill(0);
+		text(CarChase.get().getTime() + "", 10, 10);
 	}
 
 	

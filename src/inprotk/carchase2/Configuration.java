@@ -14,7 +14,8 @@ import inprotk.carchase2.ConfigurationUpdateListener;
 import inprotk.carchase2.World;
 
 public class Configuration {
-	public ArrayList<DirectionAction> actions;
+	public ArrayList<DirectionAction> directionActions;
+	public ArrayList<SpeedAction> speedActions;
 	public int startDirection;
 	public String startPointStr, startStreetStr;
 	public int startDistance;
@@ -27,16 +28,20 @@ public class Configuration {
 	public int direction;
 	
 	private ArrayList<ConfigurationUpdateListener> listeners;
+	private int startSpeed;
 
 	protected Configuration() {
-		actions = new ArrayList<DirectionAction>();
+		directionActions = new ArrayList<DirectionAction>();
 		listeners = new ArrayList<ConfigurationUpdateListener>();
+		speedActions = new ArrayList<SpeedAction>();
 	}
 	
 	public Configuration(String filename) {
 		try {
 			String[] lines = CarChase.readLines(filename);
-			actions = new ArrayList<DirectionAction>();
+			directionActions = new ArrayList<DirectionAction>();
+			speedActions = new ArrayList<SpeedAction>();
+			startSpeed = 2;
 			for (String line : lines) {
 				if (line.startsWith("#")) continue;
 				if (line.startsWith("Start:")) {
@@ -56,7 +61,10 @@ public class Configuration {
 						while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
 					String name = args[0];
 					if (name.equals("direction")) {
-						actions.add(new DirectionAction(Integer.parseInt(args[1])));
+						directionActions.add(new DirectionAction(Integer.parseInt(args[1])));
+					}
+					if (name.equals("speed")) {
+						speedActions.add(new SpeedAction(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
 					}
 				}
 				else if (line.equals("")) continue;
@@ -69,6 +77,7 @@ public class Configuration {
 			nextPoint = currentStreet.fetchNextPoint(startPoint, startDirection);
 			direction = startDirection;
 			listeners = new ArrayList<ConfigurationUpdateListener>();
+			Collections.sort(speedActions);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -152,16 +161,16 @@ public class Configuration {
 		int steppedOver = 0;
 		path.add(sp);
 		path.add(np);
-		for (int i = currentDirAction; i <= actions.size() + steppedOver; i++) {
+		for (int i = currentDirAction; i <= directionActions.size() + steppedOver; i++) {
 			ArrayList<WorldPointWrapper> nextPossibilities = getPossibilitiesIntern(sp, np);
 			int index = nextPossibilities.size() - 1;
-			if (i >= actions.size() + steppedOver && index == 0) { 
+			if (i >= directionActions.size() + steppedOver && index == 0) { 
 				steppedOver++; 
 				i++; 
 			}
-			else if (i >= actions.size() + steppedOver) break;
+			else if (i >= directionActions.size() + steppedOver) break;
 			if (index > 0) {
-				index = actions.get(i - steppedOver).data;
+				index = directionActions.get(i - steppedOver).data;
 			} else if (index == 0) {
 				steppedOver++;
 			} else {
@@ -175,23 +184,23 @@ public class Configuration {
 	}
 	
 	public void pushDirection(int direction) {
-		actions.add(new DirectionAction(direction));
+		directionActions.add(new DirectionAction(direction));
 		notifyListeners(ConfigurationUpdateListener.PATH_CHANGED);
 	}
 	
 	public void popDirection() {
-		if (actions.size() >= currentDirAction && actions.size() > 0) actions.remove(actions.size() - 1);
+		if (directionActions.size() >= currentDirAction && directionActions.size() > 0) directionActions.remove(directionActions.size() - 1);
 	}
 	
 	public void setNextDirection(int direction) {
-		while (actions.size() <= currentDirAction) actions.add(null);
-		actions.set(currentDirAction, new DirectionAction(direction));
+		while (directionActions.size() <= currentDirAction) directionActions.add(null);
+		directionActions.set(currentDirAction, new DirectionAction(direction));
 		notifyListeners(ConfigurationUpdateListener.PATH_CHANGED);
 	}
 	
 	public int getNextDirection(int millisFromStart) {
-		if (currentDirAction >= actions.size()) return -1;
-		return actions.get(currentDirAction).data;
+		if (currentDirAction >= directionActions.size()) return -1;
+		return directionActions.get(currentDirAction).data;
 	}
 	
 	public void directionUsed() {
@@ -199,11 +208,25 @@ public class Configuration {
 	}
 	
 	public double getCurrentSpeed(int millisFromStart) {
-		return 0.1; // px/ms
+		return getDiscreteSpeed(millisFromStart) / 20.; //0.1; // px/ms
 	}
 	
-	public int getDiscreteSpeed() {
-		return (int) (getCurrentSpeed(0) * 20.0);
+	public int getDiscreteSpeed(int millisFromStart) {
+		int speed = 2;
+		for (SpeedAction a : speedActions) {
+			if (a.millis <= millisFromStart)
+				speed = a.delta;
+		}
+		return speed;
+	}
+	
+	public void checkSpeed(int millis, int currentSpeed) {
+		if (getDiscreteSpeed(millis) != currentSpeed)
+			notifyListeners(ConfigurationUpdateListener.SPEED_CHANGED);
+	}
+
+	public void markDone() {
+		notifyListeners(ConfigurationUpdateListener.PATH_COMPLETED);
 	}
 	
 	public static class DirectionAction {
@@ -217,8 +240,22 @@ public class Configuration {
 			return "DirectionAction[data=" + data + "]";
 		}
 	}
+	
+	public static class SpeedAction implements Comparable<SpeedAction> {
+		public int millis, delta;
+		
+		public SpeedAction(int millis, int delta) {
+			this.millis = millis;
+			this.delta = delta;
+		}
+		
+		public String toString() {
+			return "SpeedAction[millis=" + millis + "ms,delta=" + delta + "]";
+		}
 
-	public void markDone() {
-		notifyListeners(ConfigurationUpdateListener.PATH_COMPLETED);
+		@Override
+		public int compareTo(SpeedAction arg0) {
+			return millis - arg0.millis;
+		}
 	}
 }
