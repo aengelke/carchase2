@@ -40,15 +40,19 @@ Here's a list of
 | intstreet | internal name of the current street |
 | intprevstreet | internal name of the previous street |
 | intjunctionstreet | internal name of the junction street |
+| intprevjunctionstreet | internal name of the previous junction street |
 | street | name of the current street |
 | prevstreet | name of the previous street |
 | junctionstreet | name of the junction street |
+| prevjunctionstreet | name of the previous junction street |
 | flex1street | variant of the current street name, to match with preposition "in" |
 | flex1prevstreet | variant of the previous street name, to match with preposition "in" |
 | flex1junctionstreet | variant of the junction street name, to match with preposition "in" |
+| flex1prevjunctionstreet | variant of the previous junction street name, to match with preposition "in" |
 | flex2street | variant of the current street name, to match with preposition "out of" |
 | flex2prevstreet | variant of the previous street name, to match with preposition "out of" |
 | flex2junctionstreet | variant of the junction street name, to match with preposition "out of" |
+| flex2prevjunctionstreet | variant of the previous junction street name, to match with preposition "out of" |
 | distance | distance to the next point _Only for usage in conditions!_ |
 | direction | current direction |
 | prevdirection | previous direction |
