@@ -25,31 +25,34 @@
  * [x] be able to specify routes in advance (as in the old prototype)
    * [x] specify routes in advance via navigation on the board (something like a pause/play button) --> set speed to 0
  * [x] be able to specify multiple steps in advance via keyboard (maybe take back future steps with the slash key?)
- * [ ] Implement spoke in last seconds function
-   * [ ] How to get the absolute end time of an IU? Ask Timo --> Timo tries to implement this
  * [x] Add speed changes to the configuration file for automated testing
- * [ ] Hesitations are buggy
-   * [ ] However, sometimes two hesitations occour directly after each other
- * [ ] Duration of an IU is not correct
- * [ ] Auto-Revoke sometimes doesn't work
- * [ ] Take random choice if there are many options
  * [x] Implement Patterns.
    * [x] Define Specs for a `patterns.txt`
    * [x] Implement Parser for a `patterns.txt`
    * [x] Generate text at runtime, if no special message exists.
-   * [x] Implement junctions (this was difficult!)
+   * [x] Implement junctions
    * [ ] Implement other variables
+ * [ ] Take random choice if there are many options
+ * [ ] Use message with lower information level on revoke, if the distance is smaller than 4 seconds
+   * [ ] Requires a correct duration of an IU
+ * [ ] Duration of an IU is not correct --> Probably a bug in InproTK?
+ * [ ] Write documentation on usage of the application
 
-## No Milestone
+## Other
  * [x] Use Processing's `PApplet` instead of `JPanel`
    * [x] Get rid of SwingRepaintTimeline
    * [x] Make sure that all variables are not null on run
- * [ ] Use message with lower information level on revoke, if the distance is smaller than 4 seconds
-   * [ ] Requires a correct duration of an IU
- * [ ] Improve rendering of the car in a curve
- * [ ] Add point-of-view perspective (in 2D)
- * [ ] Save street history and not just the previous street
+ * [ ] Implement spoke in last seconds function
+   * [ ] How to get the absolute end time of an IU? Ask Timo --> Timo tries to implement this
+ * [ ] Hesitations are buggy
+   * [ ] However, sometimes two hesitations occour directly after each other
+ * [ ] Auto-Revoke sometimes doesn't work
+ 
+ ## Ideas
+ * [ ] Improve rendering of the car in a curve --> nice to have
+ * [ ] Add point-of-view perspective (in 2D) --> nice to have
+ * [ ] Save street history and not just the previous street --> really needed?
    * [ ] Implement this in the configuration and remove other occourences
- * [ ] Extend existing map
+ * [ ] Extend existing map --> really needed?
  * [ ] Add other situations --> really needed?
- * [ ] have the user select the starting point with digits on the map? (0-9 points should always offer enough options)
+ * [ ] have the user select the starting point with digits on the map? (0-9 points should always offer enough options) --> really needed?
