@@ -62,7 +62,7 @@ Here's a list of
 | isjunction | whether the next point is a junction (0 = no, 1 = yes, 2 = T-junction) |
 | wasjunction | whether the last point was a junction (0 = no, 1 = yes, 2 = T-junction) |
 | speed | current speed |
-| _prevspeed_ | previous speed |
+| prevspeed | previous speed |
 | _angle_ | The angle between the current and the previous street |
 | _leftright_ | after a junction: whether the car turns left or right |
 

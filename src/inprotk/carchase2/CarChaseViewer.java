@@ -31,7 +31,8 @@ public class CarChaseViewer extends PApplet {
 	private Street currentStreet;
 	private WorldPoint start;
 	private WorldPoint end;
-	private float speed;
+	private int speed;
+	private int prevSpeed;
 	private int direction;
 	private int previousDirection;
 	
@@ -54,6 +55,7 @@ public class CarChaseViewer extends PApplet {
 		car = loadImage(CarChase.getFilename("data/car.png"));
 		textFont(createFont("ArialMT-Bold", 15));
 		frameRate(30);
+		prevSpeed = -1;
 	}
 	
 	// Called on update
@@ -100,16 +102,14 @@ public class CarChaseViewer extends PApplet {
 		}
 		
 		CarChaseTTS tts = CarChase.get().tts();
-		int speed = CarChase.get().configuration().getDiscreteSpeed(CarChase.get().getTime());
 		
-		CarState state1 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, start.name, direction, previousDirection, prevDistance1, distance1, speed, speed); 
-		CarState state2 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, end.name, direction, previousDirection, prevDistance2, distance2, speed, speed); 
+		CarState state1 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, start.name, direction, previousDirection, prevDistance1, distance1, speed, prevSpeed); 
+		CarState state2 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, end.name, direction, previousDirection, prevDistance2, distance2, speed, prevSpeed); 
 		
-		//tts.matchAndTrigger(currentStreet.name, previousStreet.name, start.name, end.name, prevDistance1, distance1, speed, direction, previousDirection);
-		//tts.matchAndTrigger(currentStreet.name, previousStreet.name, end.name, end.name, prevDistance2, distance2, speed, direction, previousDirection);
 		tts.matchAndTrigger(state1);
 		tts.matchAndTrigger(state2);
 		
+		prevSpeed = speed;
 		previousTimelinePosition = position;
 	}
 	
@@ -176,7 +176,7 @@ public class CarChaseViewer extends PApplet {
 		currentStreet = a.street;
 		start = a.start;
 		end = a.end;
-		speed = a.speed;
+		speed = (int) (20 * a.speed);
 		previousDirection = direction;
 		direction = a.direction;
 		

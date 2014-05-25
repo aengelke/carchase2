@@ -316,6 +316,7 @@ public class CarChaseTTS {
 			replace.set("*POINTNAME", s.nextPointName);
 			replace.set("*PREVPOINTNAME", s.prevPointName);
 			replace.set("*SPEED", "" + s.speed);
+			replace.set("*PREVSPEED", "" + s.prevSpeed);
 			replace.set("*BIDIRECTIONAL", "" + (currentStreet.bidirectional ? 1 : 0));
 			replace.set("*NUMSTREETS", "" + nextPoint.streets.size());
 			// Junctions
@@ -328,10 +329,14 @@ public class CarChaseTTS {
 				String instancedRightSide = instanciate(cond.rightSide, replace);
 				if (cond.isDistance) {
 					int distance = Integer.parseInt(instancedRightSide);
-					if (s.previousDistance > s.currentDistance) {
-						if (distance >= s.previousDistance || distance < s.currentDistance) return null;
+					if (cond.operator == '=') {
+						if (s.previousDistance > s.currentDistance) {
+							if (distance >= s.previousDistance || distance < s.currentDistance) return null;
+						}
+						else if (distance < s.previousDistance || distance >= s.currentDistance) return null;
+					} else if (cond.operator == '>') {
+						if (s.currentDistance <= distance) return null;
 					}
-					else if (distance < s.previousDistance || distance >= s.currentDistance) return null;
 				} else {
 					if (cond.operator == '=' && !instancedLeftSide.equals(instancedRightSide)) return null;
 					else if (cond.operator == '!' && instancedLeftSide.equals(instancedRightSide)) return null;
