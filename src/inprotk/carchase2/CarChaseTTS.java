@@ -339,7 +339,7 @@ public class CarChaseTTS {
 			if (pointName.equals(nextPoint)) // Present
 				applyJunction(point, currentStreet, replace, direction, streetNamesCrossNextPoint, false);
 			else // Past
-				applyJunction(point, w.streets.get(prevStreet), replace, direction, streetNamesCrossPoint, true);
+				applyJunction(point, w.streets.get(prevStreet), replace, prevDir, streetNamesCrossPoint, true);
 			
 			replace.set("*NUMSTREETS", "" + streetNamesCrossNextPoint.size());
 			
