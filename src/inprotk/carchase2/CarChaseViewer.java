@@ -3,6 +3,7 @@ package inprotk.carchase2;
 import java.util.ArrayList;
 import java.util.List;
 
+import inprotk.carchase2.Configuration.CarState;
 import inprotk.carchase2.World.Street;
 import inprotk.carchase2.World.WorldPoint;
 import processing.core.PApplet;
@@ -100,8 +101,14 @@ public class CarChaseViewer extends PApplet {
 		
 		CarChaseTTS tts = CarChase.get().tts();
 		int speed = CarChase.get().configuration().getDiscreteSpeed(CarChase.get().getTime());
-		tts.matchAndTrigger(currentStreet.name, previousStreet.name, start.name, end.name, prevDistance1, distance1, speed, direction, previousDirection);
-		tts.matchAndTrigger(currentStreet.name, previousStreet.name, end.name, end.name, prevDistance2, distance2, speed, direction, previousDirection);
+		
+		CarState state1 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, start.name, direction, previousDirection, prevDistance1, distance1, speed, speed); 
+		CarState state2 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, end.name, direction, previousDirection, prevDistance2, distance2, speed, speed); 
+		
+		//tts.matchAndTrigger(currentStreet.name, previousStreet.name, start.name, end.name, prevDistance1, distance1, speed, direction, previousDirection);
+		//tts.matchAndTrigger(currentStreet.name, previousStreet.name, end.name, end.name, prevDistance2, distance2, speed, direction, previousDirection);
+		tts.matchAndTrigger(state1);
+		tts.matchAndTrigger(state2);
 		
 		previousTimelinePosition = position;
 	}

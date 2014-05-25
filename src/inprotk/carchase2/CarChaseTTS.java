@@ -11,6 +11,7 @@ import java.util.Vector;
 import processing.data.StringDict;
 import inprotk.carchase2.Articulator;
 import inprotk.carchase2.CarChase;
+import inprotk.carchase2.Configuration.CarState;
 import inprotk.carchase2.IncrementalArticulator;
 import inprotk.carchase2.World.Street;
 import inprotk.carchase2.World.WorldPoint;
@@ -125,8 +126,8 @@ public class CarChaseTTS {
 		}
 	}
 	
-	public void matchAndTrigger(String streetName, String prevStreet, String pointName, String nextPoint, int previousDistance, int currentDistance, int speed, int direction, int previousDirection) {
-		dispatchThread.addDispatchTask(streetName, prevStreet, pointName, nextPoint, previousDistance, currentDistance, speed, direction, previousDirection);
+	public void matchAndTrigger(CarState state) {
+		dispatchThread.addDispatchTask(state);
 	}
 	
 	private class DispatcherThread extends Thread {
@@ -162,18 +163,18 @@ public class CarChaseTTS {
 			boolean continuationPossible = articulator.isSpeaking();
 			for (Situation m : situations) {
 				if (startAction == null)	
-					startAction = m.match(a.streetName, a.prevStreet, a.pointName, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, null);
+					startAction = m.match(a.state, null);
 				if (continuationAction == null && continuationPossible)	
-					continuationAction = m.match(a.streetName, a.prevStreet, a.pointName, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, lastIU);
+					continuationAction = m.match(a.state, lastIU);
 				if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 			}
 			
 			if (startAction == null) { // Try to find a matching pattern! 
 				for (Pattern p : patterns) {
 					if (startAction == null)	
-						startAction = p.match(a.streetName, a.prevStreet, a.pointName, a.nextPoint, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, null);
+						startAction = p.match(a.state, null);
 					if (continuationAction == null && continuationPossible)	
-						continuationAction = p.match(a.streetName, a.prevStreet, a.pointName, a.nextPoint, a.previousDistance, a.currentDistance, a.speed, a.direction, a.previousDirection, lastIU);
+						continuationAction = p.match(a.state, lastIU);
 					if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 				}
 				if (startAction == null)
@@ -193,38 +194,17 @@ public class CarChaseTTS {
 			articulator.autoRemoveUpcoming();
 			articulator.say(finalAction);
 		}
-		private void addDispatchTask(String streetName, String prevStreet,
-				String pointName, String nextPoint, int previousDistance, int currentDistance,
-				int speed, int direction, int previousDirection) {
+		private void addDispatchTask(CarState state) {
 			synchronized (this) {
-				actions.add(new DispatchAction(streetName, prevStreet, pointName, nextPoint, previousDistance, currentDistance, speed, direction, previousDirection));
+				actions.add(new DispatchAction(state));
 				notify();
 			}
 		}
 		
 		private class DispatchAction {
-			public int previousDirection;
-			public int direction;
-			private String streetName;
-			private String prevStreet;
-			private String pointName;
-			private String nextPoint;
-			private int previousDistance;
-			private int currentDistance;
-			private int speed;
-			public DispatchAction(String streetName, String prevStreet,
-					String pointName, String nextPoint, int previousDistance, int currentDistance,
-					int speed, int direction, int previousDirection) {
-				super();
-				this.streetName = streetName;
-				this.prevStreet = prevStreet;
-				this.pointName = pointName;
-				this.nextPoint = nextPoint;
-				this.previousDistance = previousDistance;
-				this.currentDistance = currentDistance;
-				this.speed = speed;
-				this.direction = direction;
-				this.previousDirection = previousDirection;
+			private CarState state;
+			public DispatchAction(CarState state) {
+				this.state = state;
 			}
 		}
 	}
@@ -311,48 +291,47 @@ public class CarChaseTTS {
 			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
 		
-		public TTSAction match(String streetName, String prevStreet, String pointName, String nextPoint, int previousDistance, int currentDistance, int speed, int direction, int prevDir, TTSAction last) {
+		public TTSAction match(CarState s, TTSAction last) {
 			World w = CarChase.get().world();
-			Street currentStreet = w.streets.get(streetName);
-			WorldPoint point = w.points.get(pointName);
+			Street currentStreet = w.streets.get(s.streetName);
+			Street prevStreet = w.streets.get(s.prevStreetName);
+			WorldPoint nextPoint = w.points.get(s.nextPointName);
+			WorldPoint prevPoint = w.points.get(s.prevPointName);
 			
 			StringDict replace = new StringDict();
-			replace.set("*INTSTREET", streetName);
-			replace.set("*INTPREVSTREET", prevStreet);
-			StreetReplacement streetRpl = streetNames.get(streetName);
-			if (streetRpl == null) streetRpl = new StreetReplacement(streetName);
-			StreetReplacement prevStreetRpl = streetNames.get(prevStreet);
-			if (prevStreetRpl == null) prevStreetRpl = new StreetReplacement(prevStreet);
+			replace.set("*INTSTREET", s.streetName);
+			replace.set("*INTPREVSTREET", s.prevStreetName);
+			StreetReplacement streetRpl = streetNames.get(s.streetName);
+			if (streetRpl == null) streetRpl = new StreetReplacement(s.streetName);
+			StreetReplacement prevStreetRpl = streetNames.get(s.prevStreetName);
+			if (prevStreetRpl == null) prevStreetRpl = new StreetReplacement(s.prevStreetName);
 			replace.set("*STREET", streetRpl.name);
 			replace.set("*PREVSTREET", prevStreetRpl.name);
 			replace.set("*FLEX1STREET", streetRpl.flex1);
 			replace.set("*FLEX1PREVSTREET", prevStreetRpl.flex1);
 			replace.set("*FLEX2STREET", streetRpl.flex2);
 			replace.set("*FLEX2PREVSTREET", prevStreetRpl.flex2);
-			replace.set("*DIRECTION", direction + "");
-			replace.set("*PREVDIRECTION", prevDir + "");
-			replace.set("*POINTNAME", nextPoint);
-			replace.set("*SPEED", "" + speed);
-			replace.set("*BIDIRECTIONAL", "" + (CarChase.get().world().streets.get(streetName).bidirectional ? 1 : 0));
-			// Juncitons
-			ArrayList<String> streetNamesCrossNextPoint = CarChase.get().world().points.get(nextPoint).streets;
-			ArrayList<String> streetNamesCrossPoint = CarChase.get().world().points.get(pointName).streets;
-			if (pointName.equals(nextPoint)) // Present
-				applyJunction(point, currentStreet, replace, direction, streetNamesCrossNextPoint, false);
-			else // Past
-				applyJunction(point, w.streets.get(prevStreet), replace, prevDir, streetNamesCrossPoint, true);
+			replace.set("*DIRECTION", s.direction + "");
+			replace.set("*PREVDIRECTION", s.prevDirection + "");
+			replace.set("*POINTNAME", s.nextPointName);
+			replace.set("*PREVPOINTNAME", s.prevPointName);
+			replace.set("*SPEED", "" + s.speed);
+			replace.set("*BIDIRECTIONAL", "" + (currentStreet.bidirectional ? 1 : 0));
+			replace.set("*NUMSTREETS", "" + nextPoint.streets.size());
+			// Junctions
+			applyJunction(nextPoint, currentStreet, replace, s.direction, nextPoint.streets, false);
+			applyJunction(prevPoint, prevStreet, replace, s.prevDirection, prevPoint.streets, true);
 			
-			replace.set("*NUMSTREETS", "" + streetNamesCrossNextPoint.size());
 			
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
 				String instancedRightSide = instanciate(cond.rightSide, replace);
 				if (cond.isDistance) {
 					int distance = Integer.parseInt(instancedRightSide);
-					if (previousDistance > currentDistance) {
-						if (distance >= previousDistance || distance < currentDistance) return null;
+					if (s.previousDistance > s.currentDistance) {
+						if (distance >= s.previousDistance || distance < s.currentDistance) return null;
 					}
-					else if (distance < previousDistance || distance >= currentDistance) return null;
+					else if (distance < s.previousDistance || distance >= s.currentDistance) return null;
 				} else {
 					if (cond.operator == '=' && !instancedLeftSide.equals(instancedRightSide)) return null;
 					else if (cond.operator == '!' && instancedLeftSide.equals(instancedRightSide)) return null;
@@ -364,22 +343,23 @@ public class CarChaseTTS {
 					}
 				}
 			}
-			PatternSituation s = new PatternSituation(optional);
+			PatternSituation situation = new PatternSituation(optional);
 			for (Map.Entry<String, TTSAction> entry : templates.entrySet()) 
-				s.addMessage(entry.getKey(), entry.getValue(), instanciate(entry.getValue().text, replace));
-			return s.match(streetName, prevStreet, pointName, previousDistance, currentDistance, speed, direction, prevDir, last);
+				situation.addMessage(entry.getKey(), entry.getValue(), instanciate(entry.getValue().text, replace));
+			return situation.match(s, last);
 		}
 		
 		private void applyJunction(WorldPoint point, Street street, StringDict replace, int direction, ArrayList<String> streetNamesCrossNextPoint, boolean was) {
 			String prefix = was ? "WAS" : "IS";
-			String inprefix = !was ? "WAS" : "IS";
+			String prevPrefix = was ? "PREV" : "";
 			boolean isEndOfStreet = street.fetchNextPoint(point, direction) == null;
 			
 			int isJunction = 0;
-			if (streetNamesCrossNextPoint.size() == 2){
+			if (streetNamesCrossNextPoint.size() == 2 && streetNamesCrossNextPoint.indexOf(street.name) >= 0){
 				isJunction = isEndOfStreet ? 2 : 1;
 
 				int indexOfOther = 1 - streetNamesCrossNextPoint.indexOf(street.name);
+				assert streetNamesCrossNextPoint.indexOf(street.name) >= 0 : "Something somewhere went terribly wrong: " + streetNamesCrossNextPoint.toString() + street.name;
 				String streetName = streetNamesCrossNextPoint.get(indexOfOther);
 				Street crossStreet = CarChase.get().world().streets.get(streetName);
 				int indexInCross = crossStreet.streetPoints.indexOf(point.name);
@@ -388,14 +368,13 @@ public class CarChaseTTS {
 				else {
 					StreetReplacement streetRpl = streetNames.get(streetName);
 					if (streetRpl == null) streetRpl = new StreetReplacement(streetName);
-					replace.set("*INTJUNCTIONSTREET", streetName);
-					replace.set("*JUNCTIONSTREET", streetRpl.name);
-					replace.set("*FLEX1JUNCTIONSTREET", streetRpl.flex1);
-					replace.set("*FLEX2JUNCTIONSTREET", streetRpl.flex2);
+					replace.set("*INT" + prevPrefix + "JUNCTIONSTREET", streetName);
+					replace.set("*" + prevPrefix + "JUNCTIONSTREET", streetRpl.name);
+					replace.set("*FLEX1" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex1);
+					replace.set("*FLEX2" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex2);
 				}
 			}			
 			replace.set("*" + prefix + "JUNCTION", "" + isJunction);
-			replace.set("*" + inprefix + "JUNCTION", "-1");
 		}
 		
 		private class Condition {
@@ -433,12 +412,12 @@ public class CarChaseTTS {
 			messages.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
 
-		public TTSAction match(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int direction, int prevDir, TTSAction last) {
-			if (!isSituationMatching(streetName, prevStreet, pointName, previousDistance, currentDistance, speed, direction, prevDir)) 
+		public TTSAction match(CarState s, TTSAction last) {
+			if (!isSituationMatching(s)) 
 				return null;
 			TTSAction[] matches = matches();
 			if (matches == null) return null;
-			MessageInformationLevel informationLevel = MessageInformationLevel.fromInteger(4 - speed);
+			MessageInformationLevel informationLevel = MessageInformationLevel.fromInteger(4 - s.speed);
 			HashMap<MessageInformationLevel,TTSAction> actions = new HashMap<MessageInformationLevel,TTSAction>();
 			for (TTSAction action : matches) {
 				if (actions.containsKey(action.type)) continue;
@@ -464,8 +443,8 @@ public class CarChaseTTS {
 				return actions.get(informationLevel);
 			} else {
 				for (int distance = 1; distance < MessageInformationLevel.values().length; distance++) {
-					MessageInformationLevel lowerLevel = MessageInformationLevel.fromInteger(4 - speed - distance);
-					MessageInformationLevel higherLevel = MessageInformationLevel.fromInteger(4 - speed + distance);
+					MessageInformationLevel lowerLevel = MessageInformationLevel.fromInteger(4 - s.speed - distance);
+					MessageInformationLevel higherLevel = MessageInformationLevel.fromInteger(4 - s.speed + distance);
 					if (actions.containsKey(lowerLevel)) return actions.get(lowerLevel);
 					if (actions.containsKey(higherLevel)) return actions.get(higherLevel);
 				}
@@ -477,7 +456,7 @@ public class CarChaseTTS {
 			return messages.values().toArray(new TTSAction[0]);
 		}
 		
-		public abstract boolean isSituationMatching(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int dir, int prevDir);
+		public abstract boolean isSituationMatching(CarState s);
 	}
 	
 	private static class PatternSituation extends Situation {
@@ -491,9 +470,7 @@ public class CarChaseTTS {
 		}
 
 		@Override
-		public boolean isSituationMatching(String streetName,
-				String prevStreet, String pointName, int previousDistance,
-				int currentDistance, int speed, int dir, int prevDir) {
+		public boolean isSituationMatching(CarState s) {
 			return true;
 		}
 		
@@ -515,17 +492,17 @@ public class CarChaseTTS {
 			this.prevDirection = prevDirection;
 		}
 		
-		public boolean isSituationMatching(String streetName, String prevStreet, String pointName, int previousDistance, int currentDistance, int speed, int dir, int prevDir) {
-			if (speed == 0) return false;
-			if (!this.streetName.equals(streetName)) return false;
-			if (!this.prevStreet.equals(prevStreet) && !this.prevStreet.equals("%")) return false;
-			if (!this.pointName.equals(pointName)) return false;
-			if (previousDistance > currentDistance) {
-				if (distance >= previousDistance || distance < currentDistance) return false;
+		public boolean isSituationMatching(CarState s) {
+			if (s.speed == 0) return false;
+			if (!this.streetName.equals(s.streetName)) return false;
+			if (!this.prevStreet.equals(s.prevStreetName) && !this.prevStreet.equals("%")) return false;
+			if (!this.pointName.equals(s.pointName)) return false;
+			if (s.previousDistance > s.currentDistance) {
+				if (distance >= s.previousDistance || distance < s.currentDistance) return false;
 			}
-			else if (distance < previousDistance || distance >= currentDistance) return false;
-			if (dir != direction) return false;
-			if (prevDirection != 0 && prevDir != 0 && prevDir != prevDirection) return false;
+			else if (distance < s.previousDistance || distance >= s.currentDistance) return false;
+			if (s.direction != direction) return false;
+			if (prevDirection != 0 && s.prevDirection != 0 && s.prevDirection != prevDirection) return false;
 			return true;
 		}
 	}

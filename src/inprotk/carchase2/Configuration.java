@@ -258,4 +258,35 @@ public class Configuration {
 			return millis - arg0.millis;
 		}
 	}
+	
+	public static class CarState {
+		public final String streetName;
+		public final String prevStreetName;
+		public final String nextPointName;
+		public final String prevPointName;
+		public final String pointName;
+		public final int direction;
+		public final int prevDirection;
+		public final int previousDistance;
+		public final int currentDistance;
+		public final int speed;
+		public final int prevSpeed;
+		
+		public CarState(String streetName, String prevStreetName,
+				String prevPointName, String nextPointName, String pointName,
+				int direction, int prevDirection, int previousDistance,
+				int currentDistance, int speed, int prevSpeed) {
+			this.streetName = streetName;
+			this.prevStreetName = prevStreetName;
+			this.nextPointName = nextPointName;
+			this.prevPointName = prevPointName;
+			this.pointName = pointName;
+			this.direction = direction;
+			this.prevDirection = prevDirection;
+			this.previousDistance = previousDistance;
+			this.currentDistance = currentDistance;
+			this.speed = speed;
+			this.prevSpeed = prevSpeed;
+		}
+	}
 }
