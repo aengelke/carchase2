@@ -264,7 +264,8 @@ public class CarChaseTTS {
 		F3(false),
 		R1(true),
 		R2(true),
-		R3(true);
+		R3(true),
+		R4(true);
 		
 		// Moeglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
 		// R benoetigt einen Satz davor, der gerade gesprochen wird;
