@@ -358,8 +358,8 @@ public class CarChaseTTS {
 					else if (cond.operator == '<' || cond.operator == '>') {
 						int left = Integer.parseInt(instancedLeftSide);
 						int right = Integer.parseInt(instancedRightSide);
-						if (cond.operator == '<' && left > right) return null;
-						if (cond.operator == '>' && left < right) return null;
+						if (cond.operator == '<' && left >= right) return null;
+						if (cond.operator == '>' && left <= right) return null;
 					}
 				}
 			}
@@ -373,18 +373,28 @@ public class CarChaseTTS {
 			String prefix = was ? "WAS" : "IS";
 			String inprefix = !was ? "WAS" : "IS";
 			boolean isEndOfStreet = street.fetchNextPoint(point, direction) == null;
-			replace.set("*" + prefix + "JUNCTION", "" + (streetNamesCrossNextPoint.size() == 2 ? (isEndOfStreet ? 2 : 1) : 0));
-			replace.set("*" + inprefix + "JUNCTION", "-1");
-			if (streetNamesCrossNextPoint.size() == 2) {
+			
+			int isJunction = 0;
+			if (streetNamesCrossNextPoint.size() == 2){
+				isJunction = isEndOfStreet ? 2 : 1;
+
 				int indexOfOther = 1 - streetNamesCrossNextPoint.indexOf(street.name);
 				String streetName = streetNamesCrossNextPoint.get(indexOfOther);
-				StreetReplacement streetRpl = streetNames.get(streetName);
-				if (streetRpl == null) streetRpl = new StreetReplacement(streetName);
-				replace.set("*INTJUNCTIONSTREET", streetName);
-				replace.set("*JUNCTIONSTREET", streetRpl.name);
-				replace.set("*FLEX1JUNCTIONSTREET", streetRpl.flex1);
-				replace.set("*FLEX2JUNCTIONSTREET", streetRpl.flex2);
-			}
+				Street crossStreet = CarChase.get().world().streets.get(streetName);
+				int indexInCross = crossStreet.streetPoints.indexOf(point.name);
+				if (indexInCross <= 0 || indexInCross >= crossStreet.streetPoints.size() - 1)
+					isJunction = 0;
+				else {
+					StreetReplacement streetRpl = streetNames.get(streetName);
+					if (streetRpl == null) streetRpl = new StreetReplacement(streetName);
+					replace.set("*INTJUNCTIONSTREET", streetName);
+					replace.set("*JUNCTIONSTREET", streetRpl.name);
+					replace.set("*FLEX1JUNCTIONSTREET", streetRpl.flex1);
+					replace.set("*FLEX2JUNCTIONSTREET", streetRpl.flex2);
+				}
+			}			
+			replace.set("*" + prefix + "JUNCTION", "" + isJunction);
+			replace.set("*" + inprefix + "JUNCTION", "-1");
 		}
 		
 		private class Condition {
