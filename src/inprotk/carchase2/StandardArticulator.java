@@ -23,15 +23,15 @@ public class StandardArticulator extends Articulator {
 		myIUSource.addListener(synthesisModule);
 	}
 
-	public void say(TTSAction action) {
+	public void say(Articulatable action) {
 		myIUSource.say(action);
 	}
 
-	public TTSAction getLastUpcoming() {
+	public Articulatable getLastUpcoming() {
 		return null;
 	}
 
-	public TTSAction getLast() {
+	public Articulatable getLast() {
 		return null;
 	}
 
@@ -46,8 +46,8 @@ public class StandardArticulator extends Articulator {
 				List<? extends EditMessage<? extends IU>> edits) {
 			throw new org.apache.commons.lang.NotImplementedException("StandardArticulator.MyIUSource is an IU source, it hence ignores its left buffer.");
 		}
-		public void say(TTSAction action) {
-			String text = action.text;
+		public void say(Articulatable action) {
+			String text = action.getPreferredText();
 			rightBuffer.addToBuffer(new ChunkIU(text));
 			rightBuffer.notify(iulisteners);
 		}

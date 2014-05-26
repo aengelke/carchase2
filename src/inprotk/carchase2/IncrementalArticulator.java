@@ -14,7 +14,6 @@ import inpro.incremental.unit.EditType;
 import inpro.incremental.unit.HesitationIU;
 import inpro.incremental.unit.IU;
 import inpro.incremental.unit.IU.Progress;
-import inprotk.carchase2.CarChaseTTS.TTSAction;
 import inprotk.carchase2.CarChase;
 import inprotk.carchase2.StandardArticulator;
 
@@ -35,7 +34,7 @@ public class IncrementalArticulator extends StandardArticulator {
 	}
 	
 	@Override
-	public void say(TTSAction action) {
+	public void say(Articulatable action) {
 		// I now assume that the action is chosen intelligent.
 		// Therefore, here the continuation WILL NOT be appended,
 		// but rather the caller has to check whether he can.
@@ -44,13 +43,13 @@ public class IncrementalArticulator extends StandardArticulator {
 		myIUSource.say(action);
 	}
 	
-	public TTSAction getLastUpcoming() {
+	public Articulatable getLastUpcoming() {
 		IUextended iue = myIUSource.getLastUpcoming();
 		if (iue == null) return null;
 		return iue.action;
 	}
 	
-	public TTSAction getLast() {
+	public Articulatable getLast() {
 		IUextended iue = myIUSource.getLast();
 		if (iue == null) return null;
 		return iue.action;
@@ -85,26 +84,26 @@ public class IncrementalArticulator extends StandardArticulator {
 		for (IUextended iue : iues) {
 			durationOverAll += iue.inner.duration();
 			// This is buggy. TODO: fix.
-			if (iue.action.optional)
+			if (iue.action.isOptional())
 				durationCanRevoked += iue.inner.duration();
 		}
 		if (durationOverAll > 2)
 			for (IUextended iue : iues)
-				if (iue.action.optional)
+				if (iue.action.isOptional())
 					myIUSource.revoke(iue);
 		CarChase.log("Reduced distance from", durationOverAll, "to", durationOverAll - durationCanRevoked);
 		//throw CarChase.notImplemented;
 	}
 	
 	private class IUextended {
-		private TTSActionIU inner;
+		private ArticulatableIU inner;
 		private HesitationIU hesitationIU;
 		private String message;
 		private double duration;
 		private boolean hasHesitation;
-		private TTSAction action;
+		private Articulatable action;
 		
-		private IUextended(TTSActionIU iu, HesitationIU hesitation) {
+		private IUextended(ArticulatableIU iu, HesitationIU hesitation) {
 			this.inner = iu;
 			this.hasHesitation = hesitation != null;
 			this.hesitationIU = hesitation;
@@ -141,7 +140,7 @@ public class IncrementalArticulator extends StandardArticulator {
 			if (hesitation)
 				lastIU = rightBuffer.getBuffer().get(rightBuffer.getBuffer().size() - 2);
 			
-			TTSActionIU chunk = (TTSActionIU) lastIU;
+			ArticulatableIU chunk = (ArticulatableIU) lastIU;
 			
 			return new IUextended(chunk, hesIU);
 		}
@@ -175,7 +174,7 @@ public class IncrementalArticulator extends StandardArticulator {
 					if (lastIU.getProgress() != Progress.UPCOMING) continue;
 				}
 				
-				TTSActionIU chunk = (TTSActionIU) lastIU;
+				ArticulatableIU chunk = (ArticulatableIU) lastIU;
 				
 				upcoming.add(new IUextended(chunk, hesIU));
 			}
@@ -183,14 +182,14 @@ public class IncrementalArticulator extends StandardArticulator {
 			return upcoming;
 		}
 		
-		public void say(TTSAction action) {
-			String text = action.text;
+		public void say(Articulatable action) {
+			String text = action.getPreferredText();
 			boolean addHesitation = false;
 			if (text.matches(".*<hes>$")) {
 				text = text.replaceAll(" <hes>$", "");
 				addHesitation = true;
 			}
-			rightBuffer.addToBuffer(new TTSActionIU(text, action));
+			rightBuffer.addToBuffer(new ArticulatableIU(text, action));
 			if (addHesitation) {
 				rightBuffer.addToBuffer(new HesitationIU());
 			}
@@ -203,9 +202,9 @@ public class IncrementalArticulator extends StandardArticulator {
 	 * A ChunkIU, which contains a TTSAction. Used for getting 
 	 * the TTSAction and its type, etc.
 	 */
-	private static class TTSActionIU extends ChunkIU {
-		private TTSAction action;
-		public TTSActionIU(String chunkText, TTSAction action) {
+	private static class ArticulatableIU extends ChunkIU {
+		private Articulatable action;
+		public ArticulatableIU(String chunkText, Articulatable action) {
 			super(chunkText);
 			this.action = action;
 		}
