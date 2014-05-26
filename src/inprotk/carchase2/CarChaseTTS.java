@@ -190,7 +190,7 @@ public class CarChaseTTS {
 			if (continuationPossible && continuationAction != null)
 				finalAction = continuationAction;
 			
-			//CarChase.log("Articulator Say", finalAction.text);
+			CarChase.log("Articulator Say", finalAction);
 
 			articulator.printUpcoming();
 			// TODO: Implement this (less) important feature.
@@ -570,6 +570,10 @@ public class CarChaseTTS {
 		@Override
 		public boolean isOptional() {
 			return optional;
+		}
+		
+		public String toString() {
+			return "----\n--pr-" + preferred.text + "\n--sh-" + (shorter == null ? "null" : shorter.text);
 		}
 	}
 	
