@@ -124,7 +124,7 @@ public class CarChaseViewer extends PApplet {
 		stroke(255, 0, 0);
 		line(carPosition.x, carPosition.y, endPoint.x, endPoint.y);
 		ArrayList<WorldPoint> path = CarChase.get().configuration().getComingPath();
-		for (int i = 1; i < path.size(); i++) {
+		for (int i = 2; i < path.size(); i++) {
 			line(path.get(i - 1).x, path.get(i - 1).y, path.get(i).x, path.get(i).y);
 		}
 		
