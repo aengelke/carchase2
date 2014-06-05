@@ -61,9 +61,9 @@ public class CarChase {
 	}
 	
 	private Configuration makeConfig() {
-		// For non interactive:
-		// return new Configuration(getConfigFilename("config.txt"));
-		return new InteractiveConfiguration();
+		// For non-interactive:
+		return new Configuration(getConfigFilename("config.txt"));
+		// return new InteractiveConfiguration();
 	}
 	
 	public void init(String name) {
