@@ -16,8 +16,8 @@ Start: E-R, DorfstrasseR, -, 0
 --- direction, 0
 --- direction, 1
 --- direction, 2
---- direction, 0
---- direction, 0
+--- direction, 1
+--- direction, 1
 --- direction, 0
 --- direction, 0
 #--- direction, 0
