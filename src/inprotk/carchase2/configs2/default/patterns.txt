@@ -100,8 +100,8 @@ pt p1
 --cond#*WASJUNCTION#=#2
 --cond#*BIDIRECTIONAL#=#1
 --cond#*PREVSTREET#!#*STREET
---msg#T1#R4#F1#Cont1=biegt *LEFTRIGHT ab.
---msg#T3#R4#F1#Cont1=biegt in *FLEX1STREET.
+--msg#T1#R4#F1#Cont1=*LEFTRIGHT ab.
+--msg#T3#R4#F1#Cont1=in *FLEX1STREET.
 ++
 pt p1
 --cond#*DISTANCE#=#-5
@@ -109,8 +109,8 @@ pt p1
 --cond#*WASJUNCTION#=#2
 --cond#*BIDIRECTIONAL#=#1
 --cond#*PREVSTREET#!#*STREET
---msg#T1#R4#F1#Cont1=biegt *LEFTRIGHT ab.
---msg#T3#R4#F1#Cont1=biegt in *FLEX1STREET.
+--msg#T1#R4#F1#Cont1=*LEFTRIGHT ab.
+--msg#T3#R4#F1#Cont1=in *FLEX1STREET.
 ++
 # Nach Strassenwechsel, wenn keine Kreuzung:
 pt p1
