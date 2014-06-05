@@ -81,7 +81,7 @@ public class CarChaseViewer extends PApplet {
 		
 		if (!animating) return;
 		
-		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), (int) (speed * 20));
+		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
 
 		if (previousTimelinePosition > position) previousTimelinePosition = position;
 		if (previousTimelinePosition == position) return;
