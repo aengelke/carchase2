@@ -21,10 +21,11 @@ public abstract class Articulator {
 	public abstract boolean isSpeaking();
 	public abstract void autoRemoveUpcoming();
 	
-	public static interface Articulatable {
-		public String getPreferredText();
-		public String getShorterText();
-		public String getLongerText();
-		public boolean isOptional();
+	public static abstract class Articulatable {
+		public abstract String getPreferredText();
+		public abstract String getShorterText();
+		public abstract String getLongerText();
+		public abstract boolean isOptional();
+		public abstract boolean canFollow(Articulatable next);
 	}
 }

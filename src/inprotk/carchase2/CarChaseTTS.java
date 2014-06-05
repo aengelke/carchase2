@@ -540,7 +540,7 @@ public class CarChaseTTS {
 		}
 	}
 	
-	public static class CarChaseArticulatable implements Articulatable {
+	public static class CarChaseArticulatable extends Articulatable {
 		private TTSAction preferred, shorter, longer;
 		private boolean optional;
 		
@@ -552,24 +552,27 @@ public class CarChaseTTS {
 			this.optional = optional;
 		}
 
-		@Override
 		public String getPreferredText() {
 			return preferred.text;
 		}
 
-		@Override
 		public String getShorterText() {
+			if (shorter == null) return null;
 			return shorter.text;
 		}
 
-		@Override
 		public String getLongerText() {
+			if (longer == null) return null;
 			return longer.text;
 		}
 		
-		@Override
 		public boolean isOptional() {
 			return optional;
+		}
+
+		public boolean canFollow(Articulatable next) {
+			// TODO Auto-generated method stub
+			return false;
 		}
 		
 		public String toString() {
