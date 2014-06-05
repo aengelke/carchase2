@@ -23,6 +23,8 @@ public class IncrementalArticulator extends StandardArticulator {
 	private final DispatchStream dispatcher;
 	private final MyIUSource myIUSource;
 	
+	private ArrayList<Articulatable> articulates;
+	
 	public IncrementalArticulator(DispatchStream dispatcher) {
 		super(dispatcher);
 		this.dispatcher = dispatcher;
@@ -31,6 +33,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		myIUSource.addListener(synthesisModule);
 		myIUSource.addListener(new CurrentHypothesisViewer().show());
 		synthesisModule.addListener(new CurrentHypothesisViewer().show());
+		articulates = new ArrayList<Articulatable>();
 	}
 	
 	@Override
@@ -40,6 +43,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		// but rather the caller has to check whether he can.
 		
 		if (action == null) return;
+		articulates.add(action);
 		myIUSource.say(action);
 	}
 	
@@ -89,8 +93,10 @@ public class IncrementalArticulator extends StandardArticulator {
 		}
 		if (durationOverAll > 2)
 			for (IUextended iue : iues)
-				if (iue.action.isOptional())
+				if (iue.action.isOptional()) {
 					myIUSource.revoke(iue);
+					articulates.remove(iue.action);
+				}
 		CarChase.log("Reduced distance from", durationOverAll, "to", durationOverAll - durationCanRevoked);
 		//throw CarChase.notImplemented;
 	}
