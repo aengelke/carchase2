@@ -1,5 +1,8 @@
 # CarChase 2: text-generating component
 
+The natural language generation is based on a template-filling system, based on 
+structures which are called "patterns".
+
 The patterns for generating sentences or concatenations are parsed from a file. This
 file contains the definition of patterns. A pattern defines _many_ situations.
 Each pattern has a situation type and defines conditions and some message 
