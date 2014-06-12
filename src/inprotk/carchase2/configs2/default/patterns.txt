@@ -11,6 +11,8 @@
 #
 # Variables start with a *.
 #
+# Nice to have: "Du fährst auf die Kreuzung zu und biegst links ab..."
+#
 pt p1
 --cond#*DISTANCE#=#-200
 --cond#*DIRECTION#=#1
