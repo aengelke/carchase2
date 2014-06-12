@@ -33,12 +33,6 @@ public class IncrementalArticulator extends StandardArticulator {
 		articulates = new ArrayList<Articulatable>();
 	}
 	
-	public MyCurrentHypothesisViewer getHypothesisViewer() {
-		MyCurrentHypothesisViewer v = new MyCurrentHypothesisViewer();
-		synthesisModule.addListener(v);
-		return v;
-	}
-	
 	@Override
 	public void say(Articulatable action) {
 		// I now assume that the action is chosen intelligent.
