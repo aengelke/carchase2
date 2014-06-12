@@ -52,7 +52,9 @@ public class StandardArticulator extends Articulator {
 			throw new org.apache.commons.lang.NotImplementedException("StandardArticulator.MyIUSource is an IU source, it hence ignores its left buffer.");
 		}
 		public void say(Articulatable action) {
-			String text = action.getPreferredText();
+			if (action.isOptional() && dispatcher.isSpeaking())
+				return;
+			String text = action.getShorterText();
 			rightBuffer.addToBuffer(new ChunkIU(text));
 			rightBuffer.notify(iulisteners);
 		}
