@@ -13,7 +13,6 @@ import inpro.incremental.unit.IU;
 import inprotk.carchase2.CarChaseTTS.TTSAction;
 
 public class StandardArticulator extends Articulator {
-	private final SynthesisModule synthesisModule;
 	private final MyIUSource myIUSource;
 
 	public StandardArticulator(DispatchStream dispatcher) {
@@ -21,6 +20,12 @@ public class StandardArticulator extends Articulator {
 		synthesisModule = new SynthesisModule(dispatcher);
 		myIUSource = new MyIUSource();
 		myIUSource.addListener(synthesisModule);
+	}
+	
+	public MyCurrentHypothesisViewer getHypothesisViewer() {
+		MyCurrentHypothesisViewer v = new MyCurrentHypothesisViewer();
+		synthesisModule.addListener(v);
+		return v;
 	}
 
 	public void say(Articulatable action) {

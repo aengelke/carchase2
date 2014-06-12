@@ -42,6 +42,10 @@ public class CarChaseTTS {
 		}
 	}
 	
+	public MyCurrentHypothesisViewer getHypothesisViewer() {
+		return articulator.getHypothesisViewer();
+	}
+	
 	private void parsePatterns(String filename) throws Exception {
 		patterns = new ArrayList<Pattern>();
 		streetNames = new HashMap<String, StreetReplacement>();

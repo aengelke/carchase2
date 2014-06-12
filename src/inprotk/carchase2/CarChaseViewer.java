@@ -44,7 +44,7 @@ public class CarChaseViewer extends PApplet {
 		return 1024;
 	}
 	public int sketchHeight() {
-		return 768;
+		return 708;
 	}
 	public String sketchRenderer() {
 		return JAVA2D;
