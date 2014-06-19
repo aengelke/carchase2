@@ -93,6 +93,15 @@ public class IncrementalArticulator extends StandardArticulator {
 				if (iue.action.isOptional()) {
 					myIUSource.revoke(iue);
 					articulates.remove(iue.action);
+				} else {
+					try {
+						Articulatable next = articulates.get(articulates.indexOf(iue.action) + 1);
+						if (next == null) throw new Exception();
+						if (iue.action.canFollowOnShorterText(next))
+							myIUSource.useShorter(iue);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 		CarChase.log("Reduced distance from", durationOverAll, "to", durationOverAll - durationCanRevoked);
 		//throw CarChase.notImplemented;
@@ -127,6 +136,10 @@ public class IncrementalArticulator extends StandardArticulator {
 			throw CarChase.notImplemented;
 		}
 		
+		public void useShorter(IUextended iue) {
+			throw CarChase.notImplemented;
+		}
+
 		public IUextended getLastUpcoming() {
 			IUextended lastIU = getLast();
 			if (lastIU == null) return null;
@@ -167,7 +180,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		public ArrayList<IUextended> getAllUpcoming() {
 			ArrayList<IUextended> upcoming = new ArrayList<IUextended>();
 			for (int i = 0; i < rightBuffer.getBuffer().size(); i++)  {
-				IU lastIU = rightBuffer.getBuffer().get(i); // Its a ChunkIU
+				IU lastIU = rightBuffer.getBuffer().get(i); // Its an ArticulatableIU
 				
 				if (lastIU.getProgress() != Progress.UPCOMING) continue;
 				boolean hesitation = lastIU instanceof HesitationIU;
