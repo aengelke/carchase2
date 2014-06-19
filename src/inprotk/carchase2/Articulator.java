@@ -33,8 +33,7 @@ public abstract class Articulator {
 	public static abstract class Articulatable {
 		public abstract String getPreferredText();
 		public abstract String getShorterText();
-		public abstract String getLongerText();
 		public abstract boolean isOptional();
-		public abstract boolean canFollow(Articulatable next);
+		public abstract boolean canFollowOnShorterText(Articulatable next);
 	}
 }

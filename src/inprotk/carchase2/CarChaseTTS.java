@@ -486,7 +486,7 @@ public class CarChaseTTS {
 				return null;
 			}
 			
-			return new CarChaseArticulatable(preferred, shorter, preferred, optional);
+			return new CarChaseArticulatable(preferred, shorter, optional);
 		}
 		
 		public TTSAction[] matches() {
@@ -545,14 +545,12 @@ public class CarChaseTTS {
 	}
 	
 	public static class CarChaseArticulatable extends Articulatable {
-		private TTSAction preferred, shorter, longer;
+		private TTSAction preferred, shorter;
 		private boolean optional;
 		
-		public CarChaseArticulatable(TTSAction preferred, TTSAction shorter,
-				TTSAction longer, boolean optional) {
+		public CarChaseArticulatable(TTSAction preferred, TTSAction shorter, boolean optional) {
 			this.preferred = preferred;
 			this.shorter = shorter;
-			this.longer = longer;
 			this.optional = optional;
 		}
 
@@ -564,19 +562,17 @@ public class CarChaseTTS {
 			if (shorter == null) return null;
 			return shorter.text;
 		}
-
-		public String getLongerText() {
-			if (longer == null) return null;
-			return longer.text;
-		}
 		
 		public boolean isOptional() {
 			return optional;
 		}
 
-		public boolean canFollow(Articulatable next) {
-			// TODO Auto-generated method stub
-			return false;
+		public boolean canFollowOnShorterText(Articulatable next) {
+			if (!(next instanceof CarChaseArticulatable))
+				return false;
+			if (shorter == null)
+				return false;
+			return ((CarChaseArticulatable) next).preferred.typeStart.getType() == shorter.typeEnd.getType();
 		}
 		
 		public String toString() {
