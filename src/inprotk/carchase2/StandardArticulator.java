@@ -21,12 +21,6 @@ public class StandardArticulator extends Articulator {
 		myIUSource = new MyIUSource();
 		myIUSource.addListener(synthesisModule);
 	}
-	
-	public MyCurrentHypothesisViewer getHypothesisViewer() {
-		MyCurrentHypothesisViewer v = new MyCurrentHypothesisViewer();
-		synthesisModule.addListener(v);
-		return v;
-	}
 
 	public void say(Articulatable action) {
 		myIUSource.say(action);
@@ -54,7 +48,7 @@ public class StandardArticulator extends Articulator {
 		public void say(Articulatable action) {
 			if (action.isOptional() && dispatcher.isSpeaking())
 				return;
-			String text = action.getShorterText();
+			String text = action.getPreferredText();
 			rightBuffer.addToBuffer(new ChunkIU(text));
 			rightBuffer.notify(iulisteners);
 		}

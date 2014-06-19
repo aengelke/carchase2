@@ -12,7 +12,7 @@
 #
 # This is to test the revoking function!
 p1, Dorfstrasse, DxK, -60, Kreisel, -1, 0, y
---T1#F1#F1#Sent1=Dies ist nur ein Test, ob die Revoking Funktion zur Zurücknahme auch wirklich funktioniert.
---T2#F1#F1#Sent1=Dies ist nur ein Test, ob die Revoking Funktion zur Zurücknahme auch wirklich funktioniert.
+#--T1#F1#F1#Sent1=Dies ist nur ein Test, ob die Revoking Funktion zur Zurücknahme auch wirklich funktioniert.
+#--T2#F1#F1#Sent1=Dies ist nur ein Test, ob die Revoking Funktion zur Zurücknahme auch wirklich funktioniert.
 ++
 #
