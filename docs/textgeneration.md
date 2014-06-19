@@ -1,5 +1,8 @@
 # CarChase 2: text-generating component
 
+The natural language generation is based on a template-filling system, based on 
+structures which are called "patterns".
+
 The patterns for generating sentences or concatenations are parsed from a file. This
 file contains the definition of patterns. A pattern defines _many_ situations.
 Each pattern has a situation type and defines conditions and some message 
@@ -17,17 +20,6 @@ some messages.
 
 If there is a matching situation from the messages file, these will be preferred
 over automatically generated situations.
-
-## Situations
-Currently, there is only one situation type, more are coming in future. (Planned
-    situations are italic.) Every situation has an "optional" flag.
-
-| Type | Parameters |
-| ---- | ---------- |
-| Driving | Street, Previous-Street, Point, Distance to point, Direction, Previous-Direction |
-| _Beginning_ | Street, Point, Distance to Point, Speed |
-| _Path_ | Current Street, Previous Street 1, Previous Street 2, ... |
-| _Speed_ | Street, Speed, Old-Speed |
 
 ## Patterns
 As mentioned above, there are variables, that will be replaced at runtime. Every pattern
@@ -65,6 +57,18 @@ Here's a list of
 | prevspeed | previous speed |
 | _angle_ | The angle between the current and the previous street |
 | _leftright_ | after a junction: whether the car turns left or right |
+
+## Situations
+Currently, there is only one situation type, more are coming in future. (Planned
+    situations are written in italic.) Every situation has an "optional" flag.
+With the implementation of the patterns, situation definitions are barely used.
+
+| Type | Parameters |
+| ---- | ---------- |
+| Driving | Street, Previous-Street, Point, Distance to point, Direction, Previous-Direction |
+| _Beginning_ | Street, Point, Distance to Point, Speed |
+| _Path_ | Current Street, Previous Street 1, Previous Street 2, ... |
+| _Speed_ | Street, Speed, Old-Speed |
 
 ## Information level
 Messages with a higher information level usually take

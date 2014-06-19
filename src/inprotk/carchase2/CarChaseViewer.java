@@ -44,7 +44,7 @@ public class CarChaseViewer extends PApplet {
 		return 1024;
 	}
 	public int sketchHeight() {
-		return 768;
+		return 708;
 	}
 	public String sketchRenderer() {
 		return JAVA2D;
@@ -81,7 +81,7 @@ public class CarChaseViewer extends PApplet {
 		
 		if (!animating) return;
 		
-		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), (int) (speed * 20));
+		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
 
 		if (previousTimelinePosition > position) previousTimelinePosition = position;
 		if (previousTimelinePosition == position) return;
@@ -124,7 +124,7 @@ public class CarChaseViewer extends PApplet {
 		stroke(255, 0, 0);
 		line(carPosition.x, carPosition.y, endPoint.x, endPoint.y);
 		ArrayList<WorldPoint> path = CarChase.get().configuration().getComingPath();
-		for (int i = 1; i < path.size(); i++) {
+		for (int i = 2; i < path.size(); i++) {
 			line(path.get(i - 1).x, path.get(i - 1).y, path.get(i).x, path.get(i).y);
 		}
 		
@@ -164,9 +164,13 @@ public class CarChaseViewer extends PApplet {
 		scale(CAR_SCALE, CAR_SCALE);
 		image(car, 0, 0);
 		popMatrix();
-		
+
+		noStroke();
+		fill(255);
+		rect(0, 0, 120, 25, 0, 0, 10, 0);
 		fill(0);
-		text(CarChase.get().getTime() + "", 10, 10);
+		textAlign(RIGHT, TOP);
+		text(CarChase.get().getTime() + "ms", 100, 2);
 	}
 
 	
@@ -190,6 +194,7 @@ public class CarChaseViewer extends PApplet {
 		carAngle = carTargetAngle;
 		carTargetAngle = atan2(startPoint.x - endPoint.x, endPoint.y - startPoint.y);
 		
+		if (carTargetAngle < 0) carTargetAngle = carTargetAngle + TWO_PI;
 		if (Math.abs(carAngle - carTargetAngle) > Math.PI * 2 - Math.abs(carAngle - carTargetAngle))
 			carTargetAngle = carTargetAngle - PI * 2;
 		

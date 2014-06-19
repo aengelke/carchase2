@@ -1,4 +1,4 @@
-# Filename: config.txt         #
+# Filename: config2.txt        #
 # Author: Alexis Engelke 2014  #
 ################################
 #
@@ -10,14 +10,12 @@
 # ...
 #
 Start: E-R, DorfstrasseR, -, 0
---- speed, 2100, 1
---- speed, 6000, 2
---- speed, 7000, 3
+--- speed, 0, 3
+--- direction, 1
 --- direction, 0
---- direction, 1
+--- direction, 0
 --- direction, 2
---- direction, 1
---- direction, 1
+--- direction, 0
 --- direction, 0
 --- direction, 0
 #--- direction, 0

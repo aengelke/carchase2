@@ -1,5 +1,6 @@
 package inprotk.carchase2;
 
+import java.awt.BorderLayout;
 import java.awt.event.KeyListener;
 
 import inprotk.carchase2.CarChaseViewer.DriveAction;
@@ -32,9 +33,13 @@ public class CarChaseExperimenter2 {
 				public void run() {
 					frame = new JFrame("CarApp");
 					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					frame.setUndecorated(true);
+					frame.setSize(1024, 768);
 					viewer = new CarChaseViewer();
 					viewer.init();
-					frame.setContentPane(viewer);
+					frame.setLayout(new BorderLayout());
+					frame.add(CarChase.get().tts().getHypothesisViewer().getTextField(), BorderLayout.SOUTH);
+					frame.add(viewer, BorderLayout.CENTER);
 			        frame.pack();
 					frame.setVisible(true);
 					viewer.requestFocusInWindow();
@@ -108,7 +113,7 @@ public class CarChaseExperimenter2 {
 		} while (true);
 		
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 		}
 		System.exit(0);

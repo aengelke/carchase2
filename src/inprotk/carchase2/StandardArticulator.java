@@ -13,7 +13,6 @@ import inpro.incremental.unit.IU;
 import inprotk.carchase2.CarChaseTTS.TTSAction;
 
 public class StandardArticulator extends Articulator {
-	private final SynthesisModule synthesisModule;
 	private final MyIUSource myIUSource;
 
 	public StandardArticulator(DispatchStream dispatcher) {
@@ -23,15 +22,15 @@ public class StandardArticulator extends Articulator {
 		myIUSource.addListener(synthesisModule);
 	}
 
-	public void say(TTSAction action) {
+	public void say(Articulatable action) {
 		myIUSource.say(action);
 	}
 
-	public TTSAction getLastUpcoming() {
+	public Articulatable getLastUpcoming() {
 		return null;
 	}
 
-	public TTSAction getLast() {
+	public Articulatable getLast() {
 		return null;
 	}
 
@@ -46,8 +45,10 @@ public class StandardArticulator extends Articulator {
 				List<? extends EditMessage<? extends IU>> edits) {
 			throw new org.apache.commons.lang.NotImplementedException("StandardArticulator.MyIUSource is an IU source, it hence ignores its left buffer.");
 		}
-		public void say(TTSAction action) {
-			String text = action.text;
+		public void say(Articulatable action) {
+			if (action.isOptional() && dispatcher.isSpeaking())
+				return;
+			String text = action.getPreferredText();
 			rightBuffer.addToBuffer(new ChunkIU(text));
 			rightBuffer.notify(iulisteners);
 		}
