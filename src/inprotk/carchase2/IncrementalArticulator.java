@@ -88,7 +88,7 @@ public class IncrementalArticulator extends StandardArticulator {
 			if (iue.action.isOptional())
 				durationCanRevoked += iue.inner.duration();
 		}
-		if (durationOverAll > 2)
+		if (durationOverAll > .5)
 			for (IUextended iue : iues)
 				if (iue.action.isOptional()) {
 					myIUSource.revoke(iue);

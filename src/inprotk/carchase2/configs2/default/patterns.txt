@@ -13,7 +13,7 @@
 #
 # Nice to have: "Du fährst auf die Kreuzung zu und biegst links ab..."
 #
-pt p1
+pt p1, y
 --cond#*DISTANCE#=#-200
 --cond#*DIRECTION#=#1
 --cond#*ISJUNCTION#=#1
@@ -26,7 +26,7 @@ pt p1
 --msg#T2#R1#R3#Cont3=und fährt auf *FLEX1JUNCTIONSTREET zu und
 --msg#T3#R1#R3#Cont4=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 ++
-pt p1
+pt p1, y
 --cond#*DISTANCE#=#200
 --cond#*DIRECTION#=#-1
 --cond#*ISJUNCTION#=#1
@@ -38,7 +38,7 @@ pt p1
 --msg#T2#R1#R3#Cont2=und fährt auf die Kreuzung zu und
 --msg#T3#R1#R3#Cont3=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 ++
-pt p1
+pt p1, y
 --cond#*DISTANCE#=#200
 --cond#*DIRECTION#=#-1
 --cond#*ISJUNCTION#=#2
@@ -47,7 +47,7 @@ pt p1
 --msg#T1#R1#R4#Cont1=und erreicht die Kreuzung und biegt
 --msg#T2#R1#R4#Cont2=und fährt auf *FLEX1JUNCTIONSTREET zu und biegt
 ++
-pt p1
+pt p1, y
 --cond#*DISTANCE#=#-200
 --cond#*DIRECTION#=#1
 --cond#*ISJUNCTION#=#2
