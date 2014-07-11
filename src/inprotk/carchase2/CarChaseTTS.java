@@ -229,6 +229,10 @@ public class CarChaseTTS {
 			this.text = text;
 			this.optional = optional;
 		}
+		
+		public String toString() {
+			return "[TTSAction text=" + text + ",level=" + type.toString() + "]";
+		}
 	}
 	
 	public static enum MessageInformationLevel {
@@ -467,7 +471,7 @@ public class CarChaseTTS {
 						ArrayList<TTSAction> possibles = actions.get(lowerLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
 					}
-					if (actions.get(higherLevel).size() > 0) {
+					else if (actions.get(higherLevel).size() > 0) {
 						ArrayList<TTSAction> possibles = actions.get(higherLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
 					}
