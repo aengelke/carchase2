@@ -44,7 +44,7 @@ public class CarChaseViewer extends PApplet {
 		return 1024;
 	}
 	public int sketchHeight() {
-		return 708;
+		return 768;
 	}
 	public String sketchRenderer() {
 		return JAVA2D;
@@ -118,42 +118,43 @@ public class CarChaseViewer extends PApplet {
 		image(map, 0, 0);
 		if (carPosition == null) return;
 		
-		PVector decisionPoint = endPoint;//wp2vec(carPath.get(carPath.size() - 1));
-		
-		strokeWeight(5);
-		stroke(255, 0, 0);
-		line(carPosition.x, carPosition.y, endPoint.x, endPoint.y);
-		ArrayList<WorldPoint> path = CarChase.get().configuration().getComingPath();
-		for (int i = 2; i < path.size(); i++) {
-			line(path.get(i - 1).x, path.get(i - 1).y, path.get(i).x, path.get(i).y);
-		}
-		
-		WorldPoint last = null;
-		if (path.size() < 2) last = path.size() == 1 ? end : start;
-		else last = path.get(path.size() - 2);
-		WorldPoint current = null;
-		if (path.size() == 0) current = end;
-		else current = path.get(path.size() - 1);
-		ArrayList<WorldPoint> possibilities = CarChase.get().configuration().getPossibilities(last, current);
-		
-		decisionPoint = wp2vec(current);
-		for (int i = 0; i < possibilities.size(); i++) {
-			PVector p = wp2vec(possibilities.get(i));
-			float dist = min(p.dist(decisionPoint), 100);
-			float theta = PVector.sub(p, decisionPoint).heading();
-			float x = dist * cos(theta) + decisionPoint.x;
-			float y = dist * sin(theta) + decisionPoint.y;
-			stroke(255, 0, 0);
-			line(decisionPoint.x, decisionPoint.y, x, y);
-			fill(255);
-			if (!possibilities.get(i).equals(path.get(path.size() - 1)) && possibilities.size() != 1)
-				noStroke();
-			rect(x - 12, y - 12, 24, 24, 4);
-			fill(0);
-			textAlign(CENTER, CENTER);
-			text("" + i, x, y);
-			stroke(255, 0, 0);
-		}
+		// Don't show the path to the user.
+//		PVector decisionPoint = endPoint;//wp2vec(carPath.get(carPath.size() - 1));
+//		
+//		strokeWeight(5);
+//		stroke(255, 0, 0);
+//		line(carPosition.x, carPosition.y, endPoint.x, endPoint.y);
+//		ArrayList<WorldPoint> path = CarChase.get().configuration().getComingPath();
+//		for (int i = 2; i < path.size(); i++) {
+//			line(path.get(i - 1).x, path.get(i - 1).y, path.get(i).x, path.get(i).y);
+//		}
+//		
+//		WorldPoint last = null;
+//		if (path.size() < 2) last = path.size() == 1 ? end : start;
+//		else last = path.get(path.size() - 2);
+//		WorldPoint current = null;
+//		if (path.size() == 0) current = end;
+//		else current = path.get(path.size() - 1);
+//		ArrayList<WorldPoint> possibilities = CarChase.get().configuration().getPossibilities(last, current);
+//		
+//		decisionPoint = wp2vec(current);
+//		for (int i = 0; i < possibilities.size(); i++) {
+//			PVector p = wp2vec(possibilities.get(i));
+//			float dist = min(p.dist(decisionPoint), 100);
+//			float theta = PVector.sub(p, decisionPoint).heading();
+//			float x = dist * cos(theta) + decisionPoint.x;
+//			float y = dist * sin(theta) + decisionPoint.y;
+//			stroke(255, 0, 0);
+//			line(decisionPoint.x, decisionPoint.y, x, y);
+//			fill(255);
+//			if (!possibilities.get(i).equals(path.get(path.size() - 1)) && possibilities.size() != 1)
+//				noStroke();
+//			rect(x - 12, y - 12, 24, 24, 4);
+//			fill(0);
+//			textAlign(CENTER, CENTER);
+//			text("" + i, x, y);
+//			stroke(255, 0, 0);
+//		}
 		
 		// Render Car
 		pushMatrix();
@@ -164,13 +165,14 @@ public class CarChaseViewer extends PApplet {
 		scale(CAR_SCALE, CAR_SCALE);
 		image(car, 0, 0);
 		popMatrix();
-
-		noStroke();
-		fill(255);
-		rect(0, 0, 120, 25, 0, 0, 10, 0);
-		fill(0);
-		textAlign(RIGHT, TOP);
-		text(CarChase.get().getTime() + "ms", 100, 2);
+		
+		// Don't show the time to the user.
+//		noStroke();
+//		fill(255);
+//		rect(0, 0, 120, 25, 0, 0, 10, 0);
+//		fill(0);
+//		textAlign(RIGHT, TOP);
+//		text(CarChase.get().getTime() + "ms", 100, 2);
 	}
 
 	
