@@ -85,6 +85,7 @@ public class CarChaseExperimenter2 {
 		do {
 			int time = CarChase.get().getTime();
 			travelDuration = (int) ((1 - percent) * (nextPoint.distanceTo(startPoint) / config.getCurrentSpeed(time) - 10));
+			CarChase.log(startPoint, nextPoint, currentStreet, direction, travelDuration, (float) config.getCurrentSpeed(time), percent);
 			 
 			viewer.executeDriveAction(new DriveAction(startPoint, nextPoint, currentStreet, direction, travelDuration, (float) config.getCurrentSpeed(time), percent));
 			
@@ -94,7 +95,7 @@ public class CarChaseExperimenter2 {
 				} catch (InterruptedException e) {
 				}
 			}
-			
+			CarChase.log(lastEvent);
 			if (lastEvent == ConfigurationUpdateListener.PATH_COMPLETED) {
 				boolean keepRunning = config.update(time);
 				if (!keepRunning) break;

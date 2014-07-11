@@ -54,7 +54,7 @@ public class CarChaseViewer extends PApplet {
 		map = loadImage(CarChase.get().getConfigFilename("mapWithStreetNames.png"));
 		car = loadImage(CarChase.getFilename("data/car.png"));
 		textFont(createFont("ArialMT-Bold", 15));
-		frameRate(30);
+		frameRate(CarChase.get().frameRate());
 		prevSpeed = -1;
 	}
 	
@@ -65,10 +65,11 @@ public class CarChaseViewer extends PApplet {
 	}
 	
 	public void update() {
-		int millis = millis() - startMillis;
+		int millis = getTime() - startMillis;
 		float rotationPercent = map(millis, 0, rotationDuration, 0, 1);
 		rotationPercent = min(1, rotationPercent);
 		float position = map(millis, 0, transitionDuration, 0, 1);
+		CarChase.log(millis, rotationPercent, position, transitionDuration, animating);
 		if (position >= 1 && animating) {
 			CarChase.get().configuration().markDone();
 			animating = false;
@@ -173,8 +174,13 @@ public class CarChaseViewer extends PApplet {
 //		fill(0);
 //		textAlign(RIGHT, TOP);
 //		text(CarChase.get().getTime() + "ms", 100, 2);
+		println(frameRate);
+		//saveFrame("../processing-recordings/" + CarChase.get().getConfigName() + "/#####.png");
 	}
 
+	public int getTime() {
+		return CarChase.get().getTime();//parseInt(frameCount * 33.33333f);
+	}
 	
 	public void executeDriveAction(final DriveAction a) {
 		animating = true;
@@ -202,13 +208,13 @@ public class CarChaseViewer extends PApplet {
 		
 		rotationDuration = a.percent > 0 ? 0 : (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed));
 		transitionDuration = a.duration;
-		startMillis = millis() - millisToSkip;
+		startMillis = getTime() - millisToSkip;
 	}
 
 	public float interrupt() {
 		if (!animating) return 0;
 		animating = false;
-		float position = map(millis() - startMillis, 0, transitionDuration, 0, 1);
+		float position = map(getTime() - startMillis, 0, transitionDuration, 0, 1);
 		return position;
 	}
 	
