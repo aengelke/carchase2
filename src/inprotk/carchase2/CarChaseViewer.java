@@ -168,12 +168,23 @@ public class CarChaseViewer extends PApplet {
 		if (carAngle == -10) carAngle = carStartAngle = carTargetAngle;
 
 		carTargetAngle = (carTargetAngle + TWO_PI) % TWO_PI;
-		float angleDistance = min(abs(carTargetAngle - carAngle), abs(carAngle - carTargetAngle));
-		if (angleDistance > PI) carTargetAngle += TWO_PI;
+		carTargetAngle += (indexAbsMin(carTargetAngle - TWO_PI - carAngle, carTargetAngle - carAngle) - 1) * TWO_PI;
 		
 		rotationDuration = a.percent > 0 ? 0 : (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed));
 		transitionDuration = a.duration;
 		startMillis = getTime() - millisToSkip;
+	}
+	
+	private static int indexAbsMin(float a, float ... b) {
+		float min = abs(a);
+		int index = 0;
+		for (int i = 0; i < b.length; i++) {
+			if (abs(b[i]) < min) {
+				min = abs(b[i]);
+				index = i + 1;
+			}
+		}
+		return index;
 	}
 
 	public float interrupt() {
