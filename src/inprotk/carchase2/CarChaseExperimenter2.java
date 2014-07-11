@@ -80,12 +80,21 @@ public class CarChaseExperimenter2 {
 		int direction = config.direction;
 		int travelDuration;
 		float percent = 0;
-		viewer.initialize(Math.atan2(startPoint.y - nextPoint.y, startPoint.x - nextPoint.x));
+		
+		viewer.notifyOnSetup(this);
+		
+		synchronized(this) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
 		
 		do {
+			
 			int time = CarChase.get().getTime();
 			travelDuration = (int) ((1 - percent) * (nextPoint.distanceTo(startPoint) / config.getCurrentSpeed(time) - 10));
-			 
+			
 			viewer.executeDriveAction(new DriveAction(startPoint, nextPoint, currentStreet, direction, travelDuration, (float) config.getCurrentSpeed(time), percent));
 			
 			synchronized(this) {

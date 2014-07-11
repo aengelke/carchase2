@@ -37,6 +37,7 @@ public class CarChaseViewer extends PApplet {
 	private int previousDirection;
 	
 	private boolean animating;
+	private boolean setup;
 	
 	private float previousTimelinePosition;
 	
@@ -56,6 +57,11 @@ public class CarChaseViewer extends PApplet {
 		textFont(createFont("ArialMT-Bold", 15));
 		frameRate(CarChase.get().frameRate());
 		prevSpeed = -1;
+		carAngle = carStartAngle = carTargetAngle = -10;
+		setup = true;
+		synchronized(notified) {
+			if (notified != null) notified.notify();
+		}
 	}
 	
 	// Called on update
@@ -159,7 +165,7 @@ public class CarChaseViewer extends PApplet {
 		// Render Car
 		pushMatrix();
 		translate(carPosition.x, carPosition.y);
-		rotate(carAngle + PI);//, 
+		rotate(carAngle + HALF_PI);//, 
 		translate(-car.width / 2 * CAR_SCALE, -car.height / 2 * CAR_SCALE);
 		translate(25, -10);
 		scale(CAR_SCALE, CAR_SCALE);
@@ -198,11 +204,12 @@ public class CarChaseViewer extends PApplet {
 		
 		carStartAngle = carAngle;
 		carAngle = carTargetAngle;
-		carTargetAngle = atan2(startPoint.x - endPoint.x, endPoint.y - startPoint.y);
-		
-		if (carTargetAngle < 0) carTargetAngle = carTargetAngle + TWO_PI;
-		if (Math.abs(carAngle - carTargetAngle) > Math.PI * 2 - Math.abs(carAngle - carTargetAngle))
-			carTargetAngle = carTargetAngle - PI * 2;
+		carTargetAngle = atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
+		if (carAngle == -10) carAngle = carStartAngle = carTargetAngle;
+
+		carTargetAngle = (carTargetAngle + TWO_PI) % TWO_PI;
+		float angleDistance = min(abs(carTargetAngle - carAngle), abs(carAngle - carTargetAngle));
+		if (angleDistance > PI) carTargetAngle += TWO_PI;
 		
 		rotationDuration = a.percent > 0 ? 0 : (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed));
 		transitionDuration = a.duration;
@@ -242,5 +249,10 @@ public class CarChaseViewer extends PApplet {
 	
 	private static PVector wp2vec(WorldPoint p) {
 		return new PVector(p.x, p.y);
+	}
+	
+	private Object notified;
+	public void notifyOnSetup(Object o) {
+		notified = o;
 	}
 }
