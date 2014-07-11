@@ -69,7 +69,6 @@ public class CarChaseViewer extends PApplet {
 		float rotationPercent = map(millis, 0, rotationDuration, 0, 1);
 		rotationPercent = min(1, rotationPercent);
 		float position = map(millis, 0, transitionDuration, 0, 1);
-		CarChase.log(millis, rotationPercent, position, transitionDuration, animating);
 		if (position >= 1 && animating) {
 			CarChase.get().configuration().markDone();
 			animating = false;
@@ -174,7 +173,6 @@ public class CarChaseViewer extends PApplet {
 //		fill(0);
 //		textAlign(RIGHT, TOP);
 //		text(CarChase.get().getTime() + "ms", 100, 2);
-		println(frameRate);
 		//saveFrame("../processing-recordings/" + CarChase.get().getConfigName() + "/#####.png");
 	}
 
