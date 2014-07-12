@@ -470,10 +470,12 @@ public class CarChaseTTS {
 					if (actions.get(lowerLevel).size() > 0) {
 						ArrayList<TTSAction> possibles = actions.get(lowerLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
+						break;
 					}
 					else if (actions.get(higherLevel).size() > 0) {
 						ArrayList<TTSAction> possibles = actions.get(higherLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
+						break;
 					}
 				}
 			}
