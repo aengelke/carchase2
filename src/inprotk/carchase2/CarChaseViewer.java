@@ -168,7 +168,7 @@ public class CarChaseViewer extends PApplet {
 		if (carAngle == -10) carAngle = carStartAngle = carTargetAngle;
 
 		carTargetAngle = (carTargetAngle + TWO_PI) % TWO_PI;
-		carTargetAngle += (indexAbsMin(carTargetAngle - TWO_PI - carAngle, carTargetAngle - carAngle) - 1) * TWO_PI;
+		carTargetAngle += (indexAbsMin(carTargetAngle - TWO_PI - carAngle, carTargetAngle - carAngle, carTargetAngle + TWO_PI - carAngle) - 1) * TWO_PI;
 		
 		rotationDuration = a.percent > 0 ? 0 : (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed));
 		transitionDuration = a.duration;
