@@ -1,5 +1,6 @@
 package inprotk.carchase2;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class CarChaseViewer extends PApplet {
 	private PImage map;
 	private PImage car;
 	private PVector carPosition;
+	private ArrayDeque<PVector> carPositions;
 	private PVector startPoint;
 	private PVector endPoint;
 	private float carAngle;
@@ -61,6 +63,9 @@ public class CarChaseViewer extends PApplet {
 		prevSpeed = -1;
 		carAngle = carStartAngle = carTargetAngle = -10;
 		setup = true;
+		carPositions = new ArrayDeque<>();
+		for (int i = 0; i < 15; i++)
+			carPositions.addLast(new PVector(0, 0));
 		synchronized(objectToNotifyOnSetup) {
 			if (objectToNotifyOnSetup != null) objectToNotifyOnSetup.notify();
 		}
@@ -127,15 +132,30 @@ public class CarChaseViewer extends PApplet {
 		
 		// Render Car
 		pushMatrix();
-		translate(carPosition.x, carPosition.y);
-		rotate(carAngle + HALF_PI);//, 
+		translate(carPositions.peekLast().x, carPositions.peekLast().y);//carPosition.x, carPosition.y);
+		rotate(carAngle + HALF_PI);
 		translate(-car.width / 2 * CAR_SCALE, -car.height / 2 * CAR_SCALE);
-		translate(25, -10);
-		scale(CAR_SCALE, CAR_SCALE);
-		image(car, 0, 0);
+		carPositions.addLast(new PVector(screenX(8+25,13+14),screenY(8+25,13+14)));
 		popMatrix();
 		
-		//saveFrame("../processing-recordings/" + CarChase.get().getConfigName() + "/#####.png");
+		float theta = PVector.sub(carPositions.peekLast(), carPositions.peekFirst()).heading()*.8f+(carAngle-HALF_PI-PI)*.2f;
+		println(PVector.sub(carPositions.peekLast(), carPositions.peekFirst()).heading(), carAngle-HALF_PI);
+		pushMatrix();
+		translate(carPosition.x, carPosition.y);
+		rotate(theta + 0);
+		translate(-car.width / 2 * CAR_SCALE, -car.height / 2 * CAR_SCALE);
+		translate(25, 30);
+		scale(CAR_SCALE, CAR_SCALE);
+		image(car, 0, 0);
+		stroke(0,255,0);
+		popMatrix();
+
+		//stroke(0,255,0);
+		//line(carPositions.peekFirst().x, carPositions.peekFirst().y, carPositions.peekLast().x, carPositions.peekLast().y);
+		carPositions.removeFirst();
+		
+		//println(oldP, carPositionP);
+		//saveFrame("../processing-recordings/v2/" + CarChase.get().getConfigName() + "/#####.png");
 	}
 
 	public int getTime() {
@@ -158,6 +178,10 @@ public class CarChaseViewer extends PApplet {
 		
 		startPoint = wp2vec(a.start); // the start position is the previous' target
 		endPoint = wp2vec(a.end);
+		float theta = PVector.sub(startPoint, endPoint).heading();
+		float x = 15 * cos(theta) + endPoint.x;
+		float y = 15 * sin(theta) + endPoint.y;
+		//endPoint = new PVector(x, y);
 		
 		final int millisToSkip = a.percent > 0 ? (int) (a.duration * a.percent) : 0;
 		previousTimelinePosition = a.percent > 0 ? a.percent : 0;
