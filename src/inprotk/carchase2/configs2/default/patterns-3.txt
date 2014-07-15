@@ -147,7 +147,7 @@ pt p1
 --msg#T3#R1#F1#Cont1=und fährt weiter in *FLEX1STREET.
 --msg#T2#R1#F1#Cont2=und fährt in *FLEX1STREET.
 --msg#T1#R1#F1#Cont3=und in *FLEX1STREET.
---msg#T1#R2#F1#Cont4=in *FLEX1STREET.
+--msg#T1#R4#F1#Cont4=in *FLEX1STREET.
 --msg#T2#R2#F1#Cont5=weiter in *FLEX1STREET.
 --msg#T1#R2#F1#Cont6=fährt in *FLEX1STREET.
 --msg#T2#R3#F1#Cont7=und fährt in *FLEX1STREET.
@@ -161,7 +161,7 @@ pt p1
 --msg#T3#R1#F1#Cont1=und fährt weiter in *FLEX1STREET.
 --msg#T2#R1#F1#Cont2=und fährt in *FLEX1STREET.
 --msg#T1#R1#F1#Cont3=und in *FLEX1STREET.
---msg#T1#R2#F1#Cont4=in *FLEX1STREET.
+--msg#T1#R4#F1#Cont4=in *FLEX1STREET.
 --msg#T2#R2#F1#Cont5=weiter in *FLEX1STREET.
 --msg#T1#R2#F1#Cont6=fährt in *FLEX1STREET.
 --msg#T2#R3#F1#Cont7=und fährt in *FLEX1STREET.
