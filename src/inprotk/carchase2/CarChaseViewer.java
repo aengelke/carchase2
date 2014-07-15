@@ -1,12 +1,11 @@
 package inprotk.carchase2;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-
 import inprotk.carchase2.Configuration.CarState;
 import inprotk.carchase2.World.Street;
 import inprotk.carchase2.World.WorldPoint;
+
+import java.util.LinkedList;
+
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -15,31 +14,30 @@ public class CarChaseViewer extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	private static final float CAR_SCALE = 1f / 4.3f;
+	private static final int CURVE_WIDTH = 30;
+	
+	private LinkedList<Segment> segments;
 	
 	private PImage map;
 	private PImage car;
-	private PVector carPosition;
-	private ArrayDeque<PVector> carPositions;
-	private PVector startPoint;
-	private PVector endPoint;
-	private float carAngle;
-	private float carStartAngle;
-	private float carTargetAngle;
-	private int rotationDuration;
-	private int transitionDuration;
-	private int startMillis;
+
+	private WorldPoint start;
+	private WorldPoint end;
 	
 	private Street previousStreet;
 	private Street currentStreet;
-	private WorldPoint start;
-	private WorldPoint end;
 	private int speed;
 	private int prevSpeed;
 	private int direction;
 	private int previousDirection;
 	
+	private float carAngle;
+	private PVector carPosition;
+	
+	private int startMillis;
+	private int duration;
+	
 	private boolean animating;
-	private boolean setup;
 	
 	private float previousTimelinePosition;
 
@@ -61,14 +59,12 @@ public class CarChaseViewer extends PApplet {
 		textFont(createFont("ArialMT-Bold", 15));
 		frameRate(CarChase.get().frameRate());
 		prevSpeed = -1;
-		carAngle = carStartAngle = carTargetAngle = -10;
-		setup = true;
-		carPositions = new ArrayDeque<>();
-		for (int i = 0; i < 15; i++)
-			carPositions.addLast(new PVector(0, 0));
+		carAngle = -10;
+		segments = new LinkedList<>();
 		synchronized(objectToNotifyOnSetup) {
 			if (objectToNotifyOnSetup != null) objectToNotifyOnSetup.notify();
 		}
+		image(map, 0, 0);
 	}
 	
 	// Called on update
@@ -78,22 +74,28 @@ public class CarChaseViewer extends PApplet {
 	}
 	
 	public void update() {
-		int millis = getTime() - startMillis;
-		float rotationPercent = map(millis, 0, rotationDuration, 0, 1);
-		rotationPercent = min(1, rotationPercent);
-		float position = map(millis, 0, transitionDuration, 0, 1);
-		if (position >= 1 && animating) {
-			CarChase.get().configuration().markDone();
-			animating = false;
-			position = 1;
+		if (segments.size() == 0) return;
+		Segment segment = segments.peek();
+		
+		if (segment.getPosition() >= 1 && animating) {
+			segments.pop();
+			if (segments.size() == 0) {
+				CarChase.get().configuration().markDone();
+				animating = false;
+			}
 		}
-		
-		carAngle = lerp(carStartAngle, carTargetAngle, rotationPercent);
-		carPosition = PVector.lerp(startPoint, endPoint, position);
-		
+
 		if (!animating) return;
 		
+		segment.update();
+		
+		float position = segment.getPosition();
+		
 		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
+		
+		println(segment instanceof CircleSegment, position);
+		
+		if (segment instanceof CircleSegment) return;
 
 		if (previousTimelinePosition > position) previousTimelinePosition = position;
 		if (previousTimelinePosition == position) return;
@@ -128,34 +130,25 @@ public class CarChaseViewer extends PApplet {
 	public void render() {
 		background(255);
 		image(map, 0, 0);
-		if (carPosition == null) return;
+		if (segments.size() == 0) return;
 		
 		// Render Car
-		pushMatrix();
-		translate(carPositions.peekLast().x, carPositions.peekLast().y);//carPosition.x, carPosition.y);
-		rotate(carAngle + HALF_PI);
-		translate(-car.width / 2 * CAR_SCALE, -car.height / 2 * CAR_SCALE);
-		carPositions.addLast(new PVector(screenX(8+25,13+14),screenY(8+25,13+14)));
-		popMatrix();
 		
-		float theta = PVector.sub(carPositions.peekLast(), carPositions.peekFirst()).heading()*.8f+(carAngle-HALF_PI-PI)*.2f;
-		println(PVector.sub(carPositions.peekLast(), carPositions.peekFirst()).heading(), carAngle-HALF_PI);
+		carAngle = segments.peek().getAngle();
+		carPosition = segments.peek().getAbsCarPosition();
+		
 		pushMatrix();
 		translate(carPosition.x, carPosition.y);
-		rotate(theta + 0);
+		rotate(carAngle + HALF_PI);
 		translate(-car.width / 2 * CAR_SCALE, -car.height / 2 * CAR_SCALE);
-		translate(25, 30);
+		translate(25, 0);
 		scale(CAR_SCALE, CAR_SCALE);
 		image(car, 0, 0);
 		stroke(0,255,0);
 		popMatrix();
-
-		//stroke(0,255,0);
-		//line(carPositions.peekFirst().x, carPositions.peekFirst().y, carPositions.peekLast().x, carPositions.peekLast().y);
-		carPositions.removeFirst();
 		
-		//println(oldP, carPositionP);
-		//saveFrame("../processing-recordings/v2/" + CarChase.get().getConfigName() + "/#####.png");
+		if (CarChase.get().frameRate() < 6)
+			saveFrame("../processing-recordings/v3/" + CarChase.get().getConfigName() + "/#####.png");
 	}
 
 	public int getTime() {
@@ -167,6 +160,7 @@ public class CarChaseViewer extends PApplet {
 	}
 	
 	public void executeDriveAction(final DriveAction a) {
+		if (a.percent > 0) segments.clear();
 		animating = true;
 		previousStreet = currentStreet == null ? a.street : currentStreet;
 		currentStreet = a.street;
@@ -176,26 +170,30 @@ public class CarChaseViewer extends PApplet {
 		previousDirection = direction;
 		direction = a.direction;
 		
-		startPoint = wp2vec(a.start); // the start position is the previous' target
-		endPoint = wp2vec(a.end);
-		float theta = PVector.sub(startPoint, endPoint).heading();
-		float x = 15 * cos(theta) + endPoint.x;
-		float y = 15 * sin(theta) + endPoint.y;
-		//endPoint = new PVector(x, y);
-		
-		final int millisToSkip = a.percent > 0 ? (int) (a.duration * a.percent) : 0;
+		final int millisToSkip = a.percent > 0 ? (int) (lineDuration(start, end, a.speed) * a.percent) : 0;
 		previousTimelinePosition = a.percent > 0 ? a.percent : 0;
 		
-		carStartAngle = carAngle;
-		carAngle = carTargetAngle;
-		carTargetAngle = atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
+		float carStartAngle = carAngle;
+		float carTargetAngle = atan2(end.y - start.y, end.x - start.x);
 		if (carAngle == -10) carAngle = carStartAngle = carTargetAngle;
 
 		carTargetAngle = (carTargetAngle + TWO_PI) % TWO_PI;
 		carTargetAngle += (indexAbsMin(carTargetAngle - TWO_PI - carAngle, carTargetAngle - carAngle, carTargetAngle + TWO_PI - carAngle) - 1) * TWO_PI;
 		
-		rotationDuration = a.percent > 0 ? 0 : (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed));
-		transitionDuration = a.duration;
+		int rotationDuration = 0;
+		if (carStartAngle != carTargetAngle && a.percent == 0) {
+			rotationDuration = (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed));
+			segments.add(new CircleSegment(start, rotationDuration, getTime() - millisToSkip, carStartAngle, carTargetAngle));
+		}
+		
+		segments.add(new LineSegment(start, end, a.speed, getTime() - millisToSkip + rotationDuration));
+		
+		println("PROCESSED", start.name, end.name, speed, getTime() - millisToSkip + rotationDuration);
+		if (a.percent > 0) {
+			println("@", a.percent, getTime() - millisToSkip + rotationDuration, getTime());
+		}
+
+		duration = rotationDuration + segments.peekLast().duration;
 		startMillis = getTime() - millisToSkip;
 	}
 	
@@ -214,12 +212,12 @@ public class CarChaseViewer extends PApplet {
 	public float interrupt() {
 		if (!animating) return 0;
 		animating = false;
-		float position = map(getTime() - startMillis, 0, transitionDuration, 0, 1);
+		float position = map(getTime() - startMillis, 0, duration, 0, 1);
 		return position;
 	}
 	
 	public static class DriveAction {
-		public int duration, direction;
+		public int /*duration, */direction;
 		public float speed;
 		public WorldPoint start, end;
 		public Street street;
@@ -229,7 +227,7 @@ public class CarChaseViewer extends PApplet {
 			this.start = start;
 			this.end = end;
 			this.direction = direction;
-			this.duration = duration;
+			//this.duration = duration;
 			this.speed = speed;
 			this.street = street;
 			this.percent = percent;
@@ -238,5 +236,121 @@ public class CarChaseViewer extends PApplet {
 	
 	private static PVector wp2vec(WorldPoint p) {
 		return new PVector(p.x, p.y);
+	}
+	
+	private abstract class Segment {
+		protected PVector startPoint;
+		protected PVector endPoint;
+		protected PVector carPosition;
+		protected int duration;
+		protected int startTime;
+		protected float carAngle;
+		
+		public Segment(WorldPoint start, WorldPoint end, int duration, int startTime) {
+			startPoint = wp2vec(start);
+			endPoint = wp2vec(end);
+			this.duration = duration;
+			this.startTime = startTime;
+			carAngle = -100;
+		}
+		
+		public abstract void update();
+		
+		public PVector getAbsCarPosition() {
+			if (carPosition == null) update();
+			return carPosition;
+		}
+		
+		public float getAngle() {
+			if (carAngle == -100) update();
+			return carAngle;
+		}
+		
+		public float getPosition() { 
+			int millis = getTime() - startTime;
+			return map(millis, 0, duration, 0, 1);
+		}
+	}
+	
+	private class LineSegment extends Segment {
+		public LineSegment(WorldPoint start, WorldPoint end, float speed, int startTime) {
+			super(start, end, -1, startTime);
+			float theta = PVector.sub(endPoint, startPoint).heading();
+			float x = -CURVE_WIDTH * cos(theta) + endPoint.x;
+			float y = -CURVE_WIDTH * sin(theta) + endPoint.y;
+			this.endPoint = new PVector(x, y);
+			x = CURVE_WIDTH * cos(theta) + startPoint.x;
+			y = CURVE_WIDTH * sin(theta) + startPoint.y;
+			this.startPoint = new PVector(x, y);
+			carAngle = theta;
+			this.duration = lineDuration(start, end, speed);
+		}
+
+		@Override
+		public void update() {
+			this.carPosition = PVector.lerp(startPoint, endPoint, getPosition());
+		}
+	}
+	
+	private class CircleSegment extends Segment {
+		private PVector mid;
+		private float radius;
+		private float angleStart, angleEnd;
+		private boolean inverse;
+
+		public CircleSegment(WorldPoint pt, int duration,
+				int startTime, float anglePr, float angleNe) {
+			super(pt, pt, duration, startTime);
+			float x = CURVE_WIDTH * cos(angleNe) + pt.x;
+			float y = CURVE_WIDTH * sin(angleNe) + pt.y;
+			this.endPoint = new PVector(x, y);
+			x = -CURVE_WIDTH * cos(anglePr) + pt.x;
+			y = -CURVE_WIDTH * sin(anglePr) + pt.y;
+			this.startPoint = new PVector(x, y);
+			
+			this.angleStart = anglePr;
+			this.angleEnd = angleNe;
+			
+			inverse = angleStart < angleEnd;
+			
+			radius = cotan(angleDistance(angleStart, angleEnd)/ 2)*CURVE_WIDTH*2;
+			mid = PVector.add(PVector.mult(PVector.fromAngle(angleStart + HALF_PI * (inverse ? 1 : -1)), radius/2), startPoint);
+			
+			if (inverse) {
+				angleStart += PI;
+				angleEnd += PI;
+			}
+		}
+
+		@Override
+		public void update() {
+			carAngle = map(getPosition(), 0, 1, angleStart, angleEnd);
+			this.carPosition = PVector.add(PVector.mult(PVector.fromAngle(carAngle+HALF_PI), radius / 2), mid);
+			carAngle -=  inverse ? PI : 0;
+		}
+		
+	}
+	
+	private float angleDistance(float angle1, float angle2) {
+		float dist1 = angle1 - angle2;
+		float dist2 = TWO_PI - angle2 + angle1;
+		return min(abs(dist1), abs(dist2));
+	}
+	
+	private float cotan(float f) {
+		return 1/tan(f);
+	}
+	
+	private int lineDuration(WorldPoint start, WorldPoint end, float speed) {
+		PVector startPoint = wp2vec(start), endPoint = wp2vec(end);
+		float theta = PVector.sub(endPoint, startPoint).heading();
+		float x = -CURVE_WIDTH * cos(theta) + endPoint.x;
+		float y = -CURVE_WIDTH * sin(theta) + endPoint.y;
+		endPoint = new PVector(x, y);
+		x = CURVE_WIDTH * cos(theta) + startPoint.x;
+		y = CURVE_WIDTH * sin(theta) + startPoint.y;
+		startPoint = new PVector(x, y);
+		carAngle = theta;
+		return (int) (startPoint.dist(endPoint) / speed);
 	}
 }

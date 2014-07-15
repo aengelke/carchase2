@@ -39,7 +39,7 @@ pt p1, y
 --msg#T3#R1#R3#Cont3=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 ++
 pt p1, y
---cond#*DISTANCE#=#200
+--cond#*DISTANCE#=#170
 --cond#*DIRECTION#=#-1
 --cond#*ISJUNCTION#=#2
 # Ideally, there would be a <hes> at the end...
@@ -48,7 +48,7 @@ pt p1, y
 --msg#T2#R1#R4#Cont2=und fährt auf *FLEX1JUNCTIONSTREET zu und biegt
 ++
 pt p1, y
---cond#*DISTANCE#=#-200
+--cond#*DISTANCE#=#-170
 --cond#*DIRECTION#=#1
 --cond#*ISJUNCTION#=#2
 # Ideally, there would be a <hes> at the end...
