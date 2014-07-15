@@ -41,7 +41,7 @@ Point: K-2, 750, 320
 Street: Breite Strasse, 1, B-T, BxF, BxD, B-B
 Street: Dorfstrasse, 1, D-L, BxD, DxK
 Street: Tierparkallee, 1, T-T, TxF, TxK
-Street: Kreisel, 0, TxK, K-1, DxK, IxK, AxK, ExK, K-2, TxK
+Street: Kreisel, 0, TxK, DxK, IxK, AxK, ExK, TxK
 Street: DorfstrasseR, 1, ExK, E-R
 Street: Kirchstrasse, 1, IxK, I-B
 Street: Bahnhofstrasse, 1, AxK, A-B

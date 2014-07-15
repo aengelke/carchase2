@@ -14,7 +14,7 @@ public class CarChaseViewer extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	private static final float CAR_SCALE = 1f / 4.3f;
-	private static final int CURVE_WIDTH = 30;
+	private static final int CURVE_WIDTH = 50;
 	
 	private LinkedList<Segment> segments;
 	
@@ -93,8 +93,6 @@ public class CarChaseViewer extends PApplet {
 		
 		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
 		
-		println(segment instanceof CircleSegment, position);
-		
 		if (segment instanceof CircleSegment) return;
 
 		if (previousTimelinePosition > position) previousTimelinePosition = position;
@@ -141,14 +139,14 @@ public class CarChaseViewer extends PApplet {
 		translate(carPosition.x, carPosition.y);
 		rotate(carAngle + HALF_PI);
 		translate(-car.width / 2 * CAR_SCALE, -car.height / 2 * CAR_SCALE);
-		translate(25, 0);
+		translate(20, 0);
 		scale(CAR_SCALE, CAR_SCALE);
 		image(car, 0, 0);
 		stroke(0,255,0);
 		popMatrix();
 		
 		if (CarChase.get().frameRate() < 6)
-			saveFrame("../processing-recordings/v3/" + CarChase.get().getConfigName() + "/#####.png");
+			saveFrame("../processing-recordings/v3fun/" + CarChase.get().getConfigName() + "/#####.png");
 	}
 
 	public int getTime() {
@@ -187,11 +185,6 @@ public class CarChaseViewer extends PApplet {
 		}
 		
 		segments.add(new LineSegment(start, end, a.speed, getTime() - millisToSkip + rotationDuration));
-		
-		println("PROCESSED", start.name, end.name, speed, getTime() - millisToSkip + rotationDuration);
-		if (a.percent > 0) {
-			println("@", a.percent, getTime() - millisToSkip + rotationDuration, getTime());
-		}
 
 		duration = rotationDuration + segments.peekLast().duration;
 		startMillis = getTime() - millisToSkip;
