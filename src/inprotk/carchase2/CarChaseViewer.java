@@ -92,7 +92,7 @@ public class CarChaseViewer extends PApplet {
 		
 		float position = segment.getPosition();
 		
-		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
+		//CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
 		
 		if (segment instanceof CircleSegment) return;
 
@@ -182,7 +182,7 @@ public class CarChaseViewer extends PApplet {
 		int rotationDuration = 0;
 		if (carStartAngle != carTargetAngle && a.percent == 0) {
 			boolean inverse = carStartAngle < carTargetAngle;
-			rotationDuration = (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed) * (!inverse ? 1.4 : 1.2));
+			rotationDuration = (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed) * (!inverse ? 1.4 : 1.8));
 			segments.add(new CircleSegment(start, rotationDuration, getTime() - millisToSkip, carStartAngle, carTargetAngle));
 		}
 		
