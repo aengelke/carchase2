@@ -29,9 +29,9 @@ Point: T-T, 688, -50
 Point: TxF, 688, 97
 Point: TxK, 688, 295
 Point: DxK, 600, 380
-Point: IxK, 640, 460
-Point: I-B, 490, 720
-Point: AxK, 740, 460
+Point: IxK, 640, 470
+Point: I-B, 425, 831
+Point: AxK, 740, 470
 Point: A-B, 890, 720
 Point: ExK, 770, 380
 Point: E-R, 1050, 380

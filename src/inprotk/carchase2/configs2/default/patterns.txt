@@ -44,6 +44,7 @@ pt p1, y
 --cond#*ISJUNCTION#=#2
 # Ideally, there would be a <hes> at the end...
 --msg#T2#F1#R4#Sent3=Das Auto fährt auf *FLEX1JUNCTIONSTREET zu und biegt
+--msg#T1#F1#R4#Sent4=Es erreicht *FLEX1JUNCTIONSTREET und biegt
 --msg#T1#R1#R4#Cont1=und erreicht die Kreuzung und biegt
 --msg#T2#R1#R4#Cont2=und fährt auf *FLEX1JUNCTIONSTREET zu und biegt
 ++
@@ -53,6 +54,7 @@ pt p1, y
 --cond#*ISJUNCTION#=#2
 # Ideally, there would be a <hes> at the end...
 --msg#T2#F1#R4#Sent3=Das Auto fährt auf *FLEX1JUNCTIONSTREET zu und biegt
+--msg#T1#F1#R4#Sent4=Es erreicht *FLEX1JUNCTIONSTREET und biegt
 --msg#T1#R1#R4#Cont1=und erreicht die Kreuzung und biegt
 --msg#T2#R1#R4#Cont2=und fährt auf *FLEX1JUNCTIONSTREET zu und biegt
 ++
@@ -63,7 +65,7 @@ pt p1
 --cond#*WASJUNCTION#=#1
 --cond#*PREVSTREET#!#*STREET
 --msg#T1#R3#F1#Cont1=biegt *LEFTRIGHT ab.
---msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
+#--msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
 ++
 pt p1
 --cond#*DISTANCE#=#-5
@@ -71,7 +73,7 @@ pt p1
 --cond#*WASJUNCTION#=#1
 --cond#*PREVSTREET#!#*STREET
 --msg#T1#R3#F1#Cont1=biegt *LEFTRIGHT ab.
---msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
+#--msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
 ++
 pt p1
 --cond#*DISTANCE#=#5
@@ -102,8 +104,8 @@ pt p1
 --cond#*WASJUNCTION#=#2
 --cond#*BIDIRECTIONAL#=#1
 --cond#*PREVSTREET#!#*STREET
---msg#T1#R4#F1#Cont1=*LEFTRIGHT ab.
---msg#T3#R4#F1#Cont1=in *FLEX1STREET.
+--msg#T1#R4#F1#Cont1=*LEFTRIGHT hinein.
+#--msg#T3#R4#F1#Cont1=in *FLEX1STREET.
 ++
 pt p1
 --cond#*DISTANCE#=#-5
@@ -111,8 +113,8 @@ pt p1
 --cond#*WASJUNCTION#=#2
 --cond#*BIDIRECTIONAL#=#1
 --cond#*PREVSTREET#!#*STREET
---msg#T1#R4#F1#Cont1=*LEFTRIGHT ab.
---msg#T3#R4#F1#Cont1=in *FLEX1STREET.
+--msg#T1#R4#F1#Cont1=*LEFTRIGHT hinein.
+#--msg#T3#R4#F1#Cont1=in *FLEX1STREET.
 ++
 # Nach Strassenwechsel, wenn keine Kreuzung:
 pt p1
