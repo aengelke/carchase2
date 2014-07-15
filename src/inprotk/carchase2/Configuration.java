@@ -271,11 +271,12 @@ public class Configuration {
 		public final int currentDistance;
 		public final int speed;
 		public final int prevSpeed;
+		public final int lr;
 		
 		public CarState(String streetName, String prevStreetName,
 				String prevPointName, String nextPointName, String pointName,
 				int direction, int prevDirection, int previousDistance,
-				int currentDistance, int speed, int prevSpeed) {
+				int currentDistance, int speed, int prevSpeed, int lr) {
 			this.streetName = streetName;
 			this.prevStreetName = prevStreetName;
 			this.nextPointName = nextPointName;
@@ -287,6 +288,7 @@ public class Configuration {
 			this.currentDistance = currentDistance;
 			this.speed = speed;
 			this.prevSpeed = prevSpeed;
+			this.lr = lr;
 		}
 	}
 }

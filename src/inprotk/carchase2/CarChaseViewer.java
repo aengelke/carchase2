@@ -33,6 +33,7 @@ public class CarChaseViewer extends PApplet {
 	
 	private float carAngle;
 	private PVector carPosition;
+	private int leftright;
 	
 	private int startMillis;
 	private int duration;
@@ -115,8 +116,8 @@ public class CarChaseViewer extends PApplet {
 		
 		CarChaseTTS tts = CarChase.get().tts();
 		
-		CarState state1 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, start.name, direction, previousDirection, prevDistance1, distance1, speed, prevSpeed); 
-		CarState state2 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, end.name, direction, previousDirection, prevDistance2, distance2, speed, prevSpeed); 
+		CarState state1 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, start.name, direction, previousDirection, prevDistance1, distance1, speed, prevSpeed, leftright); 
+		CarState state2 = new CarState(currentStreet.name, previousStreet.name, start.name, end.name, end.name, direction, previousDirection, prevDistance2, distance2, speed, prevSpeed, leftright); 
 		
 		tts.matchAndTrigger(state1);
 		tts.matchAndTrigger(state2);
@@ -146,7 +147,7 @@ public class CarChaseViewer extends PApplet {
 		popMatrix();
 		
 		if (CarChase.get().frameRate() < 6)
-			saveFrame("../processing-recordings/v3fun/" + CarChase.get().getConfigName() + "/#####.png");
+			saveFrame("../processing-recordings/v4/" + CarChase.get().getConfigName() + "/#####.png");
 	}
 
 	public int getTime() {
@@ -189,6 +190,8 @@ public class CarChaseViewer extends PApplet {
 
 		duration = rotationDuration + segments.peekLast().duration;
 		startMillis = getTime() - millisToSkip;
+		
+		leftright = carStartAngle > carTargetAngle ? 1 : 2;
 	}
 	
 	private static int indexAbsMin(float a, float ... b) {

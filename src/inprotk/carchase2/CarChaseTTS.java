@@ -330,6 +330,7 @@ public class CarChaseTTS {
 			replace.set("*PREVSPEED", "" + s.prevSpeed);
 			replace.set("*BIDIRECTIONAL", "" + (currentStreet.bidirectional ? 1 : 0));
 			replace.set("*NUMSTREETS", "" + nextPoint.streets.size());
+			replace.set("*LEFTRIGHT", "" + (s.lr == 1 ? "links" : "rechts"));
 			// Junctions
 			applyJunction(nextPoint, currentStreet, replace, s.direction, nextPoint.streets, false);
 			applyJunction(prevPoint, prevStreet, replace, s.prevDirection, prevPoint.streets, true);
