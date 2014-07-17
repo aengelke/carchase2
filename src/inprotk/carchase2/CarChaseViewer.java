@@ -132,6 +132,11 @@ public class CarChaseViewer extends PApplet {
 		image(map, 0, 0);
 		if (segments.size() == 0) return;
 		
+		// Render Car and Path
+
+		carAngle = segments.peek().getAngle();
+		carPosition = segments.peek().getAbsCarPosition();
+		
 		strokeWeight(5);
 		stroke(255, 0, 0);
 		ArrayList<WorldPoint> path = CarChase.get().configuration().getComingPath();
@@ -168,11 +173,6 @@ public class CarChaseViewer extends PApplet {
 			text("" + i, x, y);
 			stroke(255, 0, 0);
 		}
-		
-		// Render Car
-		
-		carAngle = segments.peek().getAngle();
-		carPosition = segments.peek().getAbsCarPosition();
 		
 		pushMatrix();
 		translate(carPosition.x, carPosition.y);
