@@ -55,6 +55,7 @@ public class CarChaseTTS {
 		for (String line : lines) {
 			if (index++ == 0) continue;
 			if (line.startsWith("#")) continue;
+			line = line.trim();
 			if (line.startsWith("--msg")) {
 				String[] args = line.substring(6).split("=");
 				String[] meta = args[0].split("#");
@@ -256,7 +257,9 @@ public class CarChaseTTS {
 		R1(true),
 		R2(true),
 		R3(true),
-		R4(true);
+		R4(true),
+		R5(true),
+		R6(true);
 		
 		// Moeglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
 		// R benoetigt einen Satz davor, der gerade gesprochen wird;
