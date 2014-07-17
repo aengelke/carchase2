@@ -92,7 +92,7 @@ public class CarChaseViewer extends PApplet {
 		
 		float position = segment.getPosition();
 		
-		//CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
+		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
 		
 		if (segment instanceof CircleSegment) return;
 
