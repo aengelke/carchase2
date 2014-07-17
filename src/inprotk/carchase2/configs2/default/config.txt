@@ -10,10 +10,10 @@
 # ...
 #
 Start: E-R, DorfstrasseR, -, 0
---- speed, 2500, 1
+--- speed, 1800, 1
 #--- speed, 6700, 2
---- speed, 7000, 2
---- speed, 8000, 3
+--- speed, 8500, 2
+--- speed, 9000, 3
 --- direction, 0
 --- direction, 1
 --- direction, 2
