@@ -302,6 +302,7 @@ public class CarChaseTTS {
 		}
 		
 		public void addTemplate(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
+			if (templates.containsKey(key)) CarChase.log("WARNING: Duplicate key", key);
 			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
 		
