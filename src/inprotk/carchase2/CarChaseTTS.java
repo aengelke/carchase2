@@ -54,6 +54,7 @@ public class CarChaseTTS {
 		int index = 0;
 		for (String line : lines) {
 			if (index++ == 0) continue;
+			line = line.trim();
 			if (line.startsWith("#")) continue;
 			if (line.startsWith("--msg")) {
 				String[] args = line.substring(6).split("=");
@@ -229,6 +230,10 @@ public class CarChaseTTS {
 			this.text = text;
 			this.optional = optional;
 		}
+		
+		public String toString() {
+			return "[TTSAction text=" + text + ",level=" + type.toString() + "]";
+		}
 	}
 	
 	public static enum MessageInformationLevel {
@@ -252,7 +257,9 @@ public class CarChaseTTS {
 		R1(true),
 		R2(true),
 		R3(true),
-		R4(true);
+		R4(true),
+		R5(true),
+		R6(true);
 		
 		// Moeglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
 		// R benoetigt einen Satz davor, der gerade gesprochen wird;
@@ -295,6 +302,7 @@ public class CarChaseTTS {
 		}
 		
 		public void addTemplate(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
+			if (templates.containsKey(key)) CarChase.log("WARNING: Duplicate key", key);
 			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
 		
@@ -326,6 +334,7 @@ public class CarChaseTTS {
 			replace.set("*PREVSPEED", "" + s.prevSpeed);
 			replace.set("*BIDIRECTIONAL", "" + (currentStreet.bidirectional ? 1 : 0));
 			replace.set("*NUMSTREETS", "" + nextPoint.streets.size());
+			replace.set("*LEFTRIGHT", "" + (s.lr == 1 ? "links" : "rechts"));
 			// Junctions
 			applyJunction(nextPoint, currentStreet, replace, s.direction, nextPoint.streets, false);
 			applyJunction(prevPoint, prevStreet, replace, s.prevDirection, prevPoint.streets, true);
@@ -466,10 +475,12 @@ public class CarChaseTTS {
 					if (actions.get(lowerLevel).size() > 0) {
 						ArrayList<TTSAction> possibles = actions.get(lowerLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
+						break;
 					}
-					if (actions.get(higherLevel).size() > 0) {
+					else if (actions.get(higherLevel).size() > 0) {
 						ArrayList<TTSAction> possibles = actions.get(higherLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
+						break;
 					}
 				}
 			}

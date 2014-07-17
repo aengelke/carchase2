@@ -1,5 +1,6 @@
 *.class
 bin/
+processing-recordings/
 Thumbs.db
 .project
 .classpath
