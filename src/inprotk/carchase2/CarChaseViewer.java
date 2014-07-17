@@ -67,6 +67,7 @@ public class CarChaseViewer extends PApplet {
 			if (objectToNotifyOnSetup != null) objectToNotifyOnSetup.notify();
 		}
 		image(map, 0, 0);
+		textFont(createFont("Source Code Pro Bold", 20));
 	}
 	
 	// Called on update
@@ -130,7 +131,10 @@ public class CarChaseViewer extends PApplet {
 	public void render() {
 		background(255);
 		image(map, 0, 0);
-		if (segments.size() == 0) return;
+		if (segments.size() == 0) {
+			renderTime();
+			return;
+		}
 		
 		// Render Car and Path
 
@@ -186,6 +190,17 @@ public class CarChaseViewer extends PApplet {
 		
 		if (CarChase.get().frameRate() < 6)
 			saveFrame("../processing-recordings/v4/" + CarChase.get().getConfigName() + "/#####.png");
+		
+		renderTime();
+	}
+	
+	private void renderTime() {
+		noStroke();
+		fill(255);
+		rect(0, 0, 120, 25, 0, 0, 10, 0);
+		fill(0);
+		textAlign(RIGHT, TOP);
+		text(CarChase.get().getTime() + "ms", 100, 0);
 	}
 
 	public int getTime() {
