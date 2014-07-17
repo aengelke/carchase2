@@ -54,8 +54,8 @@ public class CarChaseTTS {
 		int index = 0;
 		for (String line : lines) {
 			if (index++ == 0) continue;
-			if (line.startsWith("#")) continue;
 			line = line.trim();
+			if (line.startsWith("#")) continue;
 			if (line.startsWith("--msg")) {
 				String[] args = line.substring(6).split("=");
 				String[] meta = args[0].split("#");
