@@ -91,8 +91,19 @@ public class IncrementalArticulator extends StandardArticulator {
 		if (durationOverAll > .5)
 			for (IUextended iue : iues)
 				if (iue.action.isOptional()) {
+					try {
+						Articulatable next = articulates.get(articulates.indexOf(iue.action) + 2);
+						if (next == null) throw new Exception();
+						CarChase.log(next.getPreferredText(), iue.action);
+						if (iue.action.canFollowOnPreferredText(next)) {
+							myIUSource.revoke(iue);
+							articulates.remove(iue.action);
+						}
+					} catch (Exception e) {
+						//e.printStackTrace();
+					}/*
 					myIUSource.revoke(iue);
-					articulates.remove(iue.action);
+					articulates.remove(iue.action);*/
 				} else {
 					try {
 						Articulatable next = articulates.get(articulates.indexOf(iue.action) + 1);
@@ -100,7 +111,7 @@ public class IncrementalArticulator extends StandardArticulator {
 						if (iue.action.canFollowOnShorterText(next))
 							myIUSource.useShorter(iue);
 					} catch (Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 				}
 		CarChase.log("Reduced distance from", durationOverAll, "to", durationOverAll - durationCanRevoked);
