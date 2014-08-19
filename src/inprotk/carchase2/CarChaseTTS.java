@@ -304,7 +304,7 @@ public class CarChaseTTS {
 		}
 
 		public CarChaseArticulatable match(CarState s, CarChaseArticulatable lastArticulatable) {
-			TTSAction last = lastArticulatable.preferred;
+			TTSAction last = lastArticulatable != null ? lastArticulatable.preferred : null;
 			StringDict replace = instantiateVariables(s);
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
@@ -361,40 +361,53 @@ public class CarChaseTTS {
 
 			Random random = new Random();
 
-			TTSAction preferred = null, shorter = null;
+			ArrayList<TTSAction> posPreferred = null, posShorter = null;
 			if (actions.get(informationLevel).size() > 0) {
-				ArrayList<TTSAction> possibles = actions.get(informationLevel);
-				preferred = possibles.get(random.nextInt(possibles.size()));
+				posPreferred = actions.get(informationLevel);
 			} else {
 				for (int distance = 1; distance < MessageInformationLevel.values().length; distance++) {
 					MessageInformationLevel lowerLevel = MessageInformationLevel.fromInteger(4 - s.speed - distance);
 					MessageInformationLevel higherLevel = MessageInformationLevel.fromInteger(4 - s.speed + distance);
 					if (actions.get(lowerLevel).size() > 0) {
-						ArrayList<TTSAction> possibles = actions.get(lowerLevel);
-						preferred = possibles.get(random.nextInt(possibles.size()));
-						break;
+						posPreferred = actions.get(lowerLevel);
 					}
 					else if (actions.get(higherLevel).size() > 0) {
-						ArrayList<TTSAction> possibles = actions.get(higherLevel);
-						preferred = possibles.get(random.nextInt(possibles.size()));
-						break;
+						posPreferred = actions.get(higherLevel);
 					}
 				}
 			}
 
 			for (int i = 1; i < MessageInformationLevel.values().length; i++) {
 				if (actions.get(MessageInformationLevel.fromInteger(i)).size() > 0) {
-					ArrayList<TTSAction> possibles = actions.get(MessageInformationLevel.fromInteger(i));
-					shorter = possibles.get(random.nextInt(possibles.size()));
-					break;
+					posShorter = actions.get(MessageInformationLevel.fromInteger(i));
 				}
 			}
-
-			if (preferred == null) {
-				return null;
+			
+			if (posPreferred == null) return null;
+			if (posShorter == null) posShorter = new ArrayList<TTSAction>();
+			
+			// now we find a pair of preferred and shorter message with the same start and end types.
+			HashMap<TTSAction, TTSAction> mapping = new HashMap<TTSAction, TTSAction>();
+			for (TTSAction pref : posPreferred) {
+				boolean put = false;
+				for (TTSAction m : posShorter) {
+					if (pref.typeStart != m.typeStart || pref.typeEnd != m.typeEnd)
+						continue;
+					mapping.put(pref, m);
+					put = true;
+					break;
+				}
+				if (!put) mapping.put(pref, null);
 			}
+			
+			if (mapping.size() == 0) return null;
+			
+			int chosen = random.nextInt(mapping.size());
+			Map.Entry<TTSAction, TTSAction> result = (Map.Entry<TTSAction, TTSAction>) mapping.entrySet().toArray()[chosen];
+			
+			CarChase.log("CHOSE", result.getKey().text, result.getValue().text);
 
-			return new CarChaseArticulatable(preferred, shorter, optional);
+			return new CarChaseArticulatable(result.getKey(), result.getValue(), optional);
 		}
 
 		private void applyJunction(WorldPoint point, Street street, StringDict replace, int direction, ArrayList<String> streetNamesCrossNextPoint, boolean was) {
@@ -475,7 +488,7 @@ public class CarChaseTTS {
 				return false;
 			if (shorter == null)
 				return false;
-			return ((CarChaseArticulatable) next).preferred.typeStart.getType() == shorter.typeEnd.getType();
+			return true; // We only use shorter versions, if they are compatible.
 		}
 
 		public String toString() {
