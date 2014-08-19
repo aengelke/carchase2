@@ -32,8 +32,7 @@
    * [x] Generate text at runtime, if no special message exists.
    * [x] Implement junctions
  * [x] Take random choice if there are many options
- * [ ] Use message with lower information level on revoke, if the distance is smaller than 0.5 seconds
- * [ ] Duration of an IU is not correct --> Probably a bug in InproTK?
+ * [x] Use message with lower information level
 
 ## Other
  * [x] Use Processing's `PApplet` instead of `JPanel`
@@ -43,7 +42,9 @@
    * [ ] How to get the absolute end time of an IU? Ask Timo --> Timo tries to implement this
  * [ ] Hesitations are buggy
    * [ ] However, sometimes two hesitations occour directly after each other
+   * [x] Don't use hesitations.
  * [x] Auto-Revoke sometimes doesn't work
+ * [ ] Synthesis quality of latest InproTK/develop/HEAD is way too bad
  
  ## Ideas
  * [x] Improve rendering of the car in a curve --> nice to have
@@ -51,5 +52,4 @@
  * [ ] Save street history and not just the previous street --> really needed?
    * [ ] Implement this in the configuration and remove other occourences
  * [ ] Extend existing map --> really needed?
- * [ ] Add other situations --> really needed?
  * [ ] have the user select the starting point with digits on the map? (0-9 points should always offer enough options) --> really needed?
