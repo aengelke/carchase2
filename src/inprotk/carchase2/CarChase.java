@@ -68,8 +68,8 @@ public class CarChase {
 	private Configuration makeConfig() {
 		this.configName = "config";
 		// For non-interactive:
-		return new Configuration(getConfigFilename(configName + ".txt"));
-		// return new InteractiveConfiguration();
+		//return new Configuration(getConfigFilename(configName + ".txt"));
+		return new InteractiveConfiguration();
 	}
 	
 	public void init(String name) {

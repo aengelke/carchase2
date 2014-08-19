@@ -38,8 +38,7 @@ public class CarChaseExperimenter2 {
 					viewer = new CarChaseViewer();
 					viewer.init();
 					frame.setLayout(new BorderLayout());
-					// Don't show a hypothesis viewer to the users.
-					//frame.add(CarChase.get().tts().getHypothesisViewer().getTextField(), BorderLayout.SOUTH);
+					frame.add(CarChase.get().tts().getHypothesisViewer().getTextField(), BorderLayout.SOUTH);
 					frame.add(viewer, BorderLayout.CENTER);
 			        frame.pack();
 					frame.setVisible(true);

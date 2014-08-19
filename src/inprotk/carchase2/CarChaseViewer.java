@@ -48,7 +48,7 @@ public class CarChaseViewer extends PApplet {
 		return 1024;
 	}
 	public int sketchHeight() {
-		return 768;
+		return 708;
 	}
 	public String sketchRenderer() {
 		return JAVA2D;
@@ -92,7 +92,7 @@ public class CarChaseViewer extends PApplet {
 		
 		float position = segment.getPosition();
 		
-		//CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
+		CarChase.get().configuration().checkSpeed(CarChase.get().getTime(), speed);
 		
 		if (segment instanceof CircleSegment) return;
 
@@ -145,6 +145,13 @@ public class CarChaseViewer extends PApplet {
 		image(car, 0, 0);
 		stroke(0,255,0);
 		popMatrix();
+
+		noStroke();
+		fill(255);
+		rect(0, 0, 120, 25, 0, 0, 10, 0);
+		fill(0);
+		textAlign(RIGHT, TOP);
+		text(CarChase.get().getTime() + "ms", 100, 2);
 		
 		if (CarChase.get().frameRate() < 6)
 			saveFrame("../processing-recordings/v4/" + CarChase.get().getConfigName() + "/#####.png");
