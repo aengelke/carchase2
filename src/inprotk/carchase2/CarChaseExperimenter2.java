@@ -38,7 +38,8 @@ public class CarChaseExperimenter2 {
 					viewer = new CarChaseViewer();
 					viewer.init();
 					frame.setLayout(new BorderLayout());
-					frame.add(CarChase.get().tts().getHypothesisViewer().getTextField(), BorderLayout.SOUTH);
+					// Don't show a hypothesis viewer to the users.
+					//frame.add(CarChase.get().tts().getHypothesisViewer().getTextField(), BorderLayout.SOUTH);
 					frame.add(viewer, BorderLayout.CENTER);
 			        frame.pack();
 					frame.setVisible(true);
@@ -79,12 +80,21 @@ public class CarChaseExperimenter2 {
 		int direction = config.direction;
 		int travelDuration;
 		float percent = 0;
-		viewer.initialize(Math.atan2(startPoint.y - nextPoint.y, startPoint.x - nextPoint.x));
+		
+		viewer.notifyOnSetup(this);
+		
+		synchronized(this) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
 		
 		do {
+			
 			int time = CarChase.get().getTime();
 			travelDuration = (int) ((1 - percent) * (nextPoint.distanceTo(startPoint) / config.getCurrentSpeed(time) - 10));
-			 
+			
 			viewer.executeDriveAction(new DriveAction(startPoint, nextPoint, currentStreet, direction, travelDuration, (float) config.getCurrentSpeed(time), percent));
 			
 			synchronized(this) {
@@ -113,7 +123,7 @@ public class CarChaseExperimenter2 {
 		} while (true);
 		
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(14000);
 		} catch (InterruptedException e) {
 		}
 		System.exit(0);

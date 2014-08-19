@@ -27,7 +27,7 @@ pt p1, y
 --msg#T3#R1#R3#Cont4=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 ++
 pt p1, y
---cond#*DISTANCE#=#150
+--cond#*DISTANCE#=#200
 --cond#*DIRECTION#=#-1
 --cond#*ISJUNCTION#=#1
 # Ideally, there would be a <hes> at the end...
@@ -36,32 +36,46 @@ pt p1, y
 --msg#T3#F1#R3#Sent3=Das Auto fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 --msg#T1#R1#R3#Cont1=und erreicht die Kreuzung und
 --msg#T2#R1#R3#Cont2=und fährt auf die Kreuzung zu und
---msg#T3#R1#R3#Cont3=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und eäheäämhm....? ?
-#<hes> 
-#äeäeäeäeäeäeäeäeä?
+--msg#T3#R1#R3#Cont3=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 ++
 pt p1, y
---cond#*DISTANCE#=#150
+--cond#*DISTANCE#=#200
 --cond#*DIRECTION#=#-1
 --cond#*ISJUNCTION#=#2
+--cond#*SPEED#=#1
 # Ideally, there would be a <hes> at the end...
---msg#T3#F1#R4#Sent2=Das Auto fährt nun auf *FLEX1JUNCTIONSTREET zu und biegt ähemhm? ?
-# <hes>
-# äeäeäeäeäeäeäeäeäeä?
+--msg#T3#F1#R4#Sent3=Das Auto fährt nun langsam auf *FLEX1JUNCTIONSTREET zu und biegt
+++
+pt p1, y
+--cond#*DISTANCE#=#200
+--cond#*DIRECTION#=#-1
+--cond#*ISJUNCTION#=#2
+--cond#*SPEED#!#1
+# Ideally, there would be a <hes> at the end...
+#--msg#T3#F1#R4#Sent3=Das Auto fährt nun langsam auf *FLEX1JUNCTIONSTREET zu und biegt
 --msg#T2#F1#R4#Sent3=Das Auto fährt auf *FLEX1JUNCTIONSTREET zu und biegt
---msg#T1#F1#R4#Sent4=Es erreicht *FLEX1JUNCTIONSTREET und biegt
---msg#T1#R1#R4#Cont1=und erreicht die Kreuzung und biegt
+--msg#T1#R1#R4#Cont1=und erreicht *FLEX1JUNCTIONSTREET und biegt
+#--msg#T1#R1#R4#Cont1=und erreicht die Kreuzung und biegt
 --msg#T2#R1#R4#Cont2=und fährt auf *FLEX1JUNCTIONSTREET zu und biegt
 ++
 pt p1, y
---cond#*DISTANCE#=#-170
+--cond#*DISTANCE#=#-200
 --cond#*DIRECTION#=#1
 --cond#*ISJUNCTION#=#2
+--cond#*SPEED#=#1
 # Ideally, there would be a <hes> at the end...
---msg#T3#F1#R4#Sent2=Das Auto fährt nun langsam auf *FLEX1JUNCTIONSTREET zu und biegt <hes>
+--msg#T3#F1#R4#Sent3=Das Auto fährt nun langsam auf *FLEX1JUNCTIONSTREET zu und biegt
+++
+pt p1, y
+--cond#*DISTANCE#=#-200
+--cond#*DIRECTION#=#1
+--cond#*ISJUNCTION#=#2
+--cond#*SPEED#!#1
+# Ideally, there would be a <hes> at the end...
+#--msg#T3#F1#R4#Sent3=Das Auto fährt nun langsam auf *FLEX1JUNCTIONSTREET zu und biegt
 --msg#T2#F1#R4#Sent3=Das Auto fährt auf *FLEX1JUNCTIONSTREET zu und biegt
---msg#T1#F1#R4#Sent4=Es erreicht *FLEX1JUNCTIONSTREET und biegt
---msg#T1#R1#R4#Cont1=und erreicht die Kreuzung und biegt
+#--msg#T1#R1#R4#Cont1=und erreicht die Kreuzung und biegt
+--msg#T1#R1#R4#Cont1=und erreicht *FLEX1JUNCTIONSTREET und biegt
 --msg#T2#R1#R4#Cont2=und fährt auf *FLEX1JUNCTIONSTREET zu und biegt
 ++
 # Kreuzung: 
@@ -71,7 +85,7 @@ pt p1
 --cond#*WASJUNCTION#=#1
 --cond#*PREVSTREET#!#*STREET
 --msg#T1#R3#F1#Cont1=biegt *LEFTRIGHT ab.
-#--msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
+--msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
 ++
 pt p1
 --cond#*DISTANCE#=#-5
@@ -79,7 +93,7 @@ pt p1
 --cond#*WASJUNCTION#=#1
 --cond#*PREVSTREET#!#*STREET
 --msg#T1#R3#F1#Cont1=biegt *LEFTRIGHT ab.
-#--msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
+--msg#T2#R3#F1#Cont1=biegt in *FLEX1STREET.
 ++
 pt p1
 --cond#*DISTANCE#=#5
@@ -110,7 +124,8 @@ pt p1
 --cond#*WASJUNCTION#=#2
 --cond#*BIDIRECTIONAL#=#1
 --cond#*PREVSTREET#!#*STREET
---msg#T1#R4#F1#Cont1=*LEFTRIGHT hinein.
+--msg#T1#R4#F1#Cont1=links hinein.
+#--msg#T1#R4#F1#Cont1=*LEFTRIGHT hinein.
 #--msg#T3#R4#F1#Cont1=in *FLEX1STREET.
 ++
 pt p1
@@ -132,7 +147,7 @@ pt p1
 --msg#T3#R1#F1#Cont1=und fährt weiter in *FLEX1STREET.
 --msg#T2#R1#F1#Cont2=und fährt in *FLEX1STREET.
 --msg#T1#R1#F1#Cont3=und in *FLEX1STREET.
---msg#T1#R2#F1#Cont4=in *FLEX1STREET.
+--msg#T1#R4#F1#Cont4=in *FLEX1STREET.
 --msg#T2#R2#F1#Cont5=weiter in *FLEX1STREET.
 --msg#T1#R2#F1#Cont6=fährt in *FLEX1STREET.
 --msg#T2#R3#F1#Cont7=und fährt in *FLEX1STREET.
@@ -144,10 +159,9 @@ pt p1
 --msg#T2#F1#F1#Sent1=Das Auto fährt in *FLEX1STREET.
 --msg#T3#F1#F1#Sent2=Das Auto fährt aus *FLEX2PREVSTREET in *FLEX1STREET.
 --msg#T3#R1#F1#Cont1=und fährt weiter in *FLEX1STREET.
---msg#T3#R1#F1#Cont1=und in *FLEX1STREET.
 --msg#T2#R1#F1#Cont2=und fährt in *FLEX1STREET.
 --msg#T1#R1#F1#Cont3=und in *FLEX1STREET.
---msg#T1#R2#F1#Cont4=in *FLEX1STREET.
+--msg#T1#R4#F1#Cont4=in *FLEX1STREET.
 --msg#T2#R2#F1#Cont5=weiter in *FLEX1STREET.
 --msg#T1#R2#F1#Cont6=fährt in *FLEX1STREET.
 --msg#T2#R3#F1#Cont7=und fährt in *FLEX1STREET.

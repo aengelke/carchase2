@@ -27,7 +27,7 @@ pt p1, y
 --msg#T3#R1#R3#Cont4=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 ++
 pt p1, y
---cond#*DISTANCE#=#150
+--cond#*DISTANCE#=#200
 --cond#*DIRECTION#=#-1
 --cond#*ISJUNCTION#=#1
 # Ideally, there would be a <hes> at the end...
@@ -36,7 +36,7 @@ pt p1, y
 --msg#T3#F1#R3#Sent3=Das Auto fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 --msg#T1#R1#R3#Cont1=und erreicht die Kreuzung und
 --msg#T2#R1#R3#Cont2=und fährt auf die Kreuzung zu und
---msg#T3#R1#R3#Cont3=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und eäheäämhm....? ?
+--msg#T3#R1#R3#Cont3=und fährt auf die Kreuzung mit *FLEX2JUNCTIONSTREET zu und
 #<hes> 
 #äeäeäeäeäeäeäeäeä?
 ++
@@ -45,7 +45,7 @@ pt p1, y
 --cond#*DIRECTION#=#-1
 --cond#*ISJUNCTION#=#2
 # Ideally, there would be a <hes> at the end...
---msg#T3#F1#R4#Sent2=Das Auto fährt nun auf *FLEX1JUNCTIONSTREET zu und biegt ähemhm? ?
+--msg#T3#F1#R4#Sent2=Das Auto fährt auf *FLEX1JUNCTIONSTREET zu und biegt
 # <hes>
 # äeäeäeäeäeäeäeäeäeä?
 --msg#T2#F1#R4#Sent3=Das Auto fährt auf *FLEX1JUNCTIONSTREET zu und biegt

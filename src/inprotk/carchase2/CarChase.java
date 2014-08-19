@@ -20,6 +20,7 @@ public class CarChase {
 	private static CarChase carchase;
 	
 	private String configSet;
+	private String configName;
 	private World world;
 	private Configuration config;
 	private CarChaseTTS tts;
@@ -50,6 +51,10 @@ public class CarChase {
 		return configSet;
 	}
 	
+	public String getConfigName() {
+		return configName;
+	}
+	
 	public String getConfigFilename(String name) {
 		return getFilename("configs2/" + configSet + "/" + name);
 	}
@@ -61,8 +66,9 @@ public class CarChase {
 	}
 	
 	private Configuration makeConfig() {
+		this.configName = "config";
 		// For non-interactive:
-		return new Configuration(getConfigFilename("config.txt"));
+		return new Configuration(getConfigFilename(configName + ".txt"));
 		// return new InteractiveConfiguration();
 	}
 	
@@ -81,8 +87,12 @@ public class CarChase {
 		startTime = System.currentTimeMillis();
 	}
 	
+	public float frameRate() {
+		return 30f;
+	}
+	
 	public int getTime() {
-		return (int) (System.currentTimeMillis() - startTime);
+		return (int) ((System.currentTimeMillis() - startTime) / (30.0 / frameRate()));
 	}
 	
 	public double getInproTimeInSeconds() {

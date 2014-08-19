@@ -25,9 +25,9 @@ public class CarChaseTTS {
 	private Articulator articulator;
 	private DispatchStream dispatcher;
 	private DispatcherThread dispatchThread;
-	
+
 	private String flexForm1, flexForm2;
-	
+
 	public CarChaseTTS(String messagesFilename, String patternsFilename) {
 		try {
 			dispatcher = SimpleMonitor.setupDispatcher();
@@ -41,11 +41,11 @@ public class CarChaseTTS {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public MyCurrentHypothesisViewer getHypothesisViewer() {
 		return articulator.getHypothesisViewer();
 	}
-	
+
 	private void parsePatterns(String filename) throws Exception {
 		patterns = new ArrayList<Pattern>();
 		streetNames = new HashMap<String, StreetReplacement>();
@@ -54,6 +54,7 @@ public class CarChaseTTS {
 		int index = 0;
 		for (String line : lines) {
 			if (index++ == 0) continue;
+			line = line.trim();
 			if (line.startsWith("#")) continue;
 			if (line.startsWith("--msg")) {
 				String[] args = line.substring(6).split("=");
@@ -73,14 +74,14 @@ public class CarChaseTTS {
 			}
 			else if (line.startsWith("pt")) {
 				String[] args = line.substring(3).split(",");
-				for (int i = 0; i < args.length; i++) 
+				for (int i = 0; i < args.length; i++)
 					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
 				boolean optional = args.length > 1 && args[1].equals("y");
 				currentPattern = new Pattern(optional);
 			}
 			else if (line.startsWith("street")) {
 				String[] args = line.substring(7).split(",");
-				for (int i = 0; i < args.length; i++) 
+				for (int i = 0; i < args.length; i++)
 					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
 				String key = args[0];
 				String name = args[1];
@@ -99,7 +100,7 @@ public class CarChaseTTS {
 			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
 		}
 	}
-	
+
 	private void parseMessages(String filename) throws Exception {
 		situations = new ArrayList<Situation>();
 		Situation currentMessage = null;
@@ -123,7 +124,7 @@ public class CarChaseTTS {
 			}
 			else if (line.startsWith("p1")) {
 				String[] args = line.substring(3).split(",");
-				for (int i = 0; i < args.length; i++) 
+				for (int i = 0; i < args.length; i++)
 					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
 				currentMessage = new DrivingSituation(args[6].equals("y"), args[0], args[1], args[3], Integer.parseInt(args[2]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
 			}
@@ -131,11 +132,11 @@ public class CarChaseTTS {
 			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
 		}
 	}
-	
+
 	public void matchAndTrigger(CarState state) {
 		dispatchThread.addDispatchTask(state);
 	}
-	
+
 	private class DispatcherThread extends Thread {
 		private Vector<DispatchAction> actions;
 		public DispatcherThread() {
@@ -153,7 +154,7 @@ public class CarChaseTTS {
 				for (DispatchAction action : toDispatch) {
 					dispatch(action);
 				}
-				
+
 				synchronized(this) {
 					try {
 						wait();
@@ -168,32 +169,32 @@ public class CarChaseTTS {
 			CarChaseArticulatable lastIU = (CarChaseArticulatable) articulator.getLast();
 			boolean continuationPossible = articulator.isSpeaking();
 			for (Situation m : situations) {
-				if (startAction == null)	
+				if (startAction == null)
 					startAction = m.match(a.state, null);
-				if (continuationAction == null && continuationPossible)	
+				if (continuationAction == null && continuationPossible)
 					// TODO: Don't use preferred.
 					continuationAction = m.match(a.state, lastIU.preferred);
 				if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 			}
-			
-			if (startAction == null) { // Try to find a matching pattern! 
+
+			if (startAction == null) { // Try to find a matching pattern!
 				for (Pattern p : patterns) {
-					if (startAction == null)	
+					if (startAction == null)
 						startAction = p.match(a.state, null);
-					if (continuationAction == null && continuationPossible)	
+					if (continuationAction == null && continuationPossible)
 						continuationAction = p.match(a.state, lastIU.preferred);
 					if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 				}
 				if (startAction == null)
 					return;
 			}
-			
+
 			//CarChase.log(continuationPossible, startAction.text, continuationAction == null ? null : continuationAction.text);
-			
+
 			CarChaseArticulatable finalAction = startAction;
 			if (continuationPossible && continuationAction != null)
 				finalAction = continuationAction;
-			
+
 			CarChase.log("Articulator Say", finalAction);
 
 			articulator.printUpcoming();
@@ -207,7 +208,7 @@ public class CarChaseTTS {
 				notify();
 			}
 		}
-		
+
 		private class DispatchAction {
 			private CarState state;
 			public DispatchAction(CarState state) {
@@ -215,13 +216,13 @@ public class CarChaseTTS {
 			}
 		}
 	}
-	
+
 	public static class TTSAction {
 		public MessageType typeStart, typeEnd;
 		public MessageInformationLevel type;
 		public String text;
 		public boolean optional;
-		
+
 		private TTSAction(MessageType typeStart, MessageType typeEnd, MessageInformationLevel type, String text, boolean optional) {
 			this.typeStart = typeStart;
 			this.typeEnd = typeEnd;
@@ -229,8 +230,12 @@ public class CarChaseTTS {
 			this.text = text;
 			this.optional = optional;
 		}
+
+		public String toString() {
+			return "[TTSAction text=" + text + ",level=" + type.toString() + "]";
+		}
 	}
-	
+
 	public static enum MessageInformationLevel {
 		T1, // Information Level 1, high speed
 		T2, // Information Level 2, normal speed
@@ -240,8 +245,8 @@ public class CarChaseTTS {
 			return MessageInformationLevel.valueOf("T" + intInformationLevel);
 		}
 	}
-	
-	
+
+
 	// Example: Das Auto faehrt in den Kreisel. (Begin: S2, End: S1)
 	// Example: und faehrt in den Kreisel. (Begin: R1, End: S1)
 	// Example: Das Auto faehrt auf die Kreuzung zu und (Begin: S1, End: R2)
@@ -252,19 +257,21 @@ public class CarChaseTTS {
 		R1(true),
 		R2(true),
 		R3(true),
-		R4(true);
-		
+		R4(true),
+		R5(true),
+		R6(true);
+
 		// Moeglich ist: [ F1 F1 ] [ R1 F2 ] [ R2 F1 ] [ F1 F1 ]
 		// R benoetigt einen Satz davor, der gerade gesprochen wird;
 		// F geht immer, wenn der vorige Satz keinen nachfolgenden braucht.
-		
+
 		private boolean requiresSentence;
 		private int type;
 		private MessageType(boolean requiresSentence) {
 			this.requiresSentence = requiresSentence;
 			this.type = Integer.parseInt(toString().substring(1));
 		}
-		
+
 		/**
 		 * Is a sentence of the same type required at the beginning / ending? If no, it is a valid beginning / ending of a sentence.
 		 * @return
@@ -272,12 +279,12 @@ public class CarChaseTTS {
 		public boolean requiresSentence() {
 			return requiresSentence;
 		}
-		
+
 		public int getType() {
 			return type;
 		}
 	}
-	
+
 	public class Pattern {
 		protected boolean optional;
 		public HashMap<String, TTSAction> templates;
@@ -287,24 +294,24 @@ public class CarChaseTTS {
 			conditions = new ArrayList<Condition>();
 			this.optional = optional;
 		}
-		
+
 		// Requires: XY#OP#XY
 		public void addCondition(String conditionLine) {
 			String[] condParts = conditionLine.split("#");
 			conditions.add(new Condition(condParts[0], condParts[2], condParts[1]));
 		}
-		
+
 		public void addTemplate(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
+			if (templates.containsKey(key)) CarChase.log("WARNING: Duplicate key", key);
 			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
-		
-		public CarChaseArticulatable match(CarState s, TTSAction last) {
+
+		private StringDict instantiateVariables(CarState s) {
 			World w = CarChase.get().world();
 			Street currentStreet = w.streets.get(s.streetName);
 			Street prevStreet = w.streets.get(s.prevStreetName);
 			WorldPoint nextPoint = w.points.get(s.nextPointName);
 			WorldPoint prevPoint = w.points.get(s.prevPointName);
-			
 			StringDict replace = new StringDict();
 			replace.set("*INTSTREET", s.streetName);
 			replace.set("*INTPREVSTREET", s.prevStreetName);
@@ -326,11 +333,16 @@ public class CarChaseTTS {
 			replace.set("*PREVSPEED", "" + s.prevSpeed);
 			replace.set("*BIDIRECTIONAL", "" + (currentStreet.bidirectional ? 1 : 0));
 			replace.set("*NUMSTREETS", "" + nextPoint.streets.size());
+			replace.set("*LEFTRIGHT", "" + (s.lr == 1 ? "links" : "rechts"));
 			// Junctions
 			applyJunction(nextPoint, currentStreet, replace, s.direction, nextPoint.streets, false);
 			applyJunction(prevPoint, prevStreet, replace, s.prevDirection, prevPoint.streets, true);
-			
-			
+
+			return replace;
+		}
+
+		public CarChaseArticulatable match(CarState s, TTSAction last) {
+			StringDict replace = instantiateVariables(s);
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
 				String instancedRightSide = instanciate(cond.rightSide, replace);
@@ -356,16 +368,16 @@ public class CarChaseTTS {
 				}
 			}
 			PatternSituation situation = new PatternSituation(optional);
-			for (Map.Entry<String, TTSAction> entry : templates.entrySet()) 
+			for (Map.Entry<String, TTSAction> entry : templates.entrySet())
 				situation.addMessage(entry.getKey(), entry.getValue(), instanciate(entry.getValue().text, replace));
 			return situation.match(s, last);
 		}
-		
+
 		private void applyJunction(WorldPoint point, Street street, StringDict replace, int direction, ArrayList<String> streetNamesCrossNextPoint, boolean was) {
 			String prefix = was ? "WAS" : "IS";
 			String prevPrefix = was ? "PREV" : "";
 			boolean isEndOfStreet = street.fetchNextPoint(point, direction) == null;
-			
+
 			int isJunction = 0;
 			if (streetNamesCrossNextPoint.size() == 2 && streetNamesCrossNextPoint.indexOf(street.name) >= 0){
 				isJunction = isEndOfStreet ? 2 : 1;
@@ -385,16 +397,16 @@ public class CarChaseTTS {
 					replace.set("*FLEX1" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex1);
 					replace.set("*FLEX2" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex2);
 				}
-			}			
+			}
 			replace.set("*" + prefix + "JUNCTION", "" + isJunction);
 		}
-		
+
 		private class Condition {
 			public String leftSide;
 			public String rightSide;
 			public char operator;
 			public boolean isDistance;
-			
+
 			public Condition(String left, String right, String op) {
 				this.leftSide = left;
 				this.rightSide = right;
@@ -402,7 +414,7 @@ public class CarChaseTTS {
 				this.isDistance = leftSide.equals("*DISTANCE");
 			}
 		}
-		
+
 		private String instanciate(String original, StringDict replace) {
 			String newString = original;
 			for (String key : replace.keyArray())
@@ -410,22 +422,22 @@ public class CarChaseTTS {
 			return newString;
 		}
 	}
-	
+
 	public static abstract class Situation {
 		public HashMap<String, TTSAction> messages;
 		protected boolean optional;
-		
+
 		public Situation(boolean optional) {
 			this.messages = new HashMap<String, TTSAction>();
 			this.optional = optional;
 		}
-		
+
 		public void addMessage(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
 			messages.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
 
 		public CarChaseArticulatable match(CarState s, TTSAction last) {
-			if (!isSituationMatching(s)) 
+			if (!isSituationMatching(s))
 				return null;
 			TTSAction[] matches = matches();
 			if (matches == null) return null;
@@ -434,7 +446,7 @@ public class CarChaseTTS {
 			for (MessageInformationLevel level : MessageInformationLevel.values())
 				actions.put(level, new ArrayList<TTSAction>());
 			for (TTSAction action : matches) {
-				// If last is null, we assume that we currently say nothing. 
+				// If last is null, we assume that we currently say nothing.
 				// If last is not null, we (have to) should try to append a continuation,
 				// as the dispatcher always asks for both, last = null and last != null.
 				//  XXX: Can this be solved better? [ F1 R1 ]  pause  [ F3 R1 ]
@@ -452,9 +464,9 @@ public class CarChaseTTS {
 						actions.get(action.type).add(action);
 				}
 			}
-			
+
 			Random random = new Random();
-			
+
 			TTSAction preferred = null, shorter = null;
 			if (actions.get(informationLevel).size() > 0) {
 				ArrayList<TTSAction> possibles = actions.get(informationLevel);
@@ -466,14 +478,16 @@ public class CarChaseTTS {
 					if (actions.get(lowerLevel).size() > 0) {
 						ArrayList<TTSAction> possibles = actions.get(lowerLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
+						break;
 					}
-					if (actions.get(higherLevel).size() > 0) {
+					else if (actions.get(higherLevel).size() > 0) {
 						ArrayList<TTSAction> possibles = actions.get(higherLevel);
 						preferred = possibles.get(random.nextInt(possibles.size()));
+						break;
 					}
 				}
 			}
-			
+
 			for (int i = 1; i < MessageInformationLevel.values().length; i++) {
 				if (actions.get(MessageInformationLevel.fromInteger(i)).size() > 0) {
 					ArrayList<TTSAction> possibles = actions.get(MessageInformationLevel.fromInteger(i));
@@ -481,27 +495,27 @@ public class CarChaseTTS {
 					break;
 				}
 			}
-			
+
 			if (preferred == null) {
 				return null;
 			}
-			
+
 			return new CarChaseArticulatable(preferred, shorter, optional);
 		}
-		
+
 		public TTSAction[] matches() {
 			return messages.values().toArray(new TTSAction[0]);
 		}
-		
+
 		public abstract boolean isSituationMatching(CarState s);
 	}
-	
+
 	private static class PatternSituation extends Situation {
 
 		public PatternSituation(boolean optional) {
 			super(optional);
 		}
-		
+
 		public void addMessage(String key, TTSAction a, String newText) {
 			addMessage(key, newText, a.typeStart, a.typeEnd, a.type);
 		}
@@ -510,14 +524,14 @@ public class CarChaseTTS {
 		public boolean isSituationMatching(CarState s) {
 			return true;
 		}
-		
+
 	}
-	
+
 	public static class DrivingSituation extends Situation {
 		public String streetName, pointName, prevStreet;
 		public int distance, direction, prevDirection;
 		public int speed;
-		
+
 		public DrivingSituation(boolean optional, String streetName, String pointName,
 				String prevStreet, int distance, int direction, int prevDirection) {
 			super(optional);
@@ -528,7 +542,7 @@ public class CarChaseTTS {
 			this.direction = direction;
 			this.prevDirection = prevDirection;
 		}
-		
+
 		public boolean isSituationMatching(CarState s) {
 			if (s.speed == 0) return false;
 			if (!this.streetName.equals(s.streetName)) return false;
@@ -543,11 +557,11 @@ public class CarChaseTTS {
 			return true;
 		}
 	}
-	
+
 	public static class CarChaseArticulatable extends Articulatable {
 		private TTSAction preferred, shorter;
 		private boolean optional;
-		
+
 		public CarChaseArticulatable(TTSAction preferred, TTSAction shorter, boolean optional) {
 			this.preferred = preferred;
 			this.shorter = shorter;
@@ -562,7 +576,7 @@ public class CarChaseTTS {
 			if (shorter == null) return null;
 			return shorter.text;
 		}
-		
+
 		public boolean isOptional() {
 			return optional;
 		}
@@ -574,12 +588,12 @@ public class CarChaseTTS {
 				return false;
 			return ((CarChaseArticulatable) next).preferred.typeStart.getType() == shorter.typeEnd.getType();
 		}
-		
+
 		public String toString() {
 			return "----\n--pr-" + preferred.text + "\n--sh-" + (shorter == null ? "null" : shorter.text);
 		}
 	}
-	
+
 	private class StreetReplacement {
 		public String name, flex1, flex2;
 
@@ -588,7 +602,7 @@ public class CarChaseTTS {
 			this.flex1 = flex1;
 			this.flex2 = flex2;
 		}
-		
+
 		public StreetReplacement(String name) {
 			this(name, flexForm1 + " " + name, flexForm2 + " " + name);
 		}

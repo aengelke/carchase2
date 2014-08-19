@@ -9,16 +9,12 @@
 # --- speed [time in ms] [0..10] # NOT IMPLEMENTED!!
 # ...
 #
-Start: E-R, DorfstrasseR, -, 0
---- speed, 1800, 1
-#--- speed, 6700, 2
---- speed, 8500, 2
---- speed, 9000, 3
---- direction, 0
---- direction, 1
---- direction, 2
---- direction, 1
+Start: B-T, Breite Strasse, +, 0
+--- speed, 0, 1
+#--- speed, 14000, 2
+--- speed, 24000, 2
 --- direction, 1
 --- direction, 0
+--- direction, 1
 --- direction, 0
-#--- direction, 0
+#
