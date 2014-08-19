@@ -145,7 +145,7 @@ public class CarChaseTTS {
 				if (startAction == null)
 					startAction = p.match(a.state, null);
 				if (continuationAction == null && continuationPossible)
-					continuationAction = p.match(a.state, lastIU.preferred);
+					continuationAction = p.match(a.state, lastIU);
 				if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 			}
 			if (startAction == null)
@@ -303,7 +303,8 @@ public class CarChaseTTS {
 			return replace;
 		}
 
-		public CarChaseArticulatable match(CarState s, TTSAction last) {
+		public CarChaseArticulatable match(CarState s, CarChaseArticulatable lastArticulatable) {
+			TTSAction last = lastArticulatable.preferred;
 			StringDict replace = instantiateVariables(s);
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
