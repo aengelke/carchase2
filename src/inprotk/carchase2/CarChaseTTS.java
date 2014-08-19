@@ -404,8 +404,6 @@ public class CarChaseTTS {
 			
 			int chosen = random.nextInt(mapping.size());
 			Map.Entry<TTSAction, TTSAction> result = (Map.Entry<TTSAction, TTSAction>) mapping.entrySet().toArray()[chosen];
-			
-			CarChase.log("CHOSE", result.getKey().text, result.getValue().text);
 
 			return new CarChaseArticulatable(result.getKey(), result.getValue(), optional);
 		}
