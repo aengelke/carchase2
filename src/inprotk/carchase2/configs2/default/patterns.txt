@@ -176,3 +176,5 @@ street Dorfstrasse, Dorfstraße, die Dorfstraße, der Dorfstraße
 street Kreisel, %, den %, dem %
 street Breite Strasse, Breite Straße, die Breite Straße, der Breiten Straße
 street Bahnhofstrasse, Baahnhoofstraße, die Baahnhoofstraße, der Baahnhoofstraße
+#
+leftright links rechts

@@ -25,7 +25,7 @@ public class CarChaseTTS {
 	private DispatchStream dispatcher;
 	private DispatcherThread dispatchThread;
 
-	private String flexForm1, flexForm2;
+	private String flexForm1, flexForm2, left, right;
 
 	public CarChaseTTS(String patternsFilename) {
 		try {
@@ -93,6 +93,12 @@ public class CarChaseTTS {
 			else if (line.startsWith("flex")) {
 				if (line.startsWith("flex1")) flexForm1 = line.substring(6);
 				if (line.startsWith("flex2")) flexForm2 = line.substring(6);
+			}
+			else if (line.startsWith("leftright")) {
+				String[] values = line.split(" ");
+				left = values[1];
+				right = values[2];
+				CarChase.log("LR", left, right);
 			}
 			else if (line.equals("")) continue;
 			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
@@ -289,7 +295,7 @@ public class CarChaseTTS {
 			replace.set("*PREVSPEED", "" + s.prevSpeed);
 			replace.set("*BIDIRECTIONAL", "" + (currentStreet.bidirectional ? 1 : 0));
 			replace.set("*NUMSTREETS", "" + nextPoint.streets.size());
-			replace.set("*LEFTRIGHT", "" + (s.lr == 1 ? "links" : "rechts"));
+			replace.set("*LEFTRIGHT", "" + (s.lr == 1 ? left : right));
 			// Junctions
 			applyJunction(nextPoint, currentStreet, replace, s.direction, nextPoint.streets, false);
 			applyJunction(prevPoint, prevStreet, replace, s.prevDirection, prevPoint.streets, true);
