@@ -19,7 +19,6 @@ import inprotk.carchase2.World.Street;
 import inprotk.carchase2.World.WorldPoint;
 
 public class CarChaseTTS {
-	private ArrayList<Situation> situations;
 	private ArrayList<Pattern> patterns;
 	private HashMap<String, StreetReplacement> streetNames;
 	private Articulator articulator;
@@ -28,12 +27,11 @@ public class CarChaseTTS {
 
 	private String flexForm1, flexForm2;
 
-	public CarChaseTTS(String messagesFilename, String patternsFilename) {
+	public CarChaseTTS(String patternsFilename) {
 		try {
 			dispatcher = SimpleMonitor.setupDispatcher();
 			//articulator = new StandardArticulator(dispatcher);
 			articulator = new IncrementalArticulator(dispatcher);
-			parseMessages(messagesFilename);
 			parsePatterns(patternsFilename);
 			dispatchThread = new DispatcherThread();
 			dispatchThread.start();
@@ -101,38 +99,6 @@ public class CarChaseTTS {
 		}
 	}
 
-	private void parseMessages(String filename) throws Exception {
-		situations = new ArrayList<Situation>();
-		Situation currentMessage = null;
-		String[] lines = CarChase.readLines(filename);
-		int index = 0;
-		for (String line : lines) {
-			if (index++ == 0) continue;
-			if (line.startsWith("#")) continue;
-			if (line.startsWith("--")) {
-				String[] args = line.substring(2).split("=");
-				String[] meta = args[0].split("#");
-				MessageInformationLevel type = MessageInformationLevel.valueOf(meta[0]);
-				MessageType typeStart = MessageType.valueOf(meta[1]);
-				MessageType typeEnd = MessageType.valueOf(meta[2]);
-				String key = meta[3];
-				currentMessage.addMessage(key, args[1], typeStart, typeEnd, type);
-			}
-			else if (line.startsWith("++")) {
-				situations.add(currentMessage);
-				currentMessage = null;
-			}
-			else if (line.startsWith("p1")) {
-				String[] args = line.substring(3).split(",");
-				for (int i = 0; i < args.length; i++)
-					while (args[i].startsWith(" ")) args[i] = args[i].substring(1);
-				currentMessage = new DrivingSituation(args[6].equals("y"), args[0], args[1], args[3], Integer.parseInt(args[2]), Integer.parseInt(args[4]), Integer.parseInt(args[5]));
-			}
-			else if (line.equals("")) continue;
-			else throw new RuntimeException("Illegal line: " + line + " in file " + filename);
-		}
-	}
-
 	public void matchAndTrigger(CarState state) {
 		dispatchThread.addDispatchTask(state);
 	}
@@ -168,26 +134,16 @@ public class CarChaseTTS {
 			CarChaseArticulatable continuationAction = null;
 			CarChaseArticulatable lastIU = (CarChaseArticulatable) articulator.getLast();
 			boolean continuationPossible = articulator.isSpeaking();
-			for (Situation m : situations) {
+
+			for (Pattern p : patterns) {
 				if (startAction == null)
-					startAction = m.match(a.state, null);
+					startAction = p.match(a.state, null);
 				if (continuationAction == null && continuationPossible)
-					// TODO: Don't use preferred.
-					continuationAction = m.match(a.state, lastIU.preferred);
+					continuationAction = p.match(a.state, lastIU.preferred);
 				if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 			}
-
-			if (startAction == null) { // Try to find a matching pattern!
-				for (Pattern p : patterns) {
-					if (startAction == null)
-						startAction = p.match(a.state, null);
-					if (continuationAction == null && continuationPossible)
-						continuationAction = p.match(a.state, lastIU.preferred);
-					if (startAction != null && (!continuationPossible || continuationAction != null)) break;
-				}
-				if (startAction == null)
-					return;
-			}
+			if (startAction == null)
+				return;
 
 			//CarChase.log(continuationPossible, startAction.text, continuationAction == null ? null : continuationAction.text);
 
@@ -367,79 +323,10 @@ public class CarChaseTTS {
 					}
 				}
 			}
-			PatternSituation situation = new PatternSituation(optional);
+			ArrayList<TTSAction> messages = new ArrayList<TTSAction>();
 			for (Map.Entry<String, TTSAction> entry : templates.entrySet())
-				situation.addMessage(entry.getKey(), entry.getValue(), instanciate(entry.getValue().text, replace));
-			return situation.match(s, last);
-		}
-
-		private void applyJunction(WorldPoint point, Street street, StringDict replace, int direction, ArrayList<String> streetNamesCrossNextPoint, boolean was) {
-			String prefix = was ? "WAS" : "IS";
-			String prevPrefix = was ? "PREV" : "";
-			boolean isEndOfStreet = street.fetchNextPoint(point, direction) == null;
-
-			int isJunction = 0;
-			if (streetNamesCrossNextPoint.size() == 2 && streetNamesCrossNextPoint.indexOf(street.name) >= 0){
-				isJunction = isEndOfStreet ? 2 : 1;
-
-				int indexOfOther = 1 - streetNamesCrossNextPoint.indexOf(street.name);
-				assert streetNamesCrossNextPoint.indexOf(street.name) >= 0 : "Something somewhere went terribly wrong: " + streetNamesCrossNextPoint.toString() + street.name;
-				String streetName = streetNamesCrossNextPoint.get(indexOfOther);
-				Street crossStreet = CarChase.get().world().streets.get(streetName);
-				int indexInCross = crossStreet.streetPoints.indexOf(point.name);
-				if (indexInCross <= 0 || indexInCross >= crossStreet.streetPoints.size() - 1)
-					isJunction = 0;
-				else {
-					StreetReplacement streetRpl = streetNames.get(streetName);
-					if (streetRpl == null) streetRpl = new StreetReplacement(streetName);
-					replace.set("*INT" + prevPrefix + "JUNCTIONSTREET", streetName);
-					replace.set("*" + prevPrefix + "JUNCTIONSTREET", streetRpl.name);
-					replace.set("*FLEX1" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex1);
-					replace.set("*FLEX2" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex2);
-				}
-			}
-			replace.set("*" + prefix + "JUNCTION", "" + isJunction);
-		}
-
-		private class Condition {
-			public String leftSide;
-			public String rightSide;
-			public char operator;
-			public boolean isDistance;
-
-			public Condition(String left, String right, String op) {
-				this.leftSide = left;
-				this.rightSide = right;
-				this.operator = op.charAt(0);
-				this.isDistance = leftSide.equals("*DISTANCE");
-			}
-		}
-
-		private String instanciate(String original, StringDict replace) {
-			String newString = original;
-			for (String key : replace.keyArray())
-				newString = newString.replace((CharSequence) key, replace.get(key));
-			return newString;
-		}
-	}
-
-	public static abstract class Situation {
-		public HashMap<String, TTSAction> messages;
-		protected boolean optional;
-
-		public Situation(boolean optional) {
-			this.messages = new HashMap<String, TTSAction>();
-			this.optional = optional;
-		}
-
-		public void addMessage(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
-			messages.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
-		}
-
-		public CarChaseArticulatable match(CarState s, TTSAction last) {
-			if (!isSituationMatching(s))
-				return null;
-			TTSAction[] matches = matches();
+				messages.add(new TTSAction(entry.getValue().typeStart, entry.getValue().typeEnd, entry.getValue().type, instanciate(entry.getValue().text, replace), entry.getValue().optional));
+			TTSAction[] matches = messages.toArray(new TTSAction[0]);
 			if (matches == null) return null;
 			MessageInformationLevel informationLevel = MessageInformationLevel.fromInteger(4 - s.speed);
 			HashMap<MessageInformationLevel,ArrayList<TTSAction>> actions = new HashMap<MessageInformationLevel,ArrayList<TTSAction>>();
@@ -503,58 +390,53 @@ public class CarChaseTTS {
 			return new CarChaseArticulatable(preferred, shorter, optional);
 		}
 
-		public TTSAction[] matches() {
-			return messages.values().toArray(new TTSAction[0]);
-		}
+		private void applyJunction(WorldPoint point, Street street, StringDict replace, int direction, ArrayList<String> streetNamesCrossNextPoint, boolean was) {
+			String prefix = was ? "WAS" : "IS";
+			String prevPrefix = was ? "PREV" : "";
+			boolean isEndOfStreet = street.fetchNextPoint(point, direction) == null;
 
-		public abstract boolean isSituationMatching(CarState s);
-	}
+			int isJunction = 0;
+			if (streetNamesCrossNextPoint.size() == 2 && streetNamesCrossNextPoint.indexOf(street.name) >= 0){
+				isJunction = isEndOfStreet ? 2 : 1;
 
-	private static class PatternSituation extends Situation {
-
-		public PatternSituation(boolean optional) {
-			super(optional);
-		}
-
-		public void addMessage(String key, TTSAction a, String newText) {
-			addMessage(key, newText, a.typeStart, a.typeEnd, a.type);
-		}
-
-		@Override
-		public boolean isSituationMatching(CarState s) {
-			return true;
-		}
-
-	}
-
-	public static class DrivingSituation extends Situation {
-		public String streetName, pointName, prevStreet;
-		public int distance, direction, prevDirection;
-		public int speed;
-
-		public DrivingSituation(boolean optional, String streetName, String pointName,
-				String prevStreet, int distance, int direction, int prevDirection) {
-			super(optional);
-			this.streetName = streetName;
-			this.pointName = pointName;
-			this.prevStreet = prevStreet;
-			this.distance = distance;
-			this.direction = direction;
-			this.prevDirection = prevDirection;
-		}
-
-		public boolean isSituationMatching(CarState s) {
-			if (s.speed == 0) return false;
-			if (!this.streetName.equals(s.streetName)) return false;
-			if (!this.prevStreet.equals(s.prevStreetName) && !this.prevStreet.equals("%")) return false;
-			if (!this.pointName.equals(s.pointName)) return false;
-			if (s.previousDistance > s.currentDistance) {
-				if (distance >= s.previousDistance || distance < s.currentDistance) return false;
+				int indexOfOther = 1 - streetNamesCrossNextPoint.indexOf(street.name);
+				assert streetNamesCrossNextPoint.indexOf(street.name) >= 0 : "Something somewhere went terribly wrong: " + streetNamesCrossNextPoint.toString() + street.name;
+				String streetName = streetNamesCrossNextPoint.get(indexOfOther);
+				Street crossStreet = CarChase.get().world().streets.get(streetName);
+				int indexInCross = crossStreet.streetPoints.indexOf(point.name);
+				if (indexInCross <= 0 || indexInCross >= crossStreet.streetPoints.size() - 1)
+					isJunction = 0;
+				else {
+					StreetReplacement streetRpl = streetNames.get(streetName);
+					if (streetRpl == null) streetRpl = new StreetReplacement(streetName);
+					replace.set("*INT" + prevPrefix + "JUNCTIONSTREET", streetName);
+					replace.set("*" + prevPrefix + "JUNCTIONSTREET", streetRpl.name);
+					replace.set("*FLEX1" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex1);
+					replace.set("*FLEX2" + prevPrefix + "JUNCTIONSTREET", streetRpl.flex2);
+				}
 			}
-			else if (distance < s.previousDistance || distance >= s.currentDistance) return false;
-			if (s.direction != direction) return false;
-			if (prevDirection != 0 && s.prevDirection != 0 && s.prevDirection != prevDirection) return false;
-			return true;
+			replace.set("*" + prefix + "JUNCTION", "" + isJunction);
+		}
+
+		private class Condition {
+			public String leftSide;
+			public String rightSide;
+			public char operator;
+			public boolean isDistance;
+
+			public Condition(String left, String right, String op) {
+				this.leftSide = left;
+				this.rightSide = right;
+				this.operator = op.charAt(0);
+				this.isDistance = leftSide.equals("*DISTANCE");
+			}
+		}
+
+		private String instanciate(String original, StringDict replace) {
+			String newString = original;
+			for (String key : replace.keyArray())
+				newString = newString.replace((CharSequence) key, replace.get(key));
+			return newString;
 		}
 	}
 
