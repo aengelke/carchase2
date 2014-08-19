@@ -161,7 +161,7 @@ public class CarChaseTTS {
 
 			articulator.printUpcoming();
 			// TODO: Implement this (less) important feature.
-			articulator.autoRemoveUpcoming();
+			articulator.reduceOffset();
 			articulator.say(finalAction);
 		}
 		private void addDispatchTask(CarState state) {

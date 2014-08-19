@@ -28,7 +28,7 @@ public abstract class Articulator {
 	public abstract Articulatable getLastUpcoming();
 	public abstract Articulatable getLast();
 	public abstract boolean isSpeaking();
-	public abstract void autoRemoveUpcoming();
+	public abstract void reduceOffset();
 	
 	public static abstract class Articulatable {
 		public abstract String getPreferredText();
