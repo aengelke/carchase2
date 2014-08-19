@@ -122,7 +122,7 @@ public class CarChaseExperimenter2 {
 		} while (true);
 		
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(14000);
 		} catch (InterruptedException e) {
 		}
 		System.exit(0);

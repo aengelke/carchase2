@@ -38,12 +38,12 @@ public class StandardArticulator extends Articulator {
 		return false;
 	}
 
-	public void autoRemoveUpcoming() {}
+	public void reduceOffset() {}
 	
 	private class MyIUSource extends IUModule {
 		protected void leftBufferUpdate(Collection<? extends IU> ius,
 				List<? extends EditMessage<? extends IU>> edits) {
-			throw new org.apache.commons.lang.NotImplementedException("StandardArticulator.MyIUSource is an IU source, it hence ignores its left buffer.");
+			throw CarChase.notImplemented;
 		}
 		public void say(Articulatable action) {
 			if (action.isOptional() && dispatcher.isSpeaking())

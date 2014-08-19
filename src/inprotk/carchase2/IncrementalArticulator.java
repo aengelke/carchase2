@@ -18,7 +18,7 @@ import inprotk.carchase2.CarChase;
 import inprotk.carchase2.StandardArticulator;
 
 public class IncrementalArticulator extends StandardArticulator {
-	private final MyIUSource myIUSource;
+	private final CarChaseIUSource ccIUSource;
 	
 	private ArrayList<Articulatable> articulates;
 	
@@ -26,9 +26,9 @@ public class IncrementalArticulator extends StandardArticulator {
 		super(dispatcher);
 		this.dispatcher = dispatcher;
 		synthesisModule = new SynthesisModule(dispatcher);
-		myIUSource = new MyIUSource();
-		myIUSource.addListener(synthesisModule);
-		//myIUSource.addListener(new MyCurrentHypothesisViewer().show());
+		ccIUSource = new CarChaseIUSource();
+		ccIUSource.addListener(synthesisModule);
+		//ccIUSource.addListener(new MyCurrentHypothesisViewer().show());
 		synthesisModule.addListener(new MyCurrentHypothesisViewer().show());
 		articulates = new ArrayList<Articulatable>();
 	}
@@ -41,19 +41,19 @@ public class IncrementalArticulator extends StandardArticulator {
 		
 		if (action == null) return;
 		articulates.add(action);
-		myIUSource.say(action);
+		ccIUSource.say(action, false);
 	}
 	
 	public Articulatable getLastUpcoming() {
-		IUextended iue = myIUSource.getLastUpcoming();
-		if (iue == null) return null;
-		return iue.action;
+		ChunkIU iu = ccIUSource.getLastUpcoming();
+		if (iu == null) return null;
+		return (Articulatable) iu.getUserData("articulatable");
 	}
 	
 	public Articulatable getLast() {
-		IUextended iue = myIUSource.getLast();
-		if (iue == null) return null;
-		return iue.action;
+		ChunkIU iu = ccIUSource.getLast();
+		if (iu == null) return null;
+		return (Articulatable) iu.getUserData("articulatable");
 	}
 	
 	public boolean isSpeaking() {
@@ -62,179 +62,144 @@ public class IncrementalArticulator extends StandardArticulator {
 	}
 	
 	public boolean spokeInLastSeconds(double seconds) {
-		IUextended iue = myIUSource.getLast();
-		if (iue == null) return dispatcher.isSpeaking();
-		double timeDelta = iue.inner.endTime() - CarChase.get().getInproTimeInSeconds() + seconds;
-		CarChase.log(iue.inner.startTime(), iue.inner.endTime(), timeDelta);
+		ChunkIU iu = ccIUSource.getLast();
+		if (iu == null) return dispatcher.isSpeaking();
+		double timeDelta = iu.endTime() - CarChase.get().getInproTimeInSeconds() + seconds;
+		CarChase.log(iu.startTime(), iu.endTime(), timeDelta);
 		if (true) throw CarChase.notImplemented;
 		return dispatcher.isSpeaking() || timeDelta >= 0;
 	}
 	
 	public void printUpcoming() {
-		ArrayList<IUextended> iues = myIUSource.getAllUpcoming();
+		/*ArrayList<? extends IU> ius = ccIUSource.getAllUpcoming();
 		CarChase.log("\n", "Upcoming:");
-		for (IUextended iue : iues) {
-			CarChase.log(" - Upcoming IU", iue.message, iue.duration, iue.hasHesitation);
-		}
+		for (IU iu : ius) {
+			Articulatable a = (Articulatable) iu.getUserData("articulatable");
+			CarChase.log(" - Upcoming IU", a.getPreferredText(), a.getShorterText(), iu.duration());
+		}*/
 	}
 	
-	public void autoRemoveUpcoming() {
-		ArrayList<IUextended> iues = myIUSource.getAllUpcoming();
-		double durationOverAll = 0;
-		double durationCanRevoked = 0;
-		for (IUextended iue : iues) {
-			durationOverAll += iue.inner.duration();
-			// This is buggy. TODO: fix.
-			if (iue.action.isOptional())
-				durationCanRevoked += iue.inner.duration();
-		}
-		if (durationOverAll > .5)
-			for (IUextended iue : iues)
-				if (iue.action.isOptional()) {
-					try {
-						Articulatable next = articulates.get(articulates.indexOf(iue.action) + 2);
-						if (next == null) throw new Exception();
-						CarChase.log(next.getPreferredText(), iue.action);
-						if (iue.action.canFollowOnPreferredText(next)) {
-							myIUSource.revoke(iue);
-							articulates.remove(iue.action);
-						}
-					} catch (Exception e) {
-						//e.printStackTrace();
-					}/*
-					myIUSource.revoke(iue);
-					articulates.remove(iue.action);*/
-				} else {
-					try {
-						Articulatable next = articulates.get(articulates.indexOf(iue.action) + 1);
-						if (next == null) throw new Exception();
-						if (iue.action.canFollowOnShorterText(next))
-							myIUSource.useShorter(iue);
-					} catch (Exception e) {
-						//e.printStackTrace();
-					}
+	public void reduceOffset() {
+		ccIUSource.beginChanges();
+		ArrayList<IU> ius = ccIUSource.revokeUpcoming();
+		for (IU iu : ius) {
+			if (!(iu instanceof ChunkIU)) continue;
+			Articulatable articulatable = (Articulatable) iu.getUserData("articulatable");
+			if (articulatable.isOptional()) {
+				//ccIUSource.revoke(iu);
+				articulates.remove(articulatable);
+				CarChase.log("ARU Revoked upcoming:", articulatable.getPreferredText());
+			} else if (articulatable.getShorterText() != null) {
+				int index = articulates.indexOf(articulatable);
+				Articulatable next;
+				if (index == -1) {
+					CarChase.log("ARU Removing old articulatable");
+					continue;
 				}
-		CarChase.log("Reduced distance from", durationOverAll, "to", durationOverAll - durationCanRevoked);
+				else if (index != articulates.size() - 1)
+					next = articulates.get(index + 1);
+				else next = null;
+				if (next == null || next.canFollowOnShorterText(articulatable)) {
+					ccIUSource.say(articulatable, true);
+					CarChase.log("ARU Shortened upcoming:", articulatable.getPreferredText(), articulatable.getShorterText());
+				}
+			} else {
+				ccIUSource.say(articulatable, false);
+			}
+		}
+		ccIUSource.doneChanges();
 		//throw CarChase.notImplemented;
 	}
 	
-	private class IUextended {
-		private ArticulatableIU inner;
-		private HesitationIU hesitationIU;
-		private String message;
-		private double duration;
-		private boolean hasHesitation;
-		private Articulatable action;
-		
-		private IUextended(ArticulatableIU iu, HesitationIU hesitation) {
-			this.inner = iu;
-			this.hasHesitation = hesitation != null;
-			this.hesitationIU = hesitation;
-			this.action = inner.action;
-			this.message = iu.getWord();
-			this.duration = iu.duration();
-		}
-		
-		public String toString() {
-			return message + "," + hasHesitation;// + "," + inner.toString();
-		}
-	}
-	
-	private class MyIUSource extends IUModule {
+	private class CarChaseIUSource extends IUModule {
+		private boolean changing;
 
 		protected void leftBufferUpdate(Collection<? extends IU> ius,
 				List<? extends EditMessage<? extends IU>> edits) {
 			throw CarChase.notImplemented;
 		}
-		
-		public void useShorter(IUextended iue) {
-			throw CarChase.notImplemented;
-		}
 
-		public IUextended getLastUpcoming() {
-			IUextended lastIU = getLast();
+		public ChunkIU getLastUpcoming() {
+			ChunkIU lastIU = getLast();
 			if (lastIU == null) return null;
-			if (lastIU.inner.getProgress() != Progress.UPCOMING) return null;
+			if (lastIU.getProgress() != Progress.UPCOMING) return null;
 			return lastIU;
 		}
 		
-		public IUextended getLast() {
-			if (rightBuffer.getBuffer().size() == 0) return null;
-			IU lastIU = rightBuffer.getBuffer().get(rightBuffer.getBuffer().size() - 1);
-			
-			boolean hesitation = lastIU instanceof HesitationIU;
-			HesitationIU hesIU = (HesitationIU) (hesitation ? lastIU : null);
-			if (hesitation)
-				lastIU = rightBuffer.getBuffer().get(rightBuffer.getBuffer().size() - 2);
-			
-			ArticulatableIU chunk = (ArticulatableIU) lastIU;
-			
-			return new IUextended(chunk, hesIU);
-		}
-		
-		public void revokeAllUpcoming() {
-			ArrayList<IUextended> ius = getAllUpcoming();
-			for (IUextended iue : ius) {
-				if (iue.hasHesitation)
-					rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iue.hesitationIU));
-				rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iue.inner));
+		public ChunkIU getLast() {
+			for (int i = rightBuffer.getBuffer().size() - 1; i >= 0; i--) {
+				IU lastIU = rightBuffer.getBuffer().get(i);
+				
+				if (lastIU instanceof HesitationIU) continue;
+				if (!(lastIU instanceof ChunkIU)) {
+					CarChase.log("WARNING: IU is not a ChunkIU. Ignoring.");
+					continue;
+				}
+				return (ChunkIU) lastIU;
 			}
-			rightBuffer.notify(iulisteners);
+			return null;
 		}
 		
-		public void revoke(IUextended iue) {
-			if (iue.hasHesitation)
-				rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iue.hesitationIU));
-			rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iue.inner));
+		public void revoke(IU iu) {
+			rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iu));
+			if (!changing)
+				rightBuffer.notify(iulisteners);
 		}
 		
-		public ArrayList<IUextended> getAllUpcoming() {
-			ArrayList<IUextended> upcoming = new ArrayList<IUextended>();
+		public ArrayList<IU> revokeUpcoming() {
+			ArrayList<IU> upcoming = new ArrayList<IU>();
+			for (IU lastIU : rightBuffer.getBuffer())  {
+				if (lastIU.getProgress() != Progress.UPCOMING) continue;
+				upcoming.add((ChunkIU) lastIU);
+			}
+			for (IU iu : upcoming)
+				rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iu));
+			if (!changing)
+				rightBuffer.notify(iulisteners);
+			return upcoming;
+		}
+		
+		public ArrayList<ChunkIU> getAllUpcoming() {
+			ArrayList<ChunkIU> upcoming = new ArrayList<ChunkIU>();
 			for (int i = 0; i < rightBuffer.getBuffer().size(); i++)  {
-				IU lastIU = rightBuffer.getBuffer().get(i); // Its an ArticulatableIU
+				IU lastIU = rightBuffer.getBuffer().get(i);
 				
 				if (lastIU.getProgress() != Progress.UPCOMING) continue;
-				boolean hesitation = lastIU instanceof HesitationIU;
-				HesitationIU hesIU = (HesitationIU) (hesitation ? lastIU : null);
-				if (hesitation) {
-					lastIU = rightBuffer.getBuffer().get(rightBuffer.getBuffer().size() - 2);
-					if (lastIU.getProgress() != Progress.UPCOMING) continue;
+				if (lastIU instanceof HesitationIU) continue;
+				if (!(lastIU instanceof ChunkIU)) {
+					CarChase.log("WARNING: IU is not a ChunkIU. Ignoring.");
+					continue;
 				}
-				
-				ArticulatableIU chunk = (ArticulatableIU) lastIU;
-				
-				upcoming.add(new IUextended(chunk, hesIU));
+				upcoming.add((ChunkIU) lastIU);
 			}
 			
 			return upcoming;
 		}
 		
-		public void say(Articulatable action) {
+		public void say(Articulatable action, boolean shorter) {
 			String text = action.getPreferredText();
 			boolean addHesitation = false;
 			if (text.matches(".*<hes>$")) {
 				text = text.replaceAll(" <hes>$", "");
 				addHesitation = true;
 			}
-			rightBuffer.addToBuffer(new ArticulatableIU(text, action));
+			ChunkIU iu = new ChunkIU(text);
+			iu.setUserData("articulatable", action);
+			rightBuffer.addToBuffer(iu);
 			if (addHesitation) {
 				rightBuffer.addToBuffer(new HesitationIU());
 			}
-			rightBuffer.notify(iulisteners);
+			if (!changing)
+				rightBuffer.notify(iulisteners);
 		}
 		
-	}
-	
-	/**
-	 * A ChunkIU, which contains a TTSAction. Used for getting 
-	 * the TTSAction and its type, etc.
-	 */
-	private static class ArticulatableIU extends ChunkIU {
-		private Articulatable action;
-		public ArticulatableIU(String chunkText, Articulatable action) {
-			super(chunkText);
-			this.action = action;
+		public void beginChanges() {
+			changing = true;
+		}
+		
+		public void doneChanges() {
+			changing = false;
+			rightBuffer.notify(iulisteners);
 		}
 	}
-
 }

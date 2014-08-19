@@ -68,15 +68,15 @@ public class CarChase {
 	private Configuration makeConfig() {
 		this.configName = "config";
 		// For non-interactive:
-		return new Configuration(getConfigFilename(configName + ".txt"));
-		// return new InteractiveConfiguration();
+		//return new Configuration(getConfigFilename(configName + ".txt"));
+		return new InteractiveConfiguration();
 	}
 	
 	public void init(String name) {
 		configSet = name;
 		world = new World(getConfigFilename("world.txt"));
 		config = makeConfig();
-		tts = new CarChaseTTS(getConfigFilename("messages.txt"), getConfigFilename("patterns.txt"));
+		tts = new CarChaseTTS(getConfigFilename("patterns.txt"));
 	}
 	
 	public boolean isInteractive() {

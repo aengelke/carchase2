@@ -1,0 +1,20 @@
+# Filename: config.txt         #
+# Author: Alexis Engelke 2014  #
+################################
+#
+# File-Format:
+# StartPoint: POINTNAME, STREETNAME, [-|+], DISTANCE # DISTANCE has to be 0 (not implemented)
+# StartDirection: 
+# --- direction, [0..n] # n-te Ausfahrt (vlnr.)
+# --- speed [time in ms] [0..10] # NOT IMPLEMENTED!!
+# ...
+#
+Start: B-T, Breite Strasse, +, 0
+--- speed, 0, 1
+#--- speed, 14000, 2
+--- speed, 24000, 2
+--- direction, 1
+--- direction, 0
+--- direction, 1
+--- direction, 0
+#
