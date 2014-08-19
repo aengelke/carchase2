@@ -182,7 +182,7 @@ public class CarChaseViewer extends PApplet {
 		int rotationDuration = 0;
 		if (carStartAngle != carTargetAngle && a.percent == 0) {
 			boolean inverse = carStartAngle < carTargetAngle;
-			rotationDuration = (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed) * (!inverse ? 1.4 : 1.8));
+			rotationDuration = (int) (2 * Math.abs(carAngle - carTargetAngle) * (20 / a.speed) * (!inverse ? 1.4 : 1.2));
 			segments.add(new CircleSegment(start, rotationDuration, getTime() - millisToSkip, carStartAngle, carTargetAngle));
 		}
 		
