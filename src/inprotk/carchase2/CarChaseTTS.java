@@ -306,7 +306,12 @@ public class CarChaseTTS {
 			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
 		}
 
-		private void instantiateVariables(CarState s) {
+		private StringDict instantiateVariables(CarState s) {
+			World w = CarChase.get().world();
+			Street currentStreet = w.streets.get(s.streetName);
+			Street prevStreet = w.streets.get(s.prevStreetName);
+			WorldPoint nextPoint = w.points.get(s.nextPointName);
+			WorldPoint prevPoint = w.points.get(s.prevPointName);
 			StringDict replace = new StringDict();
 			replace.set("*INTSTREET", s.streetName);
 			replace.set("*INTPREVSTREET", s.prevStreetName);
@@ -337,15 +342,7 @@ public class CarChaseTTS {
 		}
 
 		public CarChaseArticulatable match(CarState s, TTSAction last) {
-			World w = CarChase.get().world();
-			Street currentStreet = w.streets.get(s.streetName);
-			Street prevStreet = w.streets.get(s.prevStreetName);
-			WorldPoint nextPoint = w.points.get(s.nextPointName);
-			WorldPoint prevPoint = w.points.get(s.prevPointName);
-
-			StringDict replce = instantiateVariables(s);
-
-
+			StringDict replace = instantiateVariables(s);
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
 				String instancedRightSide = instanciate(cond.rightSide, replace);
