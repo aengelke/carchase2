@@ -41,7 +41,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		
 		if (action == null) return;
 		articulates.add(action);
-		ccIUSource.say(action, false);
+		ccIUSource.say(action, false, false);
 	}
 	
 	public Articulatable getLast() {
@@ -85,11 +85,11 @@ public class IncrementalArticulator extends StandardArticulator {
 					next = articulates.get(index + 1);
 				else next = null;
 				if (next == null || next.canFollowOnShorterText(articulatable)) {
-					ccIUSource.say(articulatable, true);
+					ccIUSource.say(articulatable, true, true);
 					CarChase.log("ARU Shortened upcoming:", articulatable.getPreferredText(), articulatable.getShorterText());
 				}
 			} else {
-				ccIUSource.say(articulatable, false);
+				ccIUSource.say(articulatable, false, true);
 			}
 		}
 		ccIUSource.doneChanges();
@@ -116,6 +116,7 @@ public class IncrementalArticulator extends StandardArticulator {
 			ArrayList<IU> upcoming = new ArrayList<IU>();
 			for (IU lastIU : rightBuffer.getBuffer())  {
 				if (lastIU.getProgress() != Progress.UPCOMING) continue;
+				if (lastIU.isCommitted()) continue;
 				upcoming.add((ChunkIU) lastIU);
 			}
 			for (IU iu : upcoming)
@@ -125,7 +126,7 @@ public class IncrementalArticulator extends StandardArticulator {
 			return upcoming;
 		}
 		
-		public void say(Articulatable action, boolean shorter) {
+		public void say(Articulatable action, boolean shorter, boolean commit) {
 			String text = action.getPreferredText();
 			boolean addHesitation = false;
 			if (text.matches(".*<hes>$")) {
@@ -135,9 +136,10 @@ public class IncrementalArticulator extends StandardArticulator {
 			ChunkIU iu = new ChunkIU(text);
 			iu.setUserData("articulatable", action);
 			rightBuffer.addToBuffer(iu);
-			if (addHesitation) {
+			if (addHesitation)
 				rightBuffer.addToBuffer(new HesitationIU());
-			}
+			if (commit)
+				rightBuffer.editBuffer(new EditMessage<IU>(EditType.COMMIT, iu));
 			if (!changing)
 				rightBuffer.notify(iulisteners);
 		}
