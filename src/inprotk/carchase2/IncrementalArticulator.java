@@ -44,12 +44,6 @@ public class IncrementalArticulator extends StandardArticulator {
 		ccIUSource.say(action, false);
 	}
 	
-	public Articulatable getLastUpcoming() {
-		ChunkIU iu = ccIUSource.getLastUpcoming();
-		if (iu == null) return null;
-		return (Articulatable) iu.getUserData("articulatable");
-	}
-	
 	public Articulatable getLast() {
 		ChunkIU iu = ccIUSource.getLast();
 		if (iu == null) return null;
@@ -68,15 +62,6 @@ public class IncrementalArticulator extends StandardArticulator {
 		CarChase.log(iu.startTime(), iu.endTime(), timeDelta);
 		if (true) throw CarChase.notImplemented;
 		return dispatcher.isSpeaking() || timeDelta >= 0;
-	}
-	
-	public void printUpcoming() {
-		/*ArrayList<? extends IU> ius = ccIUSource.getAllUpcoming();
-		CarChase.log("\n", "Upcoming:");
-		for (IU iu : ius) {
-			Articulatable a = (Articulatable) iu.getUserData("articulatable");
-			CarChase.log(" - Upcoming IU", a.getPreferredText(), a.getShorterText(), iu.duration());
-		}*/
 	}
 	
 	public void reduceOffset() {
@@ -108,7 +93,6 @@ public class IncrementalArticulator extends StandardArticulator {
 			}
 		}
 		ccIUSource.doneChanges();
-		//throw CarChase.notImplemented;
 	}
 	
 	private class CarChaseIUSource extends IUModule {
@@ -118,32 +102,14 @@ public class IncrementalArticulator extends StandardArticulator {
 				List<? extends EditMessage<? extends IU>> edits) {
 			throw CarChase.notImplemented;
 		}
-
-		public ChunkIU getLastUpcoming() {
-			ChunkIU lastIU = getLast();
-			if (lastIU == null) return null;
-			if (lastIU.getProgress() != Progress.UPCOMING) return null;
-			return lastIU;
-		}
 		
 		public ChunkIU getLast() {
 			for (int i = rightBuffer.getBuffer().size() - 1; i >= 0; i--) {
 				IU lastIU = rightBuffer.getBuffer().get(i);
-				
-				if (lastIU instanceof HesitationIU) continue;
-				if (!(lastIU instanceof ChunkIU)) {
-					CarChase.log("WARNING: IU is not a ChunkIU. Ignoring.");
-					continue;
-				}
+				if (!(lastIU instanceof ChunkIU)) continue;
 				return (ChunkIU) lastIU;
 			}
 			return null;
-		}
-		
-		public void revoke(IU iu) {
-			rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iu));
-			if (!changing)
-				rightBuffer.notify(iulisteners);
 		}
 		
 		public ArrayList<IU> revokeUpcoming() {
@@ -156,23 +122,6 @@ public class IncrementalArticulator extends StandardArticulator {
 				rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iu));
 			if (!changing)
 				rightBuffer.notify(iulisteners);
-			return upcoming;
-		}
-		
-		public ArrayList<ChunkIU> getAllUpcoming() {
-			ArrayList<ChunkIU> upcoming = new ArrayList<ChunkIU>();
-			for (int i = 0; i < rightBuffer.getBuffer().size(); i++)  {
-				IU lastIU = rightBuffer.getBuffer().get(i);
-				
-				if (lastIU.getProgress() != Progress.UPCOMING) continue;
-				if (lastIU instanceof HesitationIU) continue;
-				if (!(lastIU instanceof ChunkIU)) {
-					CarChase.log("WARNING: IU is not a ChunkIU. Ignoring.");
-					continue;
-				}
-				upcoming.add((ChunkIU) lastIU);
-			}
-			
 			return upcoming;
 		}
 		

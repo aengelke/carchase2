@@ -13,21 +13,17 @@ import inpro.incremental.unit.IU;
 import inprotk.carchase2.CarChaseTTS.TTSAction;
 
 public class StandardArticulator extends Articulator {
-	private final MyIUSource myIUSource;
+	private final CarChaseIUSource ccIUSource;
 
 	public StandardArticulator(DispatchStream dispatcher) {
 		super(dispatcher);
 		synthesisModule = new SynthesisModule(dispatcher);
-		myIUSource = new MyIUSource();
-		myIUSource.addListener(synthesisModule);
+		ccIUSource = new CarChaseIUSource();
+		ccIUSource.addListener(synthesisModule);
 	}
 
 	public void say(Articulatable action) {
-		myIUSource.say(action);
-	}
-
-	public Articulatable getLastUpcoming() {
-		return null;
+		ccIUSource.say(action);
 	}
 
 	public Articulatable getLast() {
@@ -40,7 +36,7 @@ public class StandardArticulator extends Articulator {
 
 	public void reduceOffset() {}
 	
-	private class MyIUSource extends IUModule {
+	private class CarChaseIUSource extends IUModule {
 		protected void leftBufferUpdate(Collection<? extends IU> ius,
 				List<? extends EditMessage<? extends IU>> edits) {
 			throw CarChase.notImplemented;

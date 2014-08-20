@@ -25,7 +25,6 @@ public abstract class Articulator {
 	}
 
 	public void printUpcoming() {}
-	public abstract Articulatable getLastUpcoming();
 	public abstract Articulatable getLast();
 	public abstract boolean isSpeaking();
 	public abstract void reduceOffset();
