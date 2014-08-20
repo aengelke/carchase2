@@ -71,23 +71,10 @@ public class IncrementalArticulator extends StandardArticulator {
 			if (!(iu instanceof ChunkIU)) continue;
 			Articulatable articulatable = (Articulatable) iu.getUserData("articulatable");
 			if (articulatable.isOptional()) {
-				//ccIUSource.revoke(iu);
 				articulates.remove(articulatable);
-				CarChase.log("ARU Revoked upcoming:", articulatable.getPreferredText());
 			} else if (articulatable.getShorterText() != null) {
-				int index = articulates.indexOf(articulatable);
-				Articulatable next;
-				if (index == -1) {
-					CarChase.log("ARU Removing old articulatable");
-					continue;
-				}
-				else if (index != articulates.size() - 1)
-					next = articulates.get(index + 1);
-				else next = null;
-				if (next == null || next.canFollowOnShorterText(articulatable)) {
-					ccIUSource.say(articulatable, true, true);
-					CarChase.log("ARU Shortened upcoming:", articulatable.getPreferredText(), articulatable.getShorterText());
-				}
+				articulatable.setUseOfShorterText(true);
+				ccIUSource.say(articulatable, true, true);
 			} else {
 				ccIUSource.say(articulatable, false, true);
 			}

@@ -481,20 +481,7 @@ public class CarChaseTTS {
 			return optional;
 		}
 
-		public boolean canFollowOnShorterText(Articulatable next) {
-			if (!(next instanceof CarChaseArticulatable))
-				return false;
-			if (shorter == null)
-				return false;
-			return true; // We only use shorter versions, if they are compatible.
-		}
-
-		public boolean canFollowOnPreferredText(Articulatable next) {
-			if (!(next instanceof CarChaseArticulatable))
-				return false;
-			CarChase.log(((CarChaseArticulatable) next).preferred.typeStart.getType(), preferred.typeEnd.getType());
-			return ((CarChaseArticulatable) next).preferred.typeStart.getType() == preferred.typeEnd.getType();
-		}
+		public void setUseOfShorterText(boolean value) {}
 
 		public String toString() {
 			return "----\n--pr-" + preferred.text + "\n--sh-" + (shorter == null ? "null" : shorter.text);
