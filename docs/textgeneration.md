@@ -5,21 +5,13 @@ structures which are called "patterns".
 
 The patterns for generating sentences or concatenations are parsed from a file. This
 file contains the definition of patterns. A pattern defines _many_ situations.
-Each pattern has a situation type and defines conditions and some message 
+Each pattern has an optional flag and defines conditions and some message 
 templates. A message template has an information level, one message type for both, 
 the beginning and the ending and the message, which can contains variables. A 
 variable is replaced at the runtime with the actual content, e.g. a `street` variable 
 will be replaced with the current street. At the runtime, on every update the 
 patterns, where all conditions are met, are determined and one message with a fitting
 type and information level will be chosen for the output.
-
-As not all situations can be defined by a pattern, some situations are parsed 
-from a `messages.txt` file. It specifies situations which cannot be put in 
-general rules. Similar to the patterns, a situations has conditions and specifies
-some messages.
-
-If there is a matching situation from the messages file, these will be preferred
-over automatically generated situations.
 
 ## Patterns
 As mentioned above, there are variables, that will be replaced at runtime. Every pattern
@@ -58,18 +50,6 @@ Here's a list of
 | _angle_ | The angle between the current and the previous street |
 | _leftright_ | after a junction: whether the car turns left or right |
 
-## Situations
-Currently, there is only one situation type, more are coming in future. (Planned
-    situations are written in italic.) Every situation has an "optional" flag.
-With the implementation of the patterns, situation definitions are barely used.
-
-| Type | Parameters |
-| ---- | ---------- |
-| Driving | Street, Previous-Street, Point, Distance to point, Direction, Previous-Direction |
-| _Beginning_ | Street, Point, Distance to Point, Speed |
-| _Path_ | Current Street, Previous Street 1, Previous Street 2, ... |
-| _Speed_ | Street, Speed, Old-Speed |
-
 ## Information level
 Messages with a higher information level usually take
 more time. Therefore, if the car has a high speed, the messages with a lower
@@ -87,8 +67,9 @@ the number of the previous or following message has to match. (Message types are
 On every update of the car's position, the dispatch thread will be notified
 check whether a situation matches and to dispatch it. If there are two or more
 situations matching, the first, which offers a continuation to the current
-sentence will be chosen. If there are upcoming sentences, and the duration of
-these sentences is longer than 2 seconds, all optional sentences will be
-revoked. _In future, continuations will also be appended, if there is a 
-break of some seconds. Furthermore, if a text is revoked, it will be replaced
-with one message of a lower information level, which is designed to be shorter._
+sentence will be chosen. If there are upcoming sentences
+all optional sentences will be
+revoked. Otherwise, it will be replaced
+with one message of a lower information level, which is designed to be shorter.
+_In future, continuations will also be appended, if there is a 
+break of some seconds. _
