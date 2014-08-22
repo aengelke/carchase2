@@ -481,6 +481,12 @@ public class CarChaseTTS {
 			return optional;
 		}
 
+		public boolean canReplace(Articulatable other) {
+			if (other == null || !(other instanceof CarChaseArticulatable)) return false;
+			CarChaseArticulatable cca = (CarChaseArticulatable) other;
+			return cca.preferred.typeStart == preferred.typeStart;
+		}
+
 		public void setUseOfShorterText(boolean value) {}
 
 		public String toString() {

@@ -71,8 +71,18 @@ public class IncrementalArticulator extends StandardArticulator {
 			if (!(iu instanceof ChunkIU)) continue;
 			Articulatable articulatable = (Articulatable) iu.getUserData("articulatable");
 			if (articulatable.isOptional()) {
-				articulates.remove(articulatable);
-			} else if (articulatable.getShorterText() != null) {
+				boolean canRemove = true;
+				int index = articulates.indexOf(articulatable);
+				if (index >= 0 && index < articulates.size() - 1) {
+					Articulatable next = articulates.get(index + 1);
+					canRemove = next.canReplace(articulatable);
+				}
+				if (canRemove) {
+					articulates.remove(articulatable);
+					continue;
+				} // Otherwise, we try to use the shorter variant.
+			}
+			if (articulatable.getShorterText() != null) {
 				articulatable.setUseOfShorterText(true);
 				ccIUSource.say(articulatable, true, true);
 			} else {
@@ -101,13 +111,16 @@ public class IncrementalArticulator extends StandardArticulator {
 		
 		public ArrayList<IU> revokeUpcoming() {
 			ArrayList<IU> upcoming = new ArrayList<IU>();
+			ArrayList<IU> all = new ArrayList<IU>();
 			for (IU lastIU : rightBuffer.getBuffer())  {
 				if (lastIU.getProgress() != Progress.UPCOMING) continue;
 				if (lastIU.isCommitted()) continue;
-				upcoming.add((ChunkIU) lastIU);
+				all.add(lastIU);
+				if (!(lastIU instanceof ChunkIU)) continue;
+				upcoming.add(lastIU);
 			}
-			for (IU iu : upcoming)
-				rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, iu));
+			for (int i = all.size() - 1; i >= 0; i--)
+				rightBuffer.editBuffer(new EditMessage<IU>(EditType.REVOKE, all.get(i)));
 			if (!changing)
 				rightBuffer.notify(iulisteners);
 			return upcoming;

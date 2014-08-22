@@ -34,5 +34,6 @@ public abstract class Articulator {
 		public abstract String getShorterText();
 		public abstract boolean isOptional();
 		public abstract void setUseOfShorterText(boolean value);
+		public abstract boolean canReplace(Articulatable articulatable);
 	}
 }
