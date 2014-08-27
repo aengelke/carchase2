@@ -28,7 +28,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		synthesisModule = new SynthesisModule(dispatcher);
 		ccIUSource = new CarChaseIUSource();
 		ccIUSource.addListener(synthesisModule);
-		//ccIUSource.addListener(new MyCurrentHypothesisViewer().show());
+		ccIUSource.addListener(new CurrentHypothesisViewer().show());
 		synthesisModule.addListener(new MyCurrentHypothesisViewer().show());
 		articulates = new ArrayList<Articulatable>();
 	}
@@ -70,6 +70,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		for (IU iu : ius) {
 			if (!(iu instanceof ChunkIU)) continue;
 			Articulatable articulatable = (Articulatable) iu.getUserData("articulatable");
+			CarChase.log("RO", articulatable.isOptional(), articulatable.getPreferredText(), articulatable.getShorterText());
 			if (articulatable.isOptional()) {
 				boolean canRemove = true;
 				int index = articulates.indexOf(articulatable);
@@ -127,7 +128,7 @@ public class IncrementalArticulator extends StandardArticulator {
 		}
 		
 		public void say(Articulatable action, boolean shorter, boolean commit) {
-			String text = action.getPreferredText();
+			String text = shorter ? action.getShorterText() : action.getPreferredText();
 			boolean addHesitation = false;
 			if (text.matches(".*<hes>$")) {
 				text = text.replaceAll(" <hes>$", "");

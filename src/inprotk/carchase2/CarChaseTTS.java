@@ -179,22 +179,22 @@ public class CarChaseTTS {
 		}
 	}
 
-	public static class TTSAction {
+	public static class Message {
 		public MessageType typeStart, typeEnd;
-		public MessageInformationLevel type;
+		public MessageInformationLevel ilevel;
 		public String text;
 		public boolean optional;
 
-		private TTSAction(MessageType typeStart, MessageType typeEnd, MessageInformationLevel type, String text, boolean optional) {
+		private Message(MessageType typeStart, MessageType typeEnd, MessageInformationLevel type, String text, boolean optional) {
 			this.typeStart = typeStart;
 			this.typeEnd = typeEnd;
-			this.type = type;
+			this.ilevel = type;
 			this.text = text;
 			this.optional = optional;
 		}
 
 		public String toString() {
-			return "[TTSAction text=" + text + ",level=" + type.toString() + "]";
+			return "[TTSAction text=" + text + ",level=" + ilevel.toString() + "]";
 		}
 	}
 
@@ -228,10 +228,10 @@ public class CarChaseTTS {
 		// F geht immer, wenn der vorige Satz keinen nachfolgenden braucht.
 
 		private boolean requiresSentence;
-		private int type;
+		private int manner;
 		private MessageType(boolean requiresSentence) {
 			this.requiresSentence = requiresSentence;
-			this.type = Integer.parseInt(toString().substring(1));
+			this.manner = Integer.parseInt(toString().substring(1));
 		}
 
 		/**
@@ -242,17 +242,17 @@ public class CarChaseTTS {
 			return requiresSentence;
 		}
 
-		public int getType() {
-			return type;
+		public int getManner() {
+			return manner;
 		}
 	}
 
 	public class Pattern {
 		protected boolean optional;
-		public HashMap<String, TTSAction> templates;
+		public HashMap<String, Message> templates;
 		public ArrayList<Condition> conditions;
 		public Pattern(boolean optional) {
-			templates = new HashMap<String, TTSAction>();
+			templates = new HashMap<String, Message>();
 			conditions = new ArrayList<Condition>();
 			this.optional = optional;
 		}
@@ -265,7 +265,7 @@ public class CarChaseTTS {
 
 		public void addTemplate(String key, String value, MessageType sortStart, MessageType sortEnd, MessageInformationLevel type) {
 			if (templates.containsKey(key)) CarChase.log("WARNING: Duplicate key", key);
-			templates.put(key, new TTSAction(sortStart, sortEnd, type, value, optional));
+			templates.put(key, new Message(sortStart, sortEnd, type, value, optional));
 		}
 
 		private StringDict instantiateVariables(CarState s) {
@@ -304,7 +304,7 @@ public class CarChaseTTS {
 		}
 
 		public CarChaseArticulatable match(CarState s, CarChaseArticulatable lastArticulatable) {
-			TTSAction last = lastArticulatable != null ? lastArticulatable.preferred : null;
+			Message last = lastArticulatable != null ? lastArticulatable.preferred : null;
 			StringDict replace = instantiateVariables(s);
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
@@ -331,66 +331,64 @@ public class CarChaseTTS {
 				}
 			}
 
-			ArrayList<TTSAction> messages = new ArrayList<TTSAction>();
-			for (Map.Entry<String, TTSAction> entry : templates.entrySet())
-				messages.add(new TTSAction(entry.getValue().typeStart, entry.getValue().typeEnd, entry.getValue().type, instanciate(entry.getValue().text, replace), entry.getValue().optional));
-			TTSAction[] matches = messages.toArray(new TTSAction[0]);
+			ArrayList<Message> instancedMessages = new ArrayList<Message>();
+			for (Map.Entry<String, Message> entry : templates.entrySet())
+				instancedMessages.add(new Message(entry.getValue().typeStart, entry.getValue().typeEnd, entry.getValue().ilevel, instanciate(entry.getValue().text, replace), entry.getValue().optional));
+			Message[] matches = instancedMessages.toArray(new Message[0]);
 			if (matches == null) return null;
-			MessageInformationLevel informationLevel = MessageInformationLevel.fromInteger(4 - s.speed);
-			HashMap<MessageInformationLevel,ArrayList<TTSAction>> actions = new HashMap<MessageInformationLevel,ArrayList<TTSAction>>();
+			HashMap<MessageInformationLevel,ArrayList<Message>> messages = new HashMap<MessageInformationLevel,ArrayList<Message>>();
 			for (MessageInformationLevel level : MessageInformationLevel.values())
-				actions.put(level, new ArrayList<TTSAction>());
-			for (TTSAction action : matches) {
-				// If last is null, we assume that we currently say nothing.
-				// If last is not null, we (have to) should try to append a continuation,
-				// as the dispatcher always asks for both, last = null and last != null.
-				//  XXX: Can this be solved better? [ F1 R1 ]  pause  [ F3 R1 ]
+				messages.put(level, new ArrayList<Message>());
+			for (Message message : matches)
 				if (last == null)
-				{
-					if (!action.typeStart.requiresSentence())
-						actions.get(action.type).add(action);
-				}
-				else if (last.typeEnd.requiresSentence()) {
-					if (action.typeStart.getType() == last.typeEnd.getType())
-						actions.get(action.type).add(action);
-				}
-				else if (action.typeStart.requiresSentence()) {
-					if (action.typeStart.getType() == last.typeEnd.getType())
-						actions.get(action.type).add(action);
-				}
-			}
+					if (!message.typeStart.requiresSentence())
+						messages.get(message.ilevel).add(message);
+					else;
+				else if (last.typeEnd.requiresSentence())
+					if (message.typeStart.getManner() == last.typeEnd.getManner() && message.typeStart.requiresSentence())
+						messages.get(message.ilevel).add(message);
+					else;
+				else if (message.typeStart.requiresSentence())
+					if (message.typeStart.getManner() == last.typeEnd.getManner())
+						messages.get(message.ilevel).add(message);
 
 			Random random = new Random();
-			ArrayList<TTSAction> posPreferred = null, posShorter = null;
-			if (actions.get(informationLevel).size() > 0) {
-				posPreferred = actions.get(informationLevel);
+			
+			// Compute ideal information level
+			MessageInformationLevel informationLevel = MessageInformationLevel.fromInteger(4 - s.speed);
+			ArrayList<Message> posPreferred = null, posShorter = null;
+			if (messages.get(informationLevel).size() > 0) {
+				posPreferred = messages.get(informationLevel);
 			} else {
 				for (int distance = 1; distance < MessageInformationLevel.values().length; distance++) {
 					MessageInformationLevel lowerLevel = MessageInformationLevel.fromInteger(4 - s.speed - distance);
 					MessageInformationLevel higherLevel = MessageInformationLevel.fromInteger(4 - s.speed + distance);
-					if (actions.get(lowerLevel).size() > 0) {
-						posPreferred = actions.get(lowerLevel);
+					if (messages.get(lowerLevel).size() > 0) {
+						posPreferred = messages.get(lowerLevel);
+						break;
 					}
-					else if (actions.get(higherLevel).size() > 0) {
-						posPreferred = actions.get(higherLevel);
+					else if (messages.get(higherLevel).size() > 0) {
+						posPreferred = messages.get(higherLevel);
+						break;
 					}
 				}
 			}
 
 			for (int i = 1; i < MessageInformationLevel.values().length; i++) {
-				if (actions.get(MessageInformationLevel.fromInteger(i)).size() > 0) {
-					posShorter = actions.get(MessageInformationLevel.fromInteger(i));
+				if (messages.get(MessageInformationLevel.fromInteger(i)).size() > 0) {
+					posShorter = messages.get(MessageInformationLevel.fromInteger(i));
+					break;
 				}
 			}
 			
 			if (posPreferred == null) return null;
-			if (posShorter == null) posShorter = new ArrayList<TTSAction>();
+			if (posShorter == null) posShorter = new ArrayList<Message>();
 			
 			// now we find a pair of preferred and shorter message with the same start and end types.
-			HashMap<TTSAction, TTSAction> mapping = new HashMap<TTSAction, TTSAction>();
-			for (TTSAction pref : posPreferred) {
+			HashMap<Message, Message> mapping = new HashMap<Message, Message>();
+			for (Message pref : posPreferred) {
 				boolean put = false;
-				for (TTSAction m : posShorter) {
+				for (Message m : posShorter) {
 					if (pref.typeStart != m.typeStart || pref.typeEnd != m.typeEnd)
 						continue;
 					mapping.put(pref, m);
@@ -403,7 +401,7 @@ public class CarChaseTTS {
 			if (mapping.size() == 0) return null;
 			
 			int chosen = random.nextInt(mapping.size());
-			Map.Entry<TTSAction, TTSAction> result = (Map.Entry<TTSAction, TTSAction>) mapping.entrySet().toArray()[chosen];
+			Map.Entry<Message, Message> result = (Map.Entry<Message, Message>) mapping.entrySet().toArray()[chosen];
 
 			return new CarChaseArticulatable(result.getKey(), result.getValue(), optional);
 		}
@@ -459,10 +457,10 @@ public class CarChaseTTS {
 	}
 
 	public static class CarChaseArticulatable extends Articulatable {
-		private TTSAction preferred, shorter;
+		private Message preferred, shorter;
 		private boolean optional;
 
-		public CarChaseArticulatable(TTSAction preferred, TTSAction shorter, boolean optional) {
+		public CarChaseArticulatable(Message preferred, Message shorter, boolean optional) {
 			this.preferred = preferred;
 			this.shorter = shorter;
 			this.optional = optional;

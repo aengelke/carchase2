@@ -10,7 +10,6 @@ import inpro.incremental.processor.SynthesisModule;
 import inpro.incremental.unit.ChunkIU;
 import inpro.incremental.unit.EditMessage;
 import inpro.incremental.unit.IU;
-import inprotk.carchase2.CarChaseTTS.TTSAction;
 
 public class StandardArticulator extends Articulator {
 	private final CarChaseIUSource ccIUSource;

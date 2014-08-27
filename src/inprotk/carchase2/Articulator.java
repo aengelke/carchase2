@@ -3,7 +3,6 @@ package inprotk.carchase2;
 import inprotk.carchase2.CarChase;
 import inpro.audio.DispatchStream;
 import inpro.incremental.processor.SynthesisModule;
-import inprotk.carchase2.CarChaseTTS.TTSAction;
 
 public abstract class Articulator {
 	protected DispatchStream dispatcher;
