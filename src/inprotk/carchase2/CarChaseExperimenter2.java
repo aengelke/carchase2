@@ -1,15 +1,23 @@
 package inprotk.carchase2;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
 
 import inprotk.carchase2.CarChaseViewer.DriveAction;
 import inprotk.carchase2.World.Street;
 import inprotk.carchase2.World.WorldPoint;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import processing.core.PApplet;
 import inprotk.carchase2.CarChase;
 import inprotk.carchase2.CarChaseExperimenter2;
 import inprotk.carchase2.CarChaseViewer;
@@ -47,6 +55,36 @@ public class CarChaseExperimenter2 {
 						viewer.addKeyListener((KeyListener) CarChase.get().configuration());
 					}
 					viewer.start();
+					
+					if (!CarChase.getSuperConfig("recording").equals("awt")) return;
+					
+					final String name = CarChase.getSuperConfig("baseline").equals("true") ? "base" : "incr";
+					new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							int lastTime = CarChase.get().getTime();
+							for (int i = 0; i < 20*50; i++){
+							try {
+	                            Robot robot = new Robot();
+	                            final BufferedImage snapShot = robot.createScreenCapture(new Rectangle(0, 0, 1024, 768+20));
+                            	final File f = new File("../../preval2/" + name + "/" + PApplet.nf(i, 5) + ".png");
+								new Thread(new Runnable() {
+									public void run() {
+										try {
+											ImageIO.write(snapShot, "png", f);
+										} catch (IOException e) {}
+									}
+								}).start();
+	                            int tm = CarChase.get().getTime();
+	                            if (tm < lastTime + 50)
+	                            	Thread.sleep(50 - tm + lastTime);
+	                        } catch (Exception ex) {
+	                            ex.printStackTrace();
+	                        }}
+						}
+						
+					}, "Screenshooting").start();
 				}
 			});
 		} catch (Exception e) {

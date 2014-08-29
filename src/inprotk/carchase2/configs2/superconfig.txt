@@ -2,3 +2,4 @@
 config:config
 interactive:false
 baseline:false
+recording:awt
