@@ -91,7 +91,7 @@ pt p1
   --cond#*WASJUNCTION#=#1
   --cond#*PREVSTREET#=#*STREET
   --msg#T2#R3#F1#Cont1=fährt geradeaus weiter.
-  --msg#T2#R5#F1#Cont1=fährt geradeaus weiter.
+  --msg#T2#R5#F1#Cont2=fährt geradeaus weiter.
   ++
 pt p1
   --cond#*DISTANCE#=#-5
@@ -99,7 +99,7 @@ pt p1
   --cond#*WASJUNCTION#>#0
   --cond#*PREVSTREET#=#*STREET
   --msg#T2#R3#F1#Cont1=fährt geradeaus weiter.
-  --msg#T2#R5#F1#Cont1=fährt geradeaus weiter.
+  --msg#T2#R5#F1#Cont2=fährt geradeaus weiter.
   ++
 # T-Kreuzung
 pt p1
