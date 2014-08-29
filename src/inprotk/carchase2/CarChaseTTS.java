@@ -136,6 +136,10 @@ public class CarChaseTTS {
 			}
 		}
 		private void dispatch(DispatchAction a) {
+			// Important to do this at the beginning, otherwise
+			// we can't be sure with the types.
+			articulator.reduceOffset();
+			
 			CarChaseArticulatable startAction = null;
 			CarChaseArticulatable continuationAction = null;
 			CarChaseArticulatable lastIU = (CarChaseArticulatable) articulator.getLast();
@@ -160,8 +164,6 @@ public class CarChaseTTS {
 			CarChase.log("Articulator Say", finalAction);
 
 			articulator.printUpcoming();
-			// TODO: Implement this (less) important feature.
-			articulator.reduceOffset();
 			articulator.say(finalAction);
 		}
 		private void addDispatchTask(CarState state) {
