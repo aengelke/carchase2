@@ -155,15 +155,10 @@ public class CarChaseTTS {
 			if (startAction == null)
 				return;
 
-			//CarChase.log(continuationPossible, startAction.text, continuationAction == null ? null : continuationAction.text);
-
 			CarChaseArticulatable finalAction = startAction;
 			if (continuationPossible && continuationAction != null)
 				finalAction = continuationAction;
 
-			CarChase.log("Articulator Say", finalAction);
-
-			articulator.printUpcoming();
 			articulator.say(finalAction);
 		}
 		private void addDispatchTask(CarState state) {
@@ -403,6 +398,8 @@ public class CarChaseTTS {
 			if (mapping.size() == 0) return null;
 			
 			int chosen = random.nextInt(mapping.size());
+			
+			@SuppressWarnings("unchecked")
 			Map.Entry<Message, Message> result = (Map.Entry<Message, Message>) mapping.entrySet().toArray()[chosen];
 
 			return new CarChaseArticulatable(result.getKey(), result.getValue(), optional);

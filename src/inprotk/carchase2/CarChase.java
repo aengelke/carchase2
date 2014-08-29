@@ -109,7 +109,6 @@ public class CarChase {
 	// Helper methods.
 
 	public static String getFilename(String s) {
-		System.err.println(s);
 		return CarChase.class.getResource(s).getPath().replaceAll("%20", " ");
 	}
 	

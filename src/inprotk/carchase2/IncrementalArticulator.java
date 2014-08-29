@@ -70,7 +70,6 @@ public class IncrementalArticulator extends StandardArticulator {
 		for (IU iu : ius) {
 			if (!(iu instanceof ChunkIU)) continue;
 			Articulatable articulatable = (Articulatable) iu.getUserData("articulatable");
-			CarChase.log("RO", articulatable.isOptional(), articulatable.getPreferredText(), articulatable.getShorterText());
 			if (articulatable.isOptional()) {
 				boolean canRemove = true;
 				int index = articulates.indexOf(articulatable);

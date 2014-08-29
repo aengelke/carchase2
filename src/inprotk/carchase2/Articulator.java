@@ -23,7 +23,6 @@ public abstract class Articulator {
 		return CarChase.get().getTime();
 	}
 
-	public void printUpcoming() {}
 	public abstract Articulatable getLast();
 	public abstract boolean isSpeaking();
 	public abstract void reduceOffset();
