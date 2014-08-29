@@ -208,7 +208,7 @@ public class Configuration {
 	}
 	
 	public double getCurrentSpeed(int millisFromStart) {
-		return getDiscreteSpeed(millisFromStart) / 20.; //0.1; // px/ms
+		return getDiscreteSpeed(millisFromStart) / 18.; //0.1; // px/ms
 	}
 	
 	public int getDiscreteSpeed(int millisFromStart) {
