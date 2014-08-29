@@ -3,10 +3,12 @@ package inprotk.carchase2;
 import inpro.util.TimeUtil;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import inprotk.carchase2.CarChase;
 import inprotk.carchase2.CarChaseTTS;
@@ -25,6 +27,29 @@ public class CarChase {
 	private Configuration config;
 	private CarChaseTTS tts;
 	private long startTime;
+	
+	private static HashMap<String, String> superConfig; 
+	
+	static {
+		if (superConfig == null) {
+			superConfig = new HashMap<String, String>();
+			try {
+				String[] raw = readLines("inprotk/carchase2/configs2/superconfig.txt");
+				int index = 0;
+				for (String line : raw) {
+					if (index++ == 0) continue;
+					line = line.trim();
+					if (line.startsWith("#")) continue;
+					if (line.equals("")) continue;
+					superConfig.put(line.split(":")[0], line.split(":")[1]);
+				}
+			} catch (Exception e) {
+				log("Error reading or parsing Super-Configuration. Full stop.");
+				log(e);
+				System.exit(-1);
+			}
+		}
+	}
 	
 	public void setWorld(World w) {
 		world = w;
@@ -66,17 +91,18 @@ public class CarChase {
 	}
 	
 	private Configuration makeConfig() {
-		this.configName = "config";
-		// For non-interactive:
-		//return new Configuration(getConfigFilename(configName + ".txt"));
-		return new InteractiveConfiguration();
+		this.configName = getSuperConfig("config");
+		if (getSuperConfig("interactive").equals("true"))
+			return new InteractiveConfiguration();
+		return new Configuration(getConfigFilename(configName + ".txt"));
 	}
 	
 	public void init(String name) {
 		configSet = name;
 		world = new World(getConfigFilename("world.txt"));
 		config = makeConfig();
-		tts = new CarChaseTTS(getConfigFilename("patterns.txt"));
+		String patternFile = "patterns" + (getSuperConfig("baseline").equals("true") ? "-baseline" : "");
+		tts = new CarChaseTTS(getConfigFilename(patternFile + ".txt"));
 	}
 	
 	public boolean isInteractive() {
@@ -122,6 +148,8 @@ public class CarChase {
 	}
 	
 	public static String[] readLines(String filename) throws IOException {
+		File f = new File(filename);
+		log(f.getAbsolutePath());
         InputStreamReader fileReader = new InputStreamReader(new FileInputStream(filename), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         ArrayList<String> lines = new ArrayList<String>();
@@ -132,4 +160,8 @@ public class CarChase {
         bufferedReader.close();
         return lines.toArray(new String[lines.size()]);
     }
+	
+	public static String getSuperConfig(String key) {
+		return superConfig.get(key);
+	}
 }

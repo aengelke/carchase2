@@ -30,8 +30,10 @@ public class CarChaseTTS {
 	public CarChaseTTS(String patternsFilename) {
 		try {
 			dispatcher = SimpleMonitor.setupDispatcher();
-			//articulator = new StandardArticulator(dispatcher);
-			articulator = new IncrementalArticulator(dispatcher);
+			if (CarChase.getSuperConfig("baseline").equals("true"))
+				articulator = new StandardArticulator(dispatcher);
+			else
+				articulator = new IncrementalArticulator(dispatcher);
 			parsePatterns(patternsFilename);
 			dispatchThread = new DispatcherThread();
 			dispatchThread.start();
