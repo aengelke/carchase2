@@ -14,7 +14,6 @@ import edu.cmu.sphinx.util.props.PropertyException;
 import edu.cmu.sphinx.util.props.PropertySheet;
 import edu.cmu.sphinx.util.props.S4Boolean;
 import inpro.incremental.PushBuffer;
-import inpro.incremental.sink.CurrentHypothesisViewer;
 import inpro.incremental.unit.EditMessage;
 import inpro.incremental.unit.IU;
 import inpro.incremental.unit.IU.IUUpdateListener;
@@ -78,15 +77,9 @@ public class MyCurrentHypothesisViewer extends PushBuffer {
 	public JEditorPane getTextField() {
 		return textField;
 	}
-
-	protected void updateFromIU() {
-
-	}
-	private int lastiusize;
+	
 	public void hypChange(Collection<? extends IU> ius,
 			List<? extends EditMessage<? extends IU>> edits) {
-		if (ius.size() > lastiusize) CarChase.log("Added", ius.size() - lastiusize);
-		lastiusize = ius.size();
 		if (updateResults) {
 			if (!ius.equals(iuList)) {
 				iuList.clear();
@@ -116,7 +109,6 @@ public class MyCurrentHypothesisViewer extends PushBuffer {
 					sb.append(payload);
 				sb.append("<sub>");
 				sb.append((int) (iu.duration()*1000));
-				//if (!iu.isCompleted() && !iu.isOngoing()) CarChase.log(payload, iu.duration());
 				sb.append("</sub>");
 				sb.append(" ");
 			}
