@@ -20,6 +20,12 @@ public class StandardArticulator extends Articulator {
 		ccIUSource = new CarChaseIUSource();
 		ccIUSource.addListener(synthesisModule);
 	}
+	
+	public MyCurrentHypothesisViewer getHypothesisViewer() {
+		MyCurrentHypothesisViewer v = new MyCurrentHypothesisViewer();
+		ccIUSource.addListener(v);
+		return v;
+	}
 
 	public void say(Articulatable action) {
 		ccIUSource.say(action);

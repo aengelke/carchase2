@@ -17,7 +17,7 @@ import inpro.incremental.unit.IU.Progress;
 import inprotk.carchase2.CarChase;
 import inprotk.carchase2.StandardArticulator;
 
-public class IncrementalArticulator extends StandardArticulator {
+public class IncrementalArticulator extends Articulator {
 	private final CarChaseIUSource ccIUSource;
 	
 	private ArrayList<Articulatable> articulates;
@@ -28,9 +28,13 @@ public class IncrementalArticulator extends StandardArticulator {
 		synthesisModule = new SynthesisModule(dispatcher);
 		ccIUSource = new CarChaseIUSource();
 		ccIUSource.addListener(synthesisModule);
-		ccIUSource.addListener(new CurrentHypothesisViewer().show());
-		synthesisModule.addListener(new MyCurrentHypothesisViewer().show());
 		articulates = new ArrayList<Articulatable>();
+	}
+	
+	public MyCurrentHypothesisViewer getHypothesisViewer() {
+		MyCurrentHypothesisViewer v = new MyCurrentHypothesisViewer();
+		ccIUSource.addListener(v);
+		return v;
 	}
 	
 	@Override
