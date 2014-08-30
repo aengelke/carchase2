@@ -18,7 +18,6 @@ public class Configuration {
 	public ArrayList<SpeedAction> speedActions;
 	public int startDirection;
 	public String startPointStr, startStreetStr;
-	public int startDistance;
 	
 	public int currentDirAction;
 
@@ -52,7 +51,6 @@ public class Configuration {
 					startPointStr = args[0];
 					startStreetStr = args[1];
 					startDirection = Integer.parseInt(args[2] + "1");
-					startDistance = Integer.parseInt(args[3]);
 				}
 				else if (line.startsWith("---")) {
 					String[] args = line.substring(line.indexOf("---") + 3).split(",");
