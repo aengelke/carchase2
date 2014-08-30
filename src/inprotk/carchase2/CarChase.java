@@ -150,8 +150,6 @@ public class CarChase {
 	}
 	
 	public static String[] readLines(String filename) throws IOException {
-		File f = new File(filename);
-		log(f.getAbsolutePath());
         InputStreamReader fileReader = new InputStreamReader(new FileInputStream(filename), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         ArrayList<String> lines = new ArrayList<String>();
