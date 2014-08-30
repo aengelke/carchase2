@@ -138,20 +138,29 @@ public class CarChaseTTS {
 			}
 		}
 		private void dispatch(DispatchAction a) {
-			// Important to do this at the beginning, otherwise
-			// we can't be sure with the types.
-			articulator.reduceOffset();
 			
 			CarChaseArticulatable startAction = null;
 			CarChaseArticulatable continuationAction = null;
 			CarChaseArticulatable lastIU = (CarChaseArticulatable) articulator.getLast();
 			boolean continuationPossible = articulator.isSpeaking();
 
+			ArrayList<Pattern> matchings = new ArrayList<CarChaseTTS.Pattern>();
 			for (Pattern p : patterns) {
+				if (p.doesMatch(a.state))
+					matchings.add(p);
+			}
+			
+			if (matchings.size() == 0) return;
+
+			// Important to do this here, otherwise
+			// we can't be sure with the types.
+			articulator.reduceOffset();
+			
+			for (Pattern p : matchings) {
 				if (startAction == null)
-					startAction = p.match(a.state, null);
+					startAction = p.findMatch(a.state, null);
 				if (continuationAction == null && continuationPossible)
-					continuationAction = p.match(a.state, lastIU);
+					continuationAction = p.findMatch(a.state, lastIU);
 				if (startAction != null && (!continuationPossible || continuationAction != null)) break;
 			}
 			if (startAction == null)
@@ -301,9 +310,8 @@ public class CarChaseTTS {
 
 			return replace;
 		}
-
-		public CarChaseArticulatable match(CarState s, CarChaseArticulatable lastArticulatable) {
-			Message last = lastArticulatable != null ? lastArticulatable.preferred : null;
+		
+		public boolean doesMatch(CarState s) {
 			StringDict replace = instantiateVariables(s);
 			for (Condition cond : conditions) {
 				String instancedLeftSide = instanciate(cond.leftSide, replace);
@@ -312,23 +320,29 @@ public class CarChaseTTS {
 					int distance = Integer.parseInt(instancedRightSide);
 					if (cond.operator == '=') {
 						if (s.previousDistance > s.currentDistance) {
-							if (distance >= s.previousDistance || distance < s.currentDistance) return null;
+							if (distance >= s.previousDistance || distance < s.currentDistance) return false;
 						}
-						else if (distance < s.previousDistance || distance >= s.currentDistance) return null;
+						else if (distance < s.previousDistance || distance >= s.currentDistance) return false;
 					} else if (cond.operator == '>') {
-						if (s.currentDistance <= distance) return null;
+						if (s.currentDistance <= distance) return false;
 					}
 				} else {
-					if (cond.operator == '=' && !instancedLeftSide.equals(instancedRightSide)) return null;
-					else if (cond.operator == '!' && instancedLeftSide.equals(instancedRightSide)) return null;
+					if (cond.operator == '=' && !instancedLeftSide.equals(instancedRightSide)) return false;
+					else if (cond.operator == '!' && instancedLeftSide.equals(instancedRightSide)) return false;
 					else if (cond.operator == '<' || cond.operator == '>') {
 						int left = Integer.parseInt(instancedLeftSide);
 						int right = Integer.parseInt(instancedRightSide);
-						if (cond.operator == '<' && left >= right) return null;
-						if (cond.operator == '>' && left <= right) return null;
+						if (cond.operator == '<' && left >= right) return false;
+						if (cond.operator == '>' && left <= right) return false;
 					}
 				}
 			}
+			return true;
+		}
+
+		public CarChaseArticulatable findMatch(CarState s, CarChaseArticulatable lastArticulatable) {
+			Message last = lastArticulatable != null ? lastArticulatable.preferred : null;
+			StringDict replace = instantiateVariables(s);
 
 			ArrayList<Message> instancedMessages = new ArrayList<Message>();
 			for (Map.Entry<String, Message> entry : templates.entrySet())
