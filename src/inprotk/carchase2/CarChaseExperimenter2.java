@@ -2,24 +2,15 @@ package inprotk.carchase2;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
-import java.awt.Robot;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import inprotk.carchase2.CarChaseViewer.DriveAction;
 import inprotk.carchase2.World.Street;
 import inprotk.carchase2.World.WorldPoint;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import processing.core.PApplet;
 import inprotk.carchase2.CarChase;
 import inprotk.carchase2.CarChaseExperimenter2;
 import inprotk.carchase2.CarChaseViewer;
@@ -31,8 +22,6 @@ public class CarChaseExperimenter2 {
 	private JFrame frame;
 	
 	private int lastEvent;
-	
-	private boolean record = true;
 
 	private CarChaseExperimenter2() {
 		setupGUI();
@@ -60,43 +49,9 @@ public class CarChaseExperimenter2 {
 					}
 					viewer.start();
 					
-					if (!CarChase.getSuperConfig("recording").equals("awt")) return;
+					if (CarChase.getSuperConfig("recording").equals("awt"))
+						RecorderAWT.startRecording(new Rectangle(0, 0, 1024, 768));
 					
-					final String name = CarChase.getSuperConfig("baseline").equals("true") ? "base" : "incr";
-					new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-							int lastTime = CarChase.get().getTime();
-							ExecutorService execService = Executors.newFixedThreadPool(1);
-							for (int i = 0; record; i++) {
-								try {
-		                            Robot robot = new Robot();
-		                            final BufferedImage snapShot = robot.createScreenCapture(new Rectangle(0, 0, 1024, 768));
-	                            	final File f = new File("../../preval2/" + name + "/" + PApplet.nf(i, 5) + ".png");
-	                            	execService.submit(new Runnable() {
-										public void run() {
-											try {
-												ImageIO.write(snapShot, "png", f);
-											} catch (IOException e) {}
-										}
-									});
-		                            int tm = CarChase.get().getTime();
-		                            if (tm < lastTime + 80)
-		                            	Thread.sleep(80 - tm + lastTime);
-		                            lastTime = CarChase.get().getTime();
-		                        } catch (Exception ex) {
-		                            ex.printStackTrace();
-		                        }
-							}
-                        	execService.submit(new Runnable() {
-								public void run() {
-									System.exit(0);
-								}
-							});
-						}
-						
-					}, "Screenshooting").start();
 				}
 			});
 		} catch (Exception e) {
@@ -174,10 +129,11 @@ public class CarChaseExperimenter2 {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 		}
-		record = false;
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
+		if (CarChase.getSuperConfig("recording").equals("awt")) {
+			// This will handle the shutdown.
+			RecorderAWT.stopRecording();
+		} else {
+			System.exit(0);
 		}
 	}
 	
