@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import inprotk.carchase2.CarChaseViewer.DriveAction;
 import inprotk.carchase2.World.Street;
@@ -29,6 +31,8 @@ public class CarChaseExperimenter2 {
 	private JFrame frame;
 	
 	private int lastEvent;
+	
+	private boolean record = true;
 
 	private CarChaseExperimenter2() {
 		setupGUI();
@@ -64,24 +68,32 @@ public class CarChaseExperimenter2 {
 						@Override
 						public void run() {
 							int lastTime = CarChase.get().getTime();
-							for (int i = 0; i < 20*50; i++){
-							try {
-	                            Robot robot = new Robot();
-	                            final BufferedImage snapShot = robot.createScreenCapture(new Rectangle(0, 0, 1024, 768+20));
-                            	final File f = new File("../../preval2/" + name + "/" + PApplet.nf(i, 5) + ".png");
-								new Thread(new Runnable() {
-									public void run() {
-										try {
-											ImageIO.write(snapShot, "png", f);
-										} catch (IOException e) {}
-									}
-								}).start();
-	                            int tm = CarChase.get().getTime();
-	                            if (tm < lastTime + 50)
-	                            	Thread.sleep(50 - tm + lastTime);
-	                        } catch (Exception ex) {
-	                            ex.printStackTrace();
-	                        }}
+							ExecutorService execService = Executors.newFixedThreadPool(1);
+							for (int i = 0; record; i++) {
+								try {
+		                            Robot robot = new Robot();
+		                            final BufferedImage snapShot = robot.createScreenCapture(new Rectangle(0, 0, 1024, 768));
+	                            	final File f = new File("../../preval2/" + name + "/" + PApplet.nf(i, 5) + ".png");
+	                            	execService.submit(new Runnable() {
+										public void run() {
+											try {
+												ImageIO.write(snapShot, "png", f);
+											} catch (IOException e) {}
+										}
+									});
+		                            int tm = CarChase.get().getTime();
+		                            if (tm < lastTime + 80)
+		                            	Thread.sleep(80 - tm + lastTime);
+		                            lastTime = CarChase.get().getTime();
+		                        } catch (Exception ex) {
+		                            ex.printStackTrace();
+		                        }
+							}
+                        	execService.submit(new Runnable() {
+								public void run() {
+									System.exit(0);
+								}
+							});
 						}
 						
 					}, "Screenshooting").start();
@@ -158,12 +170,15 @@ public class CarChaseExperimenter2 {
 				lastEvent = -1;
 			}
 		} while (true);
-		
 		try {
-			Thread.sleep(14000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 		}
-		System.exit(0);
+		record = false;
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+		}
 	}
 	
 	public static void main(String[] args) {
