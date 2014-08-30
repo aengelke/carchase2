@@ -94,6 +94,7 @@ public class MyCurrentHypothesisViewer extends PushBuffer {
 
 			}
 			StringBuilder sb = new StringBuilder();
+			StringBuilder log = new StringBuilder();
 			for (IU iu : ius) {
 				String payload = iu.toPayLoad().replace(">", "&gt;")
 						.replace("<", "&lt;");
@@ -105,14 +106,19 @@ public class MyCurrentHypothesisViewer extends PushBuffer {
 					sb.append("<em>");
 					sb.append(payload);
 					sb.append("</em>");
-				} else
+					log.append(" ~ " + payload);
+					log.append(" |");
+				} else {
 					sb.append(payload);
+					log.append(" " + payload);
+					log.append(" |");
+				}
 				sb.append("<sub>");
 				sb.append((int) (iu.duration()*1000));
 				sb.append("</sub>");
 				sb.append(" ");
 			}
-			//CarChase.log("---");
+			CarChase.log(CarChase.get().getTime(), log);
 			final String text = sb.toString();
 			if (!text.equals(lastString)) {
 				SwingUtilities.invokeLater(new Runnable() {
