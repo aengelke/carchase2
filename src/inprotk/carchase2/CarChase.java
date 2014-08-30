@@ -114,6 +114,8 @@ public class CarChase {
 	}
 	
 	public float frameRate() {
+		if (getSuperConfig("recording").equals("papplet"))
+			return 5f;
 		return 30f;
 	}
 	
